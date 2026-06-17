@@ -1,0 +1,31 @@
+load("//harness:defs.bzl", "repo_build", "repo_smoke", "repo_test")
+
+# gin (rank_code_size 666): Go HTTP web framework (a library, not a CLI).
+#
+# build: `go build ./...` compiles all packages (deps from the proxy; go.sum pins).
+# test:  `go test ./...` — the project's suite. Integration tests bind localhost,
+#        which the toolchain's /etc/hosts now resolves.
+# smoke: a tiny in-process app that defines a route and serves a request through
+#        gin (the library equivalent of "just use it").
+GO = "//toolchains:go_rootfs"
+
+repo_build(
+    name = "gin",
+    repo = "https://github.com/gin-gonic/gin",
+    commit = "d75fcd4c9ab260e5225de590f1f0f8c0e0e12d11",
+    build = "go build ./...",
+    toolchain = GO,
+)
+
+repo_test(
+    name = "gin",
+    built = ":gin",
+    test = "go test ./...",
+    toolchain = GO,
+)
+
+repo_smoke(
+    name = "gin",
+    built = ":gin",
+    toolchain = GO,
+)

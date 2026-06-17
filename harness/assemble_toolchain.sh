@@ -44,6 +44,9 @@ fi
 mkdir -p "$ROOT/etc/ssl/certs"
 cp "$CACERT" "$ROOT/etc/ssl/certs/ca-certificates.crt"
 cp /etc/resolv.conf "$ROOT/etc/resolv.conf"
+# Resolve localhost without DNS (ubuntu-base ships no /etc/hosts entry; tests
+# that bind/connect localhost otherwise hit the DNS server and fail).
+printf '127.0.0.1\tlocalhost\n::1\tlocalhost ip6-localhost\n' > "$ROOT/etc/hosts"
 
 echo 'APT::Sandbox::User "root";' > "$ROOT/etc/apt/apt.conf.d/00sandbox"
 cat > "$ROOT/etc/apt/sources.list.d/ubuntu.sources" <<EOF
