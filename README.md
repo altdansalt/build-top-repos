@@ -145,22 +145,17 @@ from the cached toolchain, so Node projects do no apt. Test targets are tagged
 
 ## Status
 
-### Done
-- **Bazel workspace skeleton**: `.bazelversion` (9.1.1), `.bazelrc` (Bzlmod-only),
-  `MODULE.bazel` with all four inputs pinned + `rules_shell`.
-- **Container runtime via Bazel**: `crun` 1.28 static binary via pinned `http_file`.
-- **Rootless run** with multi-id mapping + capabilities.
-- **Cached toolchain rootfs** (`//toolchains:node_rootfs`): ubuntu-base + Node +
-  CA, with git/time/ca-certs baked in via one apt pass against the pinned
-  snapshot. Bazel caches it; apt runs once, not per project.
-- **husky — build + test split, both green**: `bazel build //projects/husky`
-  produces `husky.built.tar` (post-build tree incl. `npm pack` output);
-  `bazel test //projects/husky:husky_test` restores it and runs husky's 12-script
-  suite against the packed artifact (no rebuild) → PASSED.
-- **gulp — first project with real deps, green**: build = `npm install`
-  (node_modules captured into the 8.5M artifact, no lockfile → first
-  non-deterministic case); test = `npm test` (eslint pretest + `nyc mocha`),
-  **42 mocha tests passing**, 100% coverage. `bazel test //projects/...` = 2/2.
+**19 projects landed, 7 deferred** (see ledger). Six cached language toolchains:
+`node` (24), `python`, `go` (1.26), `rust` (1.96 + clippy/rustfmt), `shell`
+(bats), `c` (autotools + g++-14 + cmake). `bazel test //projects/...` is the
+cross-project health check (build+test+smoke per project). Each landed project is
+a `repo_build` + `repo_test`/`repo_smoke` in `projects/<name>/BUILD.bazel`.
+
+Recurring lessons baked into the harness: keep `.git` (some suites locate fixtures
+via `git rev-parse`); provide `/etc/hosts` localhost, `tzdata`, and `git
+safe.directory` (tests assume them); pin contemporaneous tool versions when a
+project's deps are unpinned (e.g. `pytest<8`, `setuptools<81`); prefer a project's
+offline/core test subset over network/TTY/root-coupled tests.
 
 ### Project ledger
 | # | project | lang | build | test | smoke | result |
@@ -215,11 +210,12 @@ heavy: it needs OCR engines (tesseract, ghostscript, unpaper, qpdf, …) and a l
 real-OCR test suite — revisitable if we invest in an OCR toolchain.
 
 ### Next
-1. Continue the CSV: `repo_build` + `repo_test` + `repo_smoke` per project,
-   learning as we go. Heavy/browser/GUI projects → cache the weight in a toolchain.
-2. Optional **reproducibility check** target: build twice, diff the artifact hash.
-3. Per-project `apt` deps and non-Node toolchains (Python, Go, C/C++) — likely a
-   second cached toolchain or per-project package lists.
+1. Keep working down the CSV: one `repo_build` + `repo_test`/`repo_smoke` per
+   project. Heavy/browser/GUI projects → cache the weight in a toolchain or defer.
+2. Optional **reproducibility check** target: build twice, diff the artifact hash
+   (turns the "determinism is measured" idea into data per project).
+3. Revisit deferrals worth a toolchain investment: a browser toolchain
+   (playwright-mcp) and an OCR toolchain (OCRmyPDF).
 4. Consider `rules_oci` pull-by-digest as an optional fast path for common stacks.
 
 ## Notes / decisions
