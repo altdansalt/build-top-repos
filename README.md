@@ -174,6 +174,8 @@ from the cached toolchain, so Node projects do no apt. Test targets are tagged
 | 756 | dive | Go | `go build` | `go test` (all pkgs but docker-cli) | analyze image tarball → JSON | ✅✅ |
 | 746 | rustlings | Rust | `cargo build` | `cargo test --workspace` | `rustlings --version`/`--help` | ✅✅ |
 | 735 | pyenv | Shell | compile realpath shim | `bats` core suite (34 tests) | `pyenv version`/`commands`/`versions` | ✅✅ |
+| 725 | code-server | TS | (vendors all of VS Code) | — | — | ⏸️ deferred |
+| 699 | thefuck | Python | venv + `pip install` | `pytest` unit suite (~1900) | `thefuck --version`/`--help` | ✅✅ |
 
 **playwright-mcp — deferred (needs a browser toolchain).** Spike confirmed
 `npm ci` + `npx playwright install --with-deps` work against our snapshot apt, but
@@ -188,6 +190,10 @@ Deferred until we choose to invest in that toolchain.
 test; the real suite (`tests/run-tests.sh`) boots the cheat.sh server with redis
 and needs `lib/fetch.py fetch-all` (cloning dozens of external cheat-sheet repos).
 A custom toolchain to land one trivial test, with no honest offline smoke — skipped.
+
+**code-server — deferred (vendors all of VS Code).** Its build (`ci/build/build-code-server.sh`)
+compiles the bundled `microsoft/vscode` submodule — a multi-GB, long build. Out of
+scope for now.
 
 ### Next
 1. Continue the CSV: `repo_build` + `repo_test` + `repo_smoke` per project,

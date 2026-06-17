@@ -1,0 +1,35 @@
+load("//harness:defs.bzl", "repo_build", "repo_smoke", "repo_test")
+
+# thefuck (rank_code_size 699): Python CLI that corrects mistyped commands.
+#
+# build: venv install. Its legacy setup.py imports pkg_resources, dropped by
+#        recent setuptools -> pin "setuptools<81" + --no-build-isolation. Its
+#        unpinned test deps resolve to a pytest too new for its old test idioms
+#        -> pin "pytest<8".
+# test:  the unit suite, excluding tests/functional (those run across shells in
+#        docker via pytest-docker-pexpect -- out of scope). ~1900 tests.
+# smoke: run the installed thefuck CLI (--version/--help).
+PY = "//toolchains:python_rootfs"
+
+repo_build(
+    name = "thefuck",
+    repo = "https://github.com/nvbn/thefuck",
+    commit = "c7e7e1d884d3bb241ea6448f72a989434c2a35ec",
+    build = "python3 -m venv .venv" +
+            " && .venv/bin/pip install \"setuptools<81\" wheel" +
+            " && .venv/bin/pip install --no-build-isolation . \"pytest<8\" \"pytest-mock<3.13\" mock",
+    toolchain = PY,
+)
+
+repo_test(
+    name = "thefuck",
+    built = ":thefuck",
+    test = ". .venv/bin/activate && pytest tests --ignore=tests/functional",
+    toolchain = PY,
+)
+
+repo_smoke(
+    name = "thefuck",
+    built = ":thefuck",
+    toolchain = PY,
+)
