@@ -1,0 +1,26 @@
+load("//harness:defs.bzl", "repo_build", "repo_smoke")
+
+# starship (rank_code_size 564): Rust cross-shell prompt.
+#
+# build: cargo build (CARGO_HOME in the tree so deps ride along).
+# smoke: `starship --version` and `starship prompt` (renders a prompt — its job).
+#
+# NOTE: full `cargo test` is DEFERRED. ~1158 tests pass, but ~74 fail: they are
+# module-detection tests that assume a full dev environment (git fixtures and the
+# runtimes starship detects — node/python/ruby/…/timezones). Matching all of that
+# is an environment rabbit hole; build + smoke are the signal.
+RUST = "//toolchains:rust_rootfs"
+
+repo_build(
+    name = "starship",
+    repo = "https://github.com/starship/starship",
+    commit = "11112302892c1c0e841d49764edbde789cfa8b48",
+    build = "CARGO_HOME=/work/starship/.cargo cargo build",
+    toolchain = RUST,
+)
+
+repo_smoke(
+    name = "starship",
+    built = ":starship",
+    toolchain = RUST,
+)
