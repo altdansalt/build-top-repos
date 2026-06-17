@@ -124,7 +124,7 @@ harness/
   test_in_container.sh    test step: restore artifact, run test cmd -> exit verdict
   smoke_in_container.sh   smoke step: restore artifact, run author smoke.sh
   defs.bzl                repo_build() + repo_test() + repo_smoke() macros
-toolchains/BUILD.bazel    //toolchains:{node,python,go,rust,shell}_rootfs  (cached, apt-baked)
+toolchains/BUILD.bazel    //toolchains:{node,python,go,rust,shell,c}_rootfs  (cached, apt-baked)
 projects/<name>/BUILD.bazel   repo_build() + repo_test() + repo_smoke() per project
 projects/<name>/smoke.sh      author-written end-user smoke script
 ```
@@ -177,6 +177,7 @@ from the cached toolchain, so Node projects do no apt. Test targets are tagged
 | 725 | code-server | TS | (vendors all of VS Code) | — | — | ⏸️ deferred |
 | 699 | thefuck | Python | venv + `pip install` | `pytest` unit suite (~1900) | `thefuck --version`/`--help` | ✅✅ |
 | 676 | httpie | Python | venv + `pip install` | (deferred: root/net/TTY-coupled) | `http --version` + `--offline` request | ✅⏸️ |
+| 669 | jq | C | autoreconf + configure + make | `make check` (8/9 groups; tzdata) | `jq` filters (`.foo`, `add`) | ✅✅ |
 
 **playwright-mcp — deferred (needs a browser toolchain).** Spike confirmed
 `npm ci` + `npx playwright install --with-deps` work against our snapshot apt, but

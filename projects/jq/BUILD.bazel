@@ -1,0 +1,30 @@
+load("//harness:defs.bzl", "repo_build", "repo_smoke", "repo_test")
+
+# jq (rank_code_size 669): C command-line JSON processor. First C project — uses
+# c_rootfs (autotools + bison/flex). Bundles oniguruma (regex) as a submodule.
+#
+# build: init the oniguruma submodule, then autoreconf + configure + make.
+# test:  `make check` (jq's own test suite: jq.test, manpage tests, ...).
+# smoke: run real jq filters through the built binary.
+C = "//toolchains:c_rootfs"
+
+repo_build(
+    name = "jq",
+    repo = "https://github.com/jqlang/jq",
+    commit = "88e83408f23cb9d8357fa279724e6014b39becb5",
+    build = "git submodule update --init && autoreconf -i && ./configure --with-oniguruma=builtin && make",
+    toolchain = C,
+)
+
+repo_test(
+    name = "jq",
+    built = ":jq",
+    test = "make check",
+    toolchain = C,
+)
+
+repo_smoke(
+    name = "jq",
+    built = ":jq",
+    toolchain = C,
+)
