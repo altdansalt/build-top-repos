@@ -13,7 +13,9 @@ Usage: gen_config.py <crun> <bundle_dir> <cwd> <args_json> [mounts_json]
 where <args_json> is a JSON list, e.g. '["/bin/sh","-c","..."]', and the
 optional [mounts_json] is a JSON list of extra OCI mounts to append.
 """
+import glob
 import json
+import os
 import subprocess
 import sys
 
@@ -30,8 +32,16 @@ c["process"]["terminal"] = False
 c["process"]["cwd"] = CWD
 c["process"]["args"] = json.loads(ARGS_JSON)
 
+# Auto-add any language toolchain's bin dir: a toolchain that drops tools under
+# /opt/<name>/bin (Node, Go, ...) is picked up here without editing this file.
+opt_bins = [
+    "/opt/%s/bin" % os.path.basename(os.path.dirname(p))
+    for p in sorted(glob.glob(os.path.join(BUNDLE, "rootfs/opt/*/bin")))
+]
+path = ":".join(opt_bins + ["/usr/local/sbin", "/usr/local/bin", "/usr/sbin", "/usr/bin", "/sbin", "/bin"])
+
 env = [e for e in c["process"]["env"] if not e.startswith(("PATH=", "HOME="))]
-env.append("PATH=/opt/node/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin")
+env.append("PATH=" + path)
 env.append("HOME=/root")
 c["process"]["env"] = env
 

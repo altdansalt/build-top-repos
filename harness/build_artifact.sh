@@ -41,7 +41,7 @@ cp /etc/resolv.conf "$ROOT/etc/resolv.conf"
 
 git clone --quiet "$REPO" "$WORK/src"
 git -C "$WORK/src" checkout --quiet "$COMMIT"
-rm -rf "$WORK/src/.git"
+# Keep .git: some test suites locate fixtures via `git rev-parse --show-toplevel`.
 mkdir -p "$ROOT/work"
 cp -a "$WORK/src" "$ROOT/work/$NAME"
 

@@ -24,7 +24,28 @@ genrule(
     cmd = "bash $(location //harness:assemble_toolchain.sh) " +
           "$(location @crun//file) $(location //harness:gen_config.py) " +
           "$(location @cacert//file) $(location @ubuntu_base//file) " +
-          "$@ '" + _COMMON_PKGS + "' $(location @node//file)",
+          "$@ '" + _COMMON_PKGS + "' $(location @node//file) /opt/node 1",
+    local = 1,
+    tags = ["requires-network", "no-sandbox"],
+)
+
+# Go toolchain: ubuntu-base + Go (extracts to /opt/go) + git/time. The Go tarball
+# has a top-level go/ dir, so it extracts to /opt with no strip -> /opt/go/bin.
+genrule(
+    name = "go_rootfs",
+    srcs = [
+        "@crun//file",
+        "@ubuntu_base//file",
+        "@go//file",
+        "@cacert//file",
+        "//harness:gen_config.py",
+        "//harness:assemble_toolchain.sh",
+    ],
+    outs = ["go_rootfs.tgz"],
+    cmd = "bash $(location //harness:assemble_toolchain.sh) " +
+          "$(location @crun//file) $(location //harness:gen_config.py) " +
+          "$(location @cacert//file) $(location @ubuntu_base//file) " +
+          "$@ '" + _COMMON_PKGS + "' $(location @go//file) /opt 0",
     local = 1,
     tags = ["requires-network", "no-sandbox"],
 )

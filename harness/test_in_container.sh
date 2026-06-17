@@ -42,6 +42,7 @@ INNER="set -e; \
 git config --global user.email build@local; \
 git config --global user.name build; \
 git config --global init.defaultBranch main; \
+git config --global --add safe.directory '*'; \
 cd /work/$NAME; $TEST"
 ARGS_JSON="$(python3 -c 'import json,sys; print(json.dumps(["/bin/sh","-c",sys.argv[1]]))' "$INNER")"
 

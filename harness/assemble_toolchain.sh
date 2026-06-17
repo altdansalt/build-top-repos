@@ -4,8 +4,11 @@
 # an optional language tarball overlaid at /opt/node. Run by a genrule, so Bazel
 # caches the result keyed on the pinned inputs + this script + the package list.
 #
+# A language toolchain just drops its tools under /opt/<name>/bin (auto-added to
+# PATH by gen_config.py). The optional overlay extracts a pinned tarball there.
+#
 # Usage: assemble_toolchain.sh <crun> <gen_config.py> <cacert.pem> <ubuntu_base.tgz> \
-#                              <out.tgz> "<apt packages>" [node.txz]
+#            <out.tgz> "<apt packages>" [overlay_tarball overlay_dest overlay_strip]
 set -euo pipefail
 
 CRUN="$(realpath "$1")"
@@ -14,7 +17,9 @@ CACERT="$(realpath "$3")"
 UBUNTU="$(realpath "$4")"
 OUT="$5"
 APT_PKGS="$6"
-NODE="${7:-}"
+OVERLAY="${7:-}"
+OVERLAY_DEST="${8:-}"
+OVERLAY_STRIP="${9:-0}"
 
 # Pinned apt snapshot: reproducible to this date (apt also GPG-verifies).
 SNAPSHOT="20260601T000000Z"
@@ -27,10 +32,13 @@ ROOT="$WORK/rootfs"
 mkdir -p "$ROOT" "$WORK/out" "$ROOT/out"
 
 tar -xzf "$UBUNTU" -C "$ROOT"
-if [ -n "$NODE" ]; then
-  NODE="$(realpath "$NODE")"
-  mkdir -p "$ROOT/opt/node"
-  tar -xJf "$NODE" -C "$ROOT/opt/node" --strip-components=1
+if [ -n "$OVERLAY" ]; then
+  OVERLAY="$(realpath "$OVERLAY")"
+  mkdir -p "$ROOT/$OVERLAY_DEST"
+  case "$OVERLAY" in
+    *.tar.xz | *.txz) tar -xJf "$OVERLAY" -C "$ROOT/$OVERLAY_DEST" --strip-components="$OVERLAY_STRIP" ;;
+    *) tar -xzf "$OVERLAY" -C "$ROOT/$OVERLAY_DEST" --strip-components="$OVERLAY_STRIP" ;;
+  esac
 fi
 mkdir -p "$ROOT/etc/ssl/certs"
 cp "$CACERT" "$ROOT/etc/ssl/certs/ca-certificates.crt"

@@ -1,0 +1,33 @@
+load("//harness:defs.bzl", "repo_build", "repo_smoke", "repo_test")
+
+# dive (rank_code_size 756): Go tool for exploring docker image layers. First Go
+# project — uses the go_rootfs toolchain.
+#
+# build: `go build` the CLI binary (module deps fetched from the proxy; no lockfile
+#        but go.sum pins hashes -> reproducible deps).
+# test:  unit/integration tests for all packages EXCEPT the top cmd/dive/cli
+#        package, which shells out to a real `docker` client to build images
+#        (not available / not reproducible here). Everything else passes.
+# smoke: analyze a prebuilt image tarball fixture into a JSON report (no daemon).
+GO = "//toolchains:go_rootfs"
+
+repo_build(
+    name = "dive",
+    repo = "https://github.com/wagoodman/dive",
+    commit = "d6c691947f8fda635c952a17ee3b7555379d58f0",
+    build = "go build -o divebin ./cmd/dive",
+    toolchain = GO,
+)
+
+repo_test(
+    name = "dive",
+    built = ":dive",
+    test = "go test ./dive/... ./cmd/dive/cli/internal/...",
+    toolchain = GO,
+)
+
+repo_smoke(
+    name = "dive",
+    built = ":dive",
+    toolchain = GO,
+)
