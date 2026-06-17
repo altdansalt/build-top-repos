@@ -1,0 +1,32 @@
+load("//harness:defs.bzl", "repo_build", "repo_smoke", "repo_test")
+
+# textual (rank_code_size 404): Python TUI application framework (Textualize).
+#
+# build: venv install + test deps (async/snapshot pytest plugins).
+# test:  ~3005 unit tests. Excluded: tests/snapshot_tests (brittle SVG-render
+#        comparisons), tests/test_features.py (devtools, needs the separate
+#        textual-dev tool), tests/text_area/test_languages.py (needs the optional
+#        tree-sitter syntax extra).
+# smoke: run a real Textual app headlessly via its test pilot.
+PY = "//toolchains:python_rootfs"
+
+repo_build(
+    name = "textual",
+    repo = "https://github.com/Textualize/textual",
+    commit = "182277f69011ba0b9665a9a1b1b0c3e89630e913",
+    build = "python3 -m venv .venv && .venv/bin/pip install . pytest pytest-asyncio pytest-xdist pytest-textual-snapshot",
+    toolchain = PY,
+)
+
+repo_test(
+    name = "textual",
+    built = ":textual",
+    test = ". .venv/bin/activate && pytest tests --ignore=tests/snapshot_tests --ignore=tests/test_features.py --ignore=tests/text_area/test_languages.py -p no:cacheprovider",
+    toolchain = PY,
+)
+
+repo_smoke(
+    name = "textual",
+    built = ":textual",
+    toolchain = PY,
+)
