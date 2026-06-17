@@ -87,7 +87,7 @@ genrule(
     cmd = "bash $(location //harness:assemble_toolchain.sh) " +
           "$(location @crun//file) $(location //harness:gen_config.py) " +
           "$(location @cacert//file) $(location @ubuntu_base//file) " +
-          "$@ '" + _COMMON_PKGS + " build-essential autoconf automake libtool pkg-config bison flex tzdata'",
+          "$@ '" + _COMMON_PKGS + " build-essential g++-14 cmake autoconf automake libtool pkg-config bison flex tzdata'",
     local = 1,
     tags = ["requires-network", "no-sandbox"],
 )

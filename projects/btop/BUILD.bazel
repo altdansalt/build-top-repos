@@ -1,0 +1,25 @@
+load("//harness:defs.bzl", "repo_build", "repo_smoke")
+
+# btop (rank_code_size 562): C++ resource monitor (TUI).
+#
+# build: `make` with g++-14 — btop's HEAD uses std::ranges::to (C++23), which
+#        noble's default g++-13 lacks.
+# smoke: run the binary's non-interactive paths (--version, --help). It's a
+#        full-screen TUI, so there's no headless "monitor" run.
+#
+# No upstream `make test` target (tests/ are standalone programs), so no test.
+C = "//toolchains:c_rootfs"
+
+repo_build(
+    name = "btop",
+    repo = "https://github.com/aristocratos/btop",
+    commit = "d03b839ec2b562226731651d4921ee0419af2338",
+    build = "make -j8 CXX=g++-14",
+    toolchain = C,
+)
+
+repo_smoke(
+    name = "btop",
+    built = ":btop",
+    toolchain = C,
+)
