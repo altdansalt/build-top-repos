@@ -185,6 +185,7 @@ from the cached toolchain, so Node projects do no apt. Test targets are tagged
 | 610 | tabby | TS | — | — | — | ⏸️ deferred |
 | 606 | fzf | Go | `go build` | `go test ./src/...` | `fzf --filter` over piped input | ✅✅ |
 | 564 | starship | Rust | `cargo build` | (deferred: module tests need full dev env) | `starship --version` + `prompt` | ✅⏸️ |
+| 558 | rich | Python | venv + `pip install` | `pytest` (~960 tests) | render a table + `python -m rich` demo | ✅✅ |
 
 **playwright-mcp — deferred (needs a browser toolchain).** Spike confirmed
 `npm ci` + `npx playwright install --with-deps` work against our snapshot apt, but

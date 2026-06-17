@@ -1,0 +1,30 @@
+load("//harness:defs.bzl", "repo_build", "repo_smoke", "repo_test")
+
+# rich (rank_code_size 558): Python terminal text-formatting library.
+#
+# build: venv install + test deps (pytest<8 to match its ^7 pin; attrs is used by
+#        the pretty-printing tests).
+# test:  the full pytest suite (~960 tests; no network).
+# smoke: import rich and render a table + run its built-in demo (`python -m rich`).
+PY = "//toolchains:python_rootfs"
+
+repo_build(
+    name = "rich",
+    repo = "https://github.com/Textualize/rich",
+    commit = "46cebbb032f920eb096efbaf23cdc6fe9dd541f7",
+    build = "python3 -m venv .venv && .venv/bin/pip install . \"pytest<8\" attrs pytest-cov",
+    toolchain = PY,
+)
+
+repo_test(
+    name = "rich",
+    built = ":rich",
+    test = ". .venv/bin/activate && pytest tests",
+    toolchain = PY,
+)
+
+repo_smoke(
+    name = "rich",
+    built = ":rich",
+    toolchain = PY,
+)
