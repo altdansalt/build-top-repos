@@ -1,0 +1,10 @@
+# Reproducible-build harness Bazel config.
+
+# Bzlmod is the only dependency mechanism (default in Bazel 7+, required in 9).
+common --enable_bzlmod
+common --noenable_workspace
+
+# Keep build output deterministic and quiet-ish.
+build --incompatible_strict_action_env
+common --color=yes
+test --test_output=errors

@@ -1,0 +1,27 @@
+load("//harness:defs.bzl", "repo_build", "repo_smoke", "repo_test")
+
+# gulp (rank_code_size 867): JavaScript/npm streaming build system. Real deps.
+#
+# build: `npm install` resolves + fetches deps into node_modules (the build
+#        output; no separate compile step). No lockfile is shipped, so versions
+#        resolve by semver range -> a good first non-deterministic case.
+# test:  `npm test` runs `pretest` (eslint) then `nyc mocha --async-only`,
+#        against the node_modules captured by the build.
+repo_build(
+    name = "gulp",
+    repo = "https://github.com/gulpjs/gulp",
+    commit = "61f22dc11bb14234b555253095fa1d224ce0eab1",
+    build = "npm install",
+)
+
+repo_test(
+    name = "gulp",
+    built = ":gulp",
+    test = "npm test",
+)
+
+# Independent black-box smoke: install gulp, author a gulpfile, run a task.
+repo_smoke(
+    name = "gulp",
+    built = ":gulp",
+)

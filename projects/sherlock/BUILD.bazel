@@ -1,0 +1,35 @@
+load("//harness:defs.bzl", "repo_build", "repo_smoke", "repo_test")
+
+# sherlock (rank_code_size 826): Python CLI to hunt usernames across social
+# networks. Poetry-packaged. First project on the Python toolchain.
+#
+# build: create a venv and `pip install` the package + test deps into it; the
+#        .venv is captured in the artifact tree (same /work/sherlock path in
+#        build and test, so the venv's absolute paths stay valid).
+# test:  activate the venv and run the OFFLINE pytest subset (`-m "not online"`).
+#        The online-marked tests hit real social sites and are inherently flaky;
+#        pytest.ini already drops the heavy validate_targets sweep.
+# smoke: run the installed `sherlock` CLI (--version, --help) — exercises the
+#        entry point and full import graph as an end user gets it.
+PY = "//toolchains:python_rootfs"
+
+repo_build(
+    name = "sherlock",
+    repo = "https://github.com/sherlock-project/sherlock",
+    commit = "206068dc7842665130c87e16e1535572d3d1a907",
+    build = "python3 -m venv .venv && .venv/bin/pip install . pytest jsonschema rstr defusedxml",
+    toolchain = PY,
+)
+
+repo_test(
+    name = "sherlock",
+    built = ":sherlock",
+    test = ". .venv/bin/activate && pytest -m \"not online\"",
+    toolchain = PY,
+)
+
+repo_smoke(
+    name = "sherlock",
+    built = ":sherlock",
+    toolchain = PY,
+)

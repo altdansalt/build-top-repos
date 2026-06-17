@@ -1,0 +1,9 @@
+package(default_visibility = ["//visibility:public"])
+
+exports_files([
+    "gen_config.py",
+    "assemble_toolchain.sh",
+    "build_artifact.sh",
+    "test_in_container.sh",
+    "smoke_in_container.sh",
+])

@@ -1,0 +1,33 @@
+load("//harness:defs.bzl", "repo_build", "repo_smoke", "repo_test")
+
+# husky (rank_code_size 877, smallest in the set): JavaScript/npm git-hooks tool.
+#
+# build: `npm pack` produces the publishable tarball (the build output).
+# test:  husky's own suite installs that tarball into throwaway git repos and
+#        asserts hook behavior -- so the test consumes the build artifact and
+#        never repacks. git + time come from the cached toolchain (no apt here).
+repo_build(
+    name = "husky",
+    repo = "https://github.com/typicode/husky",
+    commit = "3f0023dc10d7003d70f2e31aa56300eab80e76d6",
+    build = "npm pack && mv husky-*.tgz husky.tgz",
+)
+
+repo_test(
+    name = "husky",
+    built = ":husky",
+    test = "cp husky.tgz /tmp/husky.tgz" +
+           " && sh test/1_default.sh && sh test/2_in-sub-dir.sh" +
+           " && sh test/3_from-sub-dir.sh && sh test/4_not-git-dir.sh" +
+           " && sh test/5_git_command_not_found.sh && sh test/6_command_not_found.sh" +
+           " && sh test/7_node_modules_path.sh && sh test/8_set_u.sh" +
+           " && sh test/9_husky_0.sh && sh test/10_init.sh" +
+           " && sh test/11_time.sh && sh test/12_deprecated.sh" +
+           " && echo ALL_TESTS_PASSED",
+)
+
+# Independent black-box smoke: install the packed tgz, init hooks, fire one.
+repo_smoke(
+    name = "husky",
+    built = ":husky",
+)

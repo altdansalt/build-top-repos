@@ -1,0 +1,61 @@
+"""Reproducible build harness for top open-source projects.
+
+Goal: build/test projects from top1000repos-strict.csv inside reproducible
+container images, relying on nothing from the host outside git and gh.
+Every external input (container runtime, base rootfs, language toolchains, CA
+bundle) enters through Bazel, pinned by sha256 so fetches are reproducible.
+
+Tarballs are fetched as opaque files (http_file) and unpacked by build actions,
+rather than extracted by Bazel -- rootfs tarballs contain special files Bazel's
+archive extraction would choke on.
+"""
+
+module(
+    name = "build_top_repos",
+    version = "0.0.1",
+)
+
+# sh_binary lives in rules_shell as of Bazel 9 (no longer a native rule).
+bazel_dep(name = "rules_shell", version = "0.8.0")
+
+http_file = use_repo_rule("@bazel_tools//tools/build_defs/repo:http.bzl", "http_file")
+
+# --- Container runtime -------------------------------------------------------
+# crun: fast, statically linked OCI runtime (no host libc dependency).
+http_file(
+    name = "crun",
+    urls = ["https://github.com/containers/crun/releases/download/1.28/crun-1.28-linux-amd64"],
+    sha256 = "2aa6b7024a9c9f153895c0d11ae233d3758f54844011c3a039e3e89048d01d42",
+    executable = True,
+    downloaded_file_path = "crun",
+)
+
+# --- Base root filesystem ----------------------------------------------------
+# Ubuntu 24.04.3 base (glibc). Most prebuilt toolchains target glibc, so this
+# generalizes better than a musl/Alpine base.
+http_file(
+    name = "ubuntu_base",
+    urls = ["https://cdimage.ubuntu.com/ubuntu-base/releases/24.04/release/ubuntu-base-24.04.3-base-amd64.tar.gz"],
+    sha256 = "6bc2cde3930ad088b3bb46fa45279e96d25bc3810f209850ecbe4722711874f9",
+    downloaded_file_path = "ubuntu-base.tar.gz",
+)
+
+# --- Node toolchain ----------------------------------------------------------
+# Node 24 (zx pins 24.13.1; its CLI auto-run uses import.meta.main, a Node 24+
+# feature). 24 also satisfies husky/gulp, which are version-agnostic.
+http_file(
+    name = "node",
+    urls = ["https://nodejs.org/dist/v24.13.1/node-v24.13.1-linux-x64.tar.xz"],
+    sha256 = "30215f90ea3cd04dfbc06e762c021393fa173a1d392974298bbc871a8e461089",
+    downloaded_file_path = "node.tar.xz",
+)
+
+# --- CA bundle ---------------------------------------------------------------
+# The base ships no CA store, but the apt snapshot mirror is https. Dated
+# Mozilla CA bundle from curl.se, seeded as /etc/ssl/certs/ca-certificates.crt.
+http_file(
+    name = "cacert",
+    urls = ["https://curl.se/ca/cacert-2025-05-20.pem"],
+    sha256 = "ab3ee3651977a4178a702b0b828a4ee7b2bbb9127235b0ab740e2e15974bf5db",
+    downloaded_file_path = "cacert.pem",
+)

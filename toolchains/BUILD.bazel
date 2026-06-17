@@ -1,0 +1,50 @@
+package(default_visibility = ["//visibility:public"])
+
+# Cached toolchain rootfs: ubuntu-base + CA + an apt package set baked in via one
+# apt pass against the pinned snapshot (+ optional Node tarball). Bazel caches
+# each keyed on its inputs + package list, so apt runs once per toolchain.
+#
+# Runs locally with network: it invokes crun (user namespaces) and apt, which
+# Bazel's sandbox would block.
+
+_COMMON_PKGS = "git ca-certificates time"
+
+# Node toolchain: ubuntu-base + Node 22 + git/time. Used by JS/TS projects.
+genrule(
+    name = "node_rootfs",
+    srcs = [
+        "@crun//file",
+        "@ubuntu_base//file",
+        "@node//file",
+        "@cacert//file",
+        "//harness:gen_config.py",
+        "//harness:assemble_toolchain.sh",
+    ],
+    outs = ["node_rootfs.tgz"],
+    cmd = "bash $(location //harness:assemble_toolchain.sh) " +
+          "$(location @crun//file) $(location //harness:gen_config.py) " +
+          "$(location @cacert//file) $(location @ubuntu_base//file) " +
+          "$@ '" + _COMMON_PKGS + "' $(location @node//file)",
+    local = 1,
+    tags = ["requires-network", "no-sandbox"],
+)
+
+# Python toolchain: ubuntu-base + python3/venv/pip + git/time. apt-only, no
+# language tarball. Used by Python projects.
+genrule(
+    name = "python_rootfs",
+    srcs = [
+        "@crun//file",
+        "@ubuntu_base//file",
+        "@cacert//file",
+        "//harness:gen_config.py",
+        "//harness:assemble_toolchain.sh",
+    ],
+    outs = ["python_rootfs.tgz"],
+    cmd = "bash $(location //harness:assemble_toolchain.sh) " +
+          "$(location @crun//file) $(location //harness:gen_config.py) " +
+          "$(location @cacert//file) $(location @ubuntu_base//file) " +
+          "$@ '" + _COMMON_PKGS + " python3 python3-venv python3-pip'",
+    local = 1,
+    tags = ["requires-network", "no-sandbox"],
+)

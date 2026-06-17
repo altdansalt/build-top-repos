@@ -1,0 +1,25 @@
+load("//harness:defs.bzl", "repo_build", "repo_smoke")
+
+# zx (rank_code_size 761): JavaScript shell-scripting tool. First real compiled
+# project — `npm run build` is a genuine esbuild + tsc compile.
+#
+# build: `npm ci` (lockfile -> reproducible) then `npm run build` (esbuild bundles
+#        src/*.ts -> build/*.{js,cjs}, tsc emits .d.ts). Captures build/ + node_modules.
+# smoke: run the built CLI (version + a real zx script). Needs Node 24.
+#
+# NOTE: full `npm test` is DEFERRED. It passes only under zx's CI terminal/color
+# environment — headless, its color-formatting tests mutually conflict (some
+# require ANSI colors on, others assert chalk.level is unset) with no single
+# FORCE_COLOR that satisfies all. Reproducing that faithfully needs a pty match;
+# not worth the rabbit hole for now. build + smoke are the landed signal.
+repo_build(
+    name = "zx",
+    repo = "https://github.com/google/zx",
+    commit = "6a62a4ba6f5c760367e425b6f8b3a9accf0aca01",
+    build = "npm ci && npm run build",
+)
+
+repo_smoke(
+    name = "zx",
+    built = ":zx",
+)
