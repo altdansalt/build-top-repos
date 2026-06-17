@@ -1,0 +1,26 @@
+load("//harness:defs.bzl", "repo_build", "repo_smoke")
+
+# scrapy (rank_code_size 479): Python web-crawling framework (twisted-based).
+#
+# build: venv install + test deps.
+# smoke: `scrapy version` + `scrapy startproject` (scaffolds a real project).
+#
+# NOTE: full test suite DEFERRED. A clean offline unit subset passes (e.g.
+# test_item/test_utils_url/test_loader = ~202 tests), but the full suite is large
+# and twisted/network-coupled (mockserver, reactor, real sockets). build + smoke
+# are the signal.
+PY = "//toolchains:python_rootfs"
+
+repo_build(
+    name = "scrapy",
+    repo = "https://github.com/scrapy/scrapy",
+    commit = "fada8be1db6479e235d7e06afa057632dbc2adf1",
+    build = "python3 -m venv .venv && .venv/bin/pip install . pytest pytest-twisted testfixtures",
+    toolchain = PY,
+)
+
+repo_smoke(
+    name = "scrapy",
+    built = ":scrapy",
+    toolchain = PY,
+)
