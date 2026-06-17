@@ -50,6 +50,28 @@ genrule(
     tags = ["requires-network", "no-sandbox"],
 )
 
+# Rust toolchain: ubuntu-base + build-essential (cargo needs a C linker) + Rust
+# (combined tarball extracted to /opt/rustdist, then install.sh -> /opt/rust/bin).
+genrule(
+    name = "rust_rootfs",
+    srcs = [
+        "@crun//file",
+        "@ubuntu_base//file",
+        "@rust//file",
+        "@cacert//file",
+        "//harness:gen_config.py",
+        "//harness:assemble_toolchain.sh",
+    ],
+    outs = ["rust_rootfs.tgz"],
+    cmd = "bash $(location //harness:assemble_toolchain.sh) " +
+          "$(location @crun//file) $(location //harness:gen_config.py) " +
+          "$(location @cacert//file) $(location @ubuntu_base//file) " +
+          "$@ '" + _COMMON_PKGS + " build-essential' $(location @rust//file) /opt/rustdist 1 " +
+          "'/opt/rustdist/install.sh --prefix=/opt/rust --components=rustc,cargo,rust-std-x86_64-unknown-linux-gnu,clippy-preview,rustfmt-preview --disable-ldconfig && rm -rf /opt/rustdist'",
+    local = 1,
+    tags = ["requires-network", "no-sandbox"],
+)
+
 # Python toolchain: ubuntu-base + python3/venv/pip + git/time. apt-only, no
 # language tarball. Used by Python projects.
 genrule(

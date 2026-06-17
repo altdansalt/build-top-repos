@@ -20,6 +20,7 @@ APT_PKGS="$6"
 OVERLAY="${7:-}"
 OVERLAY_DEST="${8:-}"
 OVERLAY_STRIP="${9:-0}"
+SETUP_CMD="${10:-}"  # optional shell run inside the bake after extraction (e.g. rust install.sh)
 
 # Pinned apt snapshot: reproducible to this date (apt also GPG-verifies).
 SNAPSHOT="20260601T000000Z"
@@ -62,6 +63,7 @@ apt-get update -qq
 apt-get install -y -qq $APT_PKGS
 apt-get clean
 rm -rf /var/lib/apt/lists/*
+$SETUP_CMD
 tar -czf /out/toolchain.tgz --exclude='./out/*' --exclude='./proc/*' --exclude='./sys/*' --exclude='./dev/*' -C / . ; rc=\$?; [ \$rc -le 1 ] || exit \$rc
 echo BAKE_DONE"
 

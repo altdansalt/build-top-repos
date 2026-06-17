@@ -58,6 +58,16 @@ http_file(
     downloaded_file_path = "go.tar.gz",
 )
 
+# --- Rust toolchain ----------------------------------------------------------
+# Combined stable tarball (rustc + cargo + std); installed via its install.sh
+# into /opt/rust during toolchain bake. sha from the official channel manifest.
+http_file(
+    name = "rust",
+    urls = ["https://static.rust-lang.org/dist/rust-1.96.0-x86_64-unknown-linux-gnu.tar.gz"],
+    sha256 = "c1130e4f7976f230766ab062b105b1fb050d6a78177db2246a5878fd6a589680",
+    downloaded_file_path = "rust.tar.gz",
+)
+
 # --- CA bundle ---------------------------------------------------------------
 # The base ships no CA store, but the apt snapshot mirror is https. Dated
 # Mozilla CA bundle from curl.se, seeded as /etc/ssl/certs/ca-certificates.crt.

@@ -1,0 +1,32 @@
+load("//harness:defs.bzl", "repo_build", "repo_smoke", "repo_test")
+
+# rustlings (rank_code_size 746): Rust learning exercises CLI. First Rust project
+# — needs Rust 1.88+/edition 2024 (newer than apt's rustc), so it uses rust_rootfs.
+#
+# build: `cargo build --workspace`. CARGO_HOME is kept inside the tree so the
+#        fetched crate registry + sources ride along in the artifact and the test
+#        step reuses them (no re-download).
+# test:  `cargo test --workspace` (the project's own suite; Cargo.lock pins deps).
+# smoke: run the built rustlings binary (--version/--help).
+RUST = "//toolchains:rust_rootfs"
+
+repo_build(
+    name = "rustlings",
+    repo = "https://github.com/rust-lang/rustlings",
+    commit = "4bab5966770e3e31ed6ef779c9ff95cf42f43645",
+    build = "CARGO_HOME=/work/rustlings/.cargo cargo build --workspace",
+    toolchain = RUST,
+)
+
+repo_test(
+    name = "rustlings",
+    built = ":rustlings",
+    test = "CARGO_HOME=/work/rustlings/.cargo cargo test --workspace",
+    toolchain = RUST,
+)
+
+repo_smoke(
+    name = "rustlings",
+    built = ":rustlings",
+    toolchain = RUST,
+)
