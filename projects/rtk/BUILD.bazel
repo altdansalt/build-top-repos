@@ -1,0 +1,25 @@
+load("//harness:defs.bzl", "repo_build", "repo_smoke", "repo_test")
+
+# rtk (rank_code_size 485): Rust CLI proxy that reduces LLM token consumption.
+RUST = "//toolchains:rust_rootfs"
+
+repo_build(
+    name = "rtk",
+    repo = "https://github.com/rtk-ai/rtk",
+    commit = "abe7d4210e0fe5c0b9322ec5210c6a6aadaa3db5",
+    build = "CARGO_HOME=/work/rtk/.cargo cargo build",
+    toolchain = RUST,
+)
+
+repo_test(
+    name = "rtk",
+    built = ":rtk",
+    test = "CARGO_HOME=/work/rtk/.cargo cargo test",
+    toolchain = RUST,
+)
+
+repo_smoke(
+    name = "rtk",
+    built = ":rtk",
+    toolchain = RUST,
+)

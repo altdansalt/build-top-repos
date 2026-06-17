@@ -188,6 +188,7 @@ from the cached toolchain, so Node projects do no apt. Test targets are tagged
 | 562 | btop | C++ | `make` (g++-14, C++23) | (no upstream test runner) | `btop --version`/`--help` | ✅✅ |
 | 558 | rich | Python | venv + `pip install` | `pytest` (~960 tests) | render a table + `python -m rich` demo | ✅✅ |
 | 551 | glances | Python | venv + `pip install` | `pytest tests/test_core.py` (52) | `--version` + one-shot CPU reading | ✅✅ |
+| 485 | rtk | Rust | `cargo build` | `cargo test` (2199) | `rtk --version`/`--help` | ✅✅ |
 
 **playwright-mcp — deferred (needs a browser toolchain).** Spike confirmed
 `npm ci` + `npx playwright install --with-deps` work against our snapshot apt, but
