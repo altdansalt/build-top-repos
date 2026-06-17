@@ -1,0 +1,30 @@
+load("//harness:defs.bzl", "repo_build", "repo_smoke", "repo_test")
+
+# glances (rank_code_size 551): Python cross-platform system monitor.
+#
+# build: venv install + pytest.
+# test:  tests/test_core.py — the core stats suite that CI runs. The other test
+#        files need a running glances server / web UI / network (out of scope).
+# smoke: `glances --version` + a one-shot non-interactive CPU reading (--stdout).
+PY = "//toolchains:python_rootfs"
+
+repo_build(
+    name = "glances",
+    repo = "https://github.com/nicolargo/glances",
+    commit = "92156d069425fbe57326e3bdc268c5bfdf994f62",
+    build = "python3 -m venv .venv && .venv/bin/pip install . pytest",
+    toolchain = PY,
+)
+
+repo_test(
+    name = "glances",
+    built = ":glances",
+    test = ". .venv/bin/activate && pytest tests/test_core.py",
+    toolchain = PY,
+)
+
+repo_smoke(
+    name = "glances",
+    built = ":glances",
+    toolchain = PY,
+)
