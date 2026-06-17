@@ -180,6 +180,10 @@ from the cached toolchain, so Node projects do no apt. Test targets are tagged
 | 669 | jq | C | autoreconf + configure + make | `make check` (8/9 groups; tzdata) | `jq` filters (`.foo`, `add`) | ✅✅ |
 | 666 | gin | Go | `go build ./...` | `go test ./...` (localhost via /etc/hosts) | in-process route serves a request | ✅✅ |
 | 617 | echo | Go | `go build ./...` | `go test ./...` | in-process route serves a request | ✅✅ |
+| 612 | OCRmyPDF | Python | — | — | — | ⏸️ deferred |
+| 611 | alacritty | Rust | — | — | — | ⏸️ deferred |
+| 610 | tabby | TS | — | — | — | ⏸️ deferred |
+| 606 | fzf | Go | `go build` | `go test ./src/...` | `fzf --filter` over piped input | ✅✅ |
 
 **playwright-mcp — deferred (needs a browser toolchain).** Spike confirmed
 `npm ci` + `npx playwright install --with-deps` work against our snapshot apt, but
@@ -198,6 +202,11 @@ A custom toolchain to land one trivial test, with no honest offline smoke — sk
 **code-server — deferred (vendors all of VS Code).** Its build (`ci/build/build-code-server.sh`)
 compiles the bundled `microsoft/vscode` submodule — a multi-GB, long build. Out of
 scope for now.
+
+**GUI / heavy-system-dep deferrals.** alacritty (OpenGL terminal) and tabby
+(Electron) are GUI apps with no meaningful headless run. OCRmyPDF is feasible but
+heavy: it needs OCR engines (tesseract, ghostscript, unpaper, qpdf, …) and a large
+real-OCR test suite — revisitable if we invest in an OCR toolchain.
 
 ### Next
 1. Continue the CSV: `repo_build` + `repo_test` + `repo_smoke` per project,

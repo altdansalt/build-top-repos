@@ -1,0 +1,30 @@
+load("//harness:defs.bzl", "repo_build", "repo_smoke", "repo_test")
+
+# fzf (rank_code_size 606): Go command-line fuzzy finder.
+#
+# build: `go build` the fzf binary.
+# test:  the Go unit tests in src/ (the TUI integration tests under test/ need
+#        tmux + Ruby -- out of scope).
+# smoke: run fzf's non-interactive --filter mode over piped input.
+GO = "//toolchains:go_rootfs"
+
+repo_build(
+    name = "fzf",
+    repo = "https://github.com/junegunn/fzf",
+    commit = "3c9965a61a842ef54e976c7195b985ee43a3e776",
+    build = "go build -o fzf .",
+    toolchain = GO,
+)
+
+repo_test(
+    name = "fzf",
+    built = ":fzf",
+    test = "go test ./src/...",
+    toolchain = GO,
+)
+
+repo_smoke(
+    name = "fzf",
+    built = ":fzf",
+    toolchain = GO,
+)
