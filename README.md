@@ -176,6 +176,7 @@ from the cached toolchain, so Node projects do no apt. Test targets are tagged
 | 735 | pyenv | Shell | compile realpath shim | `bats` core suite (34 tests) | `pyenv version`/`commands`/`versions` | ✅✅ |
 | 725 | code-server | TS | (vendors all of VS Code) | — | — | ⏸️ deferred |
 | 699 | thefuck | Python | venv + `pip install` | `pytest` unit suite (~1900) | `thefuck --version`/`--help` | ✅✅ |
+| 676 | httpie | Python | venv + `pip install` | (deferred: root/net/TTY-coupled) | `http --version` + `--offline` request | ✅⏸️ |
 
 **playwright-mcp — deferred (needs a browser toolchain).** Spike confirmed
 `npm ci` + `npx playwright install --with-deps` work against our snapshot apt, but

@@ -1,0 +1,28 @@
+load("//harness:defs.bzl", "repo_build", "repo_smoke")
+
+# httpie (rank_code_size 676): Python CLI HTTP client.
+#
+# build: venv install.
+# smoke: run the installed `http` CLI (--version, --help, and `--offline` which
+#        builds a real request with no network).
+#
+# NOTE: full `pytest` is DEFERRED. ~949 tests pass (via local pytest-httpbin),
+# but ~40 are coupled to a non-root/networked/TTY/locale dev environment: one
+# asserts a chmod-000 file is unreadable (we run as container-root, which
+# bypasses it), several do real DNS (socket.gaierror), and theme/big5 tests want
+# a terminal/locale. Not worth the rabbit hole; build + smoke are the signal.
+PY = "//toolchains:python_rootfs"
+
+repo_build(
+    name = "httpie",
+    repo = "https://github.com/httpie/cli",
+    commit = "5b604c37c6c67e18e7c3e9aee6c88a8c22b98345",
+    build = "python3 -m venv .venv && .venv/bin/pip install .",
+    toolchain = PY,
+)
+
+repo_smoke(
+    name = "httpie",
+    built = ":httpie",
+    toolchain = PY,
+)
