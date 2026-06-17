@@ -1,0 +1,25 @@
+load("//harness:defs.bzl", "repo_build", "repo_smoke", "repo_test")
+
+# echo (rank_code_size 617): Go HTTP web framework (a library, like gin).
+GO = "//toolchains:go_rootfs"
+
+repo_build(
+    name = "echo",
+    repo = "https://github.com/labstack/echo",
+    commit = "78c3d9543be665b4bb9ed5ece3ac829108e3efa5",
+    build = "go build ./...",
+    toolchain = GO,
+)
+
+repo_test(
+    name = "echo",
+    built = ":echo",
+    test = "go test ./...",
+    toolchain = GO,
+)
+
+repo_smoke(
+    name = "echo",
+    built = ":echo",
+    toolchain = GO,
+)

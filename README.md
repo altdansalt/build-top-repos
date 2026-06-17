@@ -179,6 +179,7 @@ from the cached toolchain, so Node projects do no apt. Test targets are tagged
 | 676 | httpie | Python | venv + `pip install` | (deferred: root/net/TTY-coupled) | `http --version` + `--offline` request | ✅⏸️ |
 | 669 | jq | C | autoreconf + configure + make | `make check` (8/9 groups; tzdata) | `jq` filters (`.foo`, `add`) | ✅✅ |
 | 666 | gin | Go | `go build ./...` | `go test ./...` (localhost via /etc/hosts) | in-process route serves a request | ✅✅ |
+| 617 | echo | Go | `go build ./...` | `go test ./...` | in-process route serves a request | ✅✅ |
 
 **playwright-mcp — deferred (needs a browser toolchain).** Spike confirmed
 `npm ci` + `npx playwright install --with-deps` work against our snapshot apt, but
