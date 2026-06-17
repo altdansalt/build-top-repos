@@ -28,8 +28,10 @@ TOOLCHAIN="$(realpath "$TOOLCHAIN")"
 BUILT="$(realpath "$BUILT")"
 SMOKE="$(realpath "$SMOKE")"
 
-WORK="$(mktemp -d)"
-trap 'rm -rf "$WORK"' EXIT
+WORK="$(mktemp -d -p "${TEST_TMPDIR:-${TMPDIR:-/tmp}}")"
+# Container processes create files owned by mapped sub-uids; a plain rm can't
+# remove sub-uid-owned dirs. Re-enter a userns (subuids mapped) to clean up.
+trap 'unshare --user --map-root-user --map-auto rm -rf "$WORK" 2>/dev/null || rm -rf "$WORK"' EXIT
 ROOT="$WORK/rootfs"
 mkdir -p "$ROOT" "$ROOT/work"
 
@@ -47,4 +49,6 @@ PROJECT=/work/$NAME sh /work/smoke.sh"
 ARGS_JSON="$(python3 -c 'import json,sys; print(json.dumps(["/bin/sh","-c",sys.argv[1]]))' "$INNER")"
 
 python3 "$GENCFG" "$CRUN" "$WORK" "/work/$NAME" "$ARGS_JSON"
-exec "$CRUN" --root "$WORK/state" run -b "$WORK" "smoke-$NAME"
+# Don't exec: the EXIT trap must run to clean up $WORK. set -e propagates a
+# nonzero crun exit (smoke failure) to our exit, and the trap fires either way.
+"$CRUN" --root "$WORK/state" run -b "$WORK" "smoke-$NAME"

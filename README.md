@@ -211,3 +211,12 @@ A custom toolchain to land one trivial test, with no honest offline smoke — sk
   captured in the artifact); build and test both mount at `/work/<name>`, keeping
   the venv's absolute paths valid. Prefer a project's **offline** test subset when
   it has one — online tests that hit live services aren't reproducible.
+- **Scratch lives under Bazel, and cleans itself.** Each action's working rootfs
+  goes in a Bazel-managed dir (`$TEST_TMPDIR` for tests, `$TMPDIR` for genrules),
+  not `/tmp`. Cleanup must handle files the container `chown`ed to mapped sub-uids
+  — a plain `rm` (and even `bazel clean`, which runs as your uid) can't remove
+  sub-uid-owned mode-700 dirs. The EXIT trap removes the rootfs via
+  `unshare --user --map-root-user --map-auto rm -rf` (a userns where those sub-uids
+  are mapped, so we're root over them). Runners must **not** `exec` crun, or the
+  trap never fires. Net: nothing sub-uid-owned survives an action, so the tree
+  stays clean and `bazel clean --expunge` works normally.

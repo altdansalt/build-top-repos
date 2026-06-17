@@ -19,8 +19,10 @@ NODE="${7:-}"
 # Pinned apt snapshot: reproducible to this date (apt also GPG-verifies).
 SNAPSHOT="20260601T000000Z"
 
-WORK="$(mktemp -d)"
-trap 'rm -rf "$WORK"' EXIT
+WORK="$(mktemp -d -p "${TEST_TMPDIR:-${TMPDIR:-/tmp}}")"
+# Container processes create files owned by mapped sub-uids; a plain rm can't
+# remove sub-uid-owned dirs. Re-enter a userns (subuids mapped) to clean up.
+trap 'unshare --user --map-root-user --map-auto rm -rf "$WORK" 2>/dev/null || rm -rf "$WORK"' EXIT
 ROOT="$WORK/rootfs"
 mkdir -p "$ROOT" "$WORK/out" "$ROOT/out"
 
