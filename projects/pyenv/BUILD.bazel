@@ -1,0 +1,33 @@
+load("//harness:defs.bzl", "repo_build", "repo_smoke", "repo_test")
+
+# pyenv (rank_code_size 735): Shell Python-version manager. First Shell project —
+# uses shell_rootfs (bats + build-essential).
+#
+# build: compile the optional C realpath shim (src/) that pyenv uses when present.
+# test:  the core bats unit suite (CI's subset). The full Makefile test matrix is
+#        docker-orchestrated across multiple bash versions and builds real Pythons
+#        (heavy); these three files cover pyenv's command/hook/version logic with
+#        stubs — reproducible and fast.
+# smoke: run the pyenv CLI (version, commands, versions) against a temp root.
+SHELL_TC = "//toolchains:shell_rootfs"
+
+repo_build(
+    name = "pyenv",
+    repo = "https://github.com/pyenv/pyenv",
+    commit = "f122a9d76453eff69e21ea6cfa42878d3a087cc5",
+    build = "cd src && ./configure && make",
+    toolchain = SHELL_TC,
+)
+
+repo_test(
+    name = "pyenv",
+    built = ":pyenv",
+    test = "bats test/pyenv.bats test/hooks.bats test/versions.bats",
+    toolchain = SHELL_TC,
+)
+
+repo_smoke(
+    name = "pyenv",
+    built = ":pyenv",
+    toolchain = SHELL_TC,
+)
