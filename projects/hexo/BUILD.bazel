@@ -1,0 +1,26 @@
+load("//harness:defs.bzl", "repo_build", "repo_smoke", "repo_test")
+
+# hexo (rank_code_size 492): Fast, simple & powerful blog framework for Node.js.
+#
+# build: `npm ci` (lockfile) installs all deps (runtime + dev); `npm run build`
+#        compiles TypeScript -> dist/ via tsc -b. Captures node_modules + dist/.
+# test:  `npm test` runs mocha + ts-node over test/scripts/**/*.ts (unit suite;
+#        tests the Hexo API in-process, no network or TTY coupling).
+# smoke: run the built hexo CLI (via bin/hexo -> hexo-cli) to check version/help.
+repo_build(
+    name = "hexo",
+    repo = "https://github.com/hexojs/hexo",
+    commit = "d7a10f407ee8e721216a373f0af4fa254de8597f",
+    build = "npm ci && npm run build",
+)
+
+repo_test(
+    name = "hexo",
+    built = ":hexo",
+    test = "FORCE_COLOR=1 npm test",
+)
+
+repo_smoke(
+    name = "hexo",
+    built = ":hexo",
+)

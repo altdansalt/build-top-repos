@@ -23,6 +23,13 @@
     "status": "deferred",
     "ts": "2026-06-18T00:00:00+00:00"
   },
+  "https://github.com/hexojs/hexo": {
+    "commit": "d7a10f407ee8e721216a373f0af4fa254de8597f",
+    "log": "20260618-161817-https-github-com-hexojs-hexo.log",
+    "project": "hexo",
+    "status": "landed",
+    "ts": "2026-06-18T16:25:21.733397+00:00"
+  },
   "https://github.com/microsoft/playwright-mcp": {
     "log": "pre-automation",
     "reason": "needs a browser toolchain (Chrome/chromium ~646M); deferred until we invest in a cached playwright_rootfs",

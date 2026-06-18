@@ -182,7 +182,7 @@ in `state.json`. Set `CLAUDE_BUDGET_SECONDS` to change the per-project time budg
 
 ## Status
 
-**30 projects landed, 6 deferred** (see ledger). Six cached language toolchains:
+**31 projects landed, 6 deferred** (see ledger). Six cached language toolchains:
 `node` (24), `python`, `go` (1.26), `rust` (1.96 + clippy/rustfmt), `shell`
 (bats), `c` (autotools + g++-14 + cmake). `bazel test //projects/...` is the
 cross-project health check (build+test+smoke per project). Each landed project is
@@ -221,6 +221,7 @@ offline/core test subset over network/TTY/root-coupled tests.
 | 562 | btop | C++ | `make` (g++-14, C++23) | (no upstream test runner) | `btop --version`/`--help` | ✅✅ |
 | 558 | rich | Python | venv + `pip install` | `pytest` (~960 tests) | render a table + `python -m rich` demo | ✅✅ |
 | 551 | glances | Python | venv + `pip install` | `pytest tests/test_core.py` (52) | `--version` + one-shot CPU reading | ✅✅ |
+| 492 | hexo | TS/npm | `npm ci && tsc -b` | `npm test` (1274; FORCE_COLOR for ANSI assertions) | `hexo version` + `hexo help` | ✅✅ |
 | 485 | rtk | Rust | `cargo build` | `cargo test` (2199) | `rtk --version`/`--help` | ✅✅ |
 | 479 | scrapy | Python | venv + `pip install` | (deferred: twisted/network suite) | `scrapy version` + `startproject` | ✅⏸️ |
 | 461 | Xray-core | Go | `go build` | (deferred: needs geoip/geosite data) | `xray version` | ✅⏸️ |
