@@ -182,7 +182,7 @@ in `state.json`. Set `CLAUDE_BUDGET_SECONDS` to change the per-project time budg
 
 ## Status
 
-**31 projects landed, 7 deferred** (see ledger). Six cached language toolchains:
+**31 projects landed, 8 deferred** (see ledger). Six cached language toolchains:
 `node` (24), `python`, `go` (1.26), `rust` (1.96 + clippy/rustfmt), `shell`
 (bats), `c` (autotools + g++-14 + cmake). `bazel test //projects/...` is the
 cross-project health check (build+test+smoke per project). Each landed project is
@@ -219,6 +219,7 @@ offline/core test subset over network/TTY/root-coupled tests.
 | 611 | alacritty | Rust | — | — | — | ⏸️ deferred |
 | 610 | tabby | TS | — | — | — | ⏸️ deferred |
 | 606 | fzf | Go | `go build` | `go test ./src/...` | `fzf --filter` over piped input | ✅✅ |
+| 581 | scrcpy | C | — | — | — | ⏸️ deferred |
 | 564 | starship | Rust | `cargo build` | (deferred: module tests need full dev env) | `starship --version` + `prompt` | ✅⏸️ |
 | 562 | btop | C++ | `make` (g++-14, C++23) | (no upstream test runner) | `btop --version`/`--help` | ✅✅ |
 | 558 | rich | Python | venv + `pip install` | `pytest` (~960 tests) | render a table + `python -m rich` demo | ✅✅ |
@@ -269,6 +270,8 @@ it requires `libpcap-dev` (pcap crate), `libgtk-3-dev` (rfd native-file-dialog c
 and X11/Wayland dev headers (winit/iced) — none present in `rust_rootfs`. The app opens
 a graphical window for all normal operation; there is no headless mode. Same category as
 alacritty, pake, and tabby.
+
+**scrcpy — deferred (Android GUI client; needs Android SDK + display).** scrcpy has two halves: a Java server APK (built with Gradle + Android SDK, deployed to the device via adb) and a C client (built with meson, links SDL2 for display and FFmpeg for video decoding). Neither half is buildable without new tooling — the server requires the Android SDK (not present in any cached toolchain) and the client requires SDL2 headers plus FFmpeg/libav dev packages not in `c_rootfs`. At runtime the client opens a window mirroring the device screen; there is no headless or CLI mode. Requires a connected Android device or emulator for any meaningful operation.
 
 **lossless-cut — deferred (Electron GUI video editor; no headless mode).** lossless-cut
 is an Electron + React desktop application built with `electron-vite`. Its renderer

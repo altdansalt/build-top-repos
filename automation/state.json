@@ -23,6 +23,12 @@
     "status": "deferred",
     "ts": "2026-06-18T00:00:00+00:00"
   },
+  "https://github.com/genymobile/scrcpy": {
+    "log": "20260618-190001-https-github-com-genymobile-scrcpy.log",
+    "reason": "scrcpy is split into a Java server APK (built with Gradle + Android SDK, deployed via adb) and a C client (meson + SDL2 + FFmpeg). The Android SDK is not in any cached toolchain, and the client requires SDL2 (display) and FFmpeg/libav dev packages not in c_rootfs. At runtime the app opens a GUI window showing the device screen \u2014 there is no headless or CLI mode and no meaningful smoke test without a connected Android device.",
+    "status": "deferred",
+    "ts": "2026-06-18T19:01:34.314454+00:00"
+  },
   "https://github.com/gyulyvgc/sniffnet": {
     "log": "20260618-180001-https-github-com-gyulyvgc-sniffnet.log",
     "reason": "sniffnet is a GUI desktop application built on iced/wgpu. Compiling it on Linux requires system libraries not present in rust_rootfs: libpcap-dev (for the pcap packet-capture crate), libgtk-3-dev (for the rfd native file-dialog crate), and X11/Wayland dev headers (for winit/iced). Even if compiled, the binary opens a graphical window for all normal operation with no meaningful headless mode. This places it in the same deferral category as alacritty, pake, and tabby.",
