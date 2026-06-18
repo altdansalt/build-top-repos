@@ -1,0 +1,31 @@
+load("//harness:defs.bzl", "repo_build", "repo_smoke", "repo_test")
+
+# syncthing (rank_code_size 435): Go continuous file synchronization.
+#
+# build: `go run build.go build` — its custom builder generates the embedded GUI
+#        assets (the `auto` package) that lib/api needs, then compiles the binary.
+# test:  `go test -short ./lib/...` (the library unit tests; the full suite has
+#        slower integration tests).
+# smoke: run the built syncthing binary's --version.
+GO = "//toolchains:go_rootfs"
+
+repo_build(
+    name = "syncthing",
+    repo = "https://github.com/syncthing/syncthing",
+    commit = "3d168d6e44215f17de9d6a2096e20ca4aa84418c",
+    build = "go run build.go build",
+    toolchain = GO,
+)
+
+repo_test(
+    name = "syncthing",
+    built = ":syncthing",
+    test = "go test -short ./lib/...",
+    toolchain = GO,
+)
+
+repo_smoke(
+    name = "syncthing",
+    built = ":syncthing",
+    toolchain = GO,
+)
