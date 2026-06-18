@@ -1,0 +1,25 @@
+load("//harness:defs.bzl", "repo_build", "repo_smoke")
+
+# redis (rank_code_size 215): C in-memory data store.
+#
+# build: `make` builds src/redis-server, redis-cli, etc.
+# smoke: start the built server and exercise it via redis-cli (ping + set/get).
+#
+# NOTE: full test suite DEFERRED. `make test` is a large Tcl-based integration
+# suite (spins up many server instances; slow and timing-sensitive in a
+# container). The smoke runs the real server end-to-end instead.
+C = "//toolchains:c_rootfs"
+
+repo_build(
+    name = "redis",
+    repo = "https://github.com/redis/redis",
+    commit = "44a6a9f5ef9bcb8ccc34f8b5d9e859187b55c523",
+    build = "make -j8",
+    toolchain = C,
+)
+
+repo_smoke(
+    name = "redis",
+    built = ":redis",
+    toolchain = C,
+)
