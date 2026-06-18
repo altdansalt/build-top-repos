@@ -1,0 +1,29 @@
+load("//harness:defs.bzl", "repo_build", "repo_smoke", "repo_test")
+
+# black (rank_code_size 357): Python code formatter.
+#
+# build: venv install with the [d] extra (blackd tests need aiohttp) + pytest.
+# test:  the full pytest suite (~465 tests; self-contained format cases).
+# smoke: format a snippet through the CLI (`x=1` -> `x = 1`).
+PY = "//toolchains:python_rootfs"
+
+repo_build(
+    name = "black",
+    repo = "https://github.com/psf/black",
+    commit = "b74b23013fe6d0f7e0cee430a472ac70c5ba1334",
+    build = "python3 -m venv .venv && .venv/bin/pip install \".[d]\" pytest",
+    toolchain = PY,
+)
+
+repo_test(
+    name = "black",
+    built = ":black",
+    test = ". .venv/bin/activate && pytest tests",
+    toolchain = PY,
+)
+
+repo_smoke(
+    name = "black",
+    built = ":black",
+    toolchain = PY,
+)

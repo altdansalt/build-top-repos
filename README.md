@@ -189,6 +189,7 @@ offline/core test subset over network/TTY/root-coupled tests.
 | 435 | syncthing | Go | `go run build.go build` | `go test -short ./lib/...` (40 pkgs) | `syncthing --version` | ✅✅ |
 | 422 | sing-box | Go | `go build` | (deferred: netlink/real-TLS integ.) | `sing-box version`/`--help` | ✅⏸️ |
 | 404 | textual | Python | venv + `pip install` | `pytest` (~3005; excl. snapshot/optional) | run a headless Textual app via pilot | ✅✅ |
+| 357 | black | Python | venv + `pip install` | `pytest` (~465) | format `x=1` → `x = 1` via the CLI | ✅✅ |
 
 **playwright-mcp — deferred (needs a browser toolchain).** Spike confirmed
 `npm ci` + `npx playwright install --with-deps` work against our snapshot apt, but
