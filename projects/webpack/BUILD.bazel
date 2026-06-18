@@ -1,0 +1,30 @@
+load("//harness:defs.bzl", "repo_build", "repo_smoke", "repo_test")
+
+# webpack (rank_code_size 257): JavaScript module bundler.
+#
+# build: `npm install` resolves + fetches all deps (runtime + dev). Webpack's
+#        source is pure JS — no compile step. The yarn.lock is advisory;
+#        .npmrc has `package-lock=false` so npm resolves from semver ranges.
+# test:  jest unit suite (63 *.unittest.js files). All offline: they test
+#        internal webpack classes and utilities via mocks or data-URL entries.
+#        Flags mirror the upstream `test:base` script; --testPathPattern filters
+#        to unit tests only (no integration/longtest/spectest).
+# smoke: bundle a trivial two-file JS project via webpack's JS API; confirm the
+#        resulting bundle produces the expected console output when run with node.
+repo_build(
+    name = "webpack",
+    repo = "https://github.com/webpack/webpack",
+    commit = "868209f9b33f88fff9531727eee72088171c4e0f",
+    build = "npm install",
+)
+
+repo_test(
+    name = "webpack",
+    built = ":webpack",
+    test = "node --expose-gc --max-old-space-size=4096 --experimental-vm-modules node_modules/jest-cli/bin/jest --testPathPatterns unittest --forceExit",
+)
+
+repo_smoke(
+    name = "webpack",
+    built = ":webpack",
+)

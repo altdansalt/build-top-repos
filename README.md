@@ -194,7 +194,7 @@ Set `CLAUDE_BUDGET_SECONDS` to change the per-project time budget (default 5400s
 
 ## Status
 
-**39 projects landed, 8 deferred** (see ledger). Six cached language toolchains:
+**40 projects landed, 8 deferred** (see ledger). Six cached language toolchains:
 `node` (24), `python`, `go` (1.26), `rust` (1.96 + clippy/rustfmt), `shell`
 (bats), `c` (autotools + g++-14 + cmake). `bazel test //projects/...` is the
 cross-project health check (build+test+smoke per project). Each landed project is
@@ -247,6 +247,7 @@ offline/core test subset over network/TTY/root-coupled tests.
 | 357 | black | Python | venv + `pip install` | `pytest` (~465) | format `x=1` → `x = 1` via the CLI | ✅✅ |
 | 311 | cli/cli | Go | `go build` | (deferred: root-permission tests) | `gh --version`/`--help` | ✅⏸️ |
 | 249 | yt-dlp | Python | venv + `pip install` | `pytest -m "not download"` (~886) | `yt-dlp --version`/`--help` | ✅✅ |
+| 257 | webpack | JS/npm | `npm install` | jest unit suite (63 tests; `--testPathPatterns unittest`) | bundle a two-file JS project via the JS API; run the bundle | ✅✅ |
 | 215 | redis | C | `make` | (deferred: Tcl integration suite) | start server → ping + set/get | ✅⏸️ |
 | 133 | ruff | Rust | `cargo build` | (deferred: huge workspace suite) | `ruff --version` + lint a snippet | ✅⏸️ |
 | 45 | cpython | C | `./configure && make` | (deferred: huge regression suite) | run built `python` (version + eval) | ✅⏸️ |
