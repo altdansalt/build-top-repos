@@ -213,6 +213,7 @@ offline/core test subset over network/TTY/root-coupled tests.
 | 669 | jq | C | autoreconf + configure + make | `make check` (8/9 groups; tzdata) | `jq` filters (`.foo`, `add`) | ✅✅ |
 | 666 | gin | Go | `go build ./...` | `go test ./...` (localhost via /etc/hosts) | in-process route serves a request | ✅✅ |
 | 626 | sniffnet | Rust | — | — | — | ⏸️ deferred |
+| 620 | lossless-cut | TS | — | — | — | ⏸️ deferred |
 | 617 | echo | Go | `go build ./...` | `go test ./...` | in-process route serves a request | ✅✅ |
 | 612 | OCRmyPDF | Python | — | — | — | ⏸️ deferred |
 | 611 | alacritty | Rust | — | — | — | ⏸️ deferred |
@@ -269,11 +270,18 @@ and X11/Wayland dev headers (winit/iced) — none present in `rust_rootfs`. The 
 a graphical window for all normal operation; there is no headless mode. Same category as
 alacritty, pake, and tabby.
 
+**lossless-cut — deferred (Electron GUI video editor; no headless mode).** lossless-cut
+is an Electron + React desktop application built with `electron-vite`. Its renderer
+targets Chrome APIs (`chrome148`), its `postinstall` step downloads native Electron
+binaries via `electron-builder install-app-deps`, and the packaged app opens a GUI
+window for all normal operation — lossless video/audio editing. There is no CLI or
+headless mode. Same category as tabby, pake, and alacritty.
+
 **GUI / heavy-system-dep deferrals.** alacritty (OpenGL terminal), tabby
-(Electron), and pake (Tauri) are GUI apps with no meaningful headless run.
-OCRmyPDF is feasible but heavy: it needs OCR engines (tesseract, ghostscript,
-unpaper, qpdf, …) and a large real-OCR test suite — revisitable if we invest in
-an OCR toolchain.
+(Electron), lossless-cut (Electron), and pake (Tauri) are GUI apps with no
+meaningful headless run. OCRmyPDF is feasible but heavy: it needs OCR engines
+(tesseract, ghostscript, unpaper, qpdf, …) and a large real-OCR test suite —
+revisitable if we invest in an OCR toolchain.
 
 ### Next
 1. Keep working down the CSV: one `repo_build` + `repo_test`/`repo_smoke` per
