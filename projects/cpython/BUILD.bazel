@@ -1,0 +1,25 @@
+load("//harness:defs.bzl", "repo_build", "repo_smoke")
+
+# cpython (rank_code_size 45): the Python interpreter itself, built from source.
+#
+# build: ./configure && make (the core interpreter; optional stdlib C modules
+#        that need extra -dev libs are skipped, which is fine for the smoke).
+# smoke: run the freshly built ./python (version + evaluate an expression).
+#
+# NOTE: the full regression suite (`make test`) is enormous and slow; build +
+# smoke (building and running CPython) is the signal here.
+C = "//toolchains:c_rootfs"
+
+repo_build(
+    name = "cpython",
+    repo = "https://github.com/python/cpython",
+    commit = "f551705011113cc5bef38f15e6b2c4abd5b82858",
+    build = "./configure && make -j8",
+    toolchain = C,
+)
+
+repo_smoke(
+    name = "cpython",
+    built = ":cpython",
+    toolchain = C,
+)
