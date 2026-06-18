@@ -1,0 +1,25 @@
+load("//harness:defs.bzl", "repo_build", "repo_smoke")
+
+# cli/cli (rank_code_size 311): GitHub's official command-line tool (Go).
+#
+# build: go build the gh binary.
+# smoke: run the CLI (version + help).
+#
+# NOTE: full `go test ./...` DEFERRED. 244/247 packages pass; the 3 failures
+# assert permission errors (e.g. an unwritable config dir) that container-root
+# bypasses via CAP_DAC_OVERRIDE. build + smoke are the signal.
+GO = "//toolchains:go_rootfs"
+
+repo_build(
+    name = "gh-cli",
+    repo = "https://github.com/cli/cli",
+    commit = "70bb306bd25eb407f90eabefd98824aed62cf519",
+    build = "go build -o gh ./cmd/gh",
+    toolchain = GO,
+)
+
+repo_smoke(
+    name = "gh-cli",
+    built = ":gh-cli",
+    toolchain = GO,
+)
