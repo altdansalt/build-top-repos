@@ -11,6 +11,13 @@
     "status": "deferred",
     "ts": "2026-06-18T00:00:00+00:00"
   },
+  "https://github.com/astral-sh/uv": {
+    "commit": "3d7e2f945091edeea8edf6cea5c480b5aabe4720",
+    "log": "20260618-193001-https-github-com-astral-sh-uv.log",
+    "project": "uv",
+    "status": "landed",
+    "ts": "2026-06-18T19:38:20+00:00"
+  },
   "https://github.com/chubin/cheat.sh": {
     "log": "pre-automation",
     "reason": "server + data-fetch heavy; only one trivial offline unit test, no honest offline smoke",

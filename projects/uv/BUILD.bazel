@@ -1,0 +1,25 @@
+load("//harness:defs.bzl", "repo_build", "repo_smoke")
+
+# uv (rank_code_size 154): extremely fast Python package and project manager, written in Rust.
+#
+# build: cargo build the uv binary (CARGO_HOME in the tree so deps ride along).
+# smoke: `uv --version`, `uv --help`, `uv pip --help`.
+#
+# NOTE: full cargo test deferred — the suite is integration-heavy, requires network
+# access to fetch Python distributions and packages, and cannot run reproducibly
+# in a hermetic container.
+RUST = "//toolchains:rust_rootfs"
+
+repo_build(
+    name = "uv",
+    repo = "https://github.com/astral-sh/uv",
+    commit = "3d7e2f945091edeea8edf6cea5c480b5aabe4720",
+    build = "CARGO_HOME=/work/uv/.cargo cargo build --bin uv",
+    toolchain = RUST,
+)
+
+repo_smoke(
+    name = "uv",
+    built = ":uv",
+    toolchain = RUST,
+)
