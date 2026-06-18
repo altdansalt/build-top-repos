@@ -1,0 +1,24 @@
+load("//harness:defs.bzl", "repo_build", "repo_smoke")
+
+# ruff (rank_code_size 133): Rust Python linter/formatter (astral).
+#
+# build: cargo build the ruff binary (CARGO_HOME in the tree).
+# smoke: run the linter (version + lint a clean snippet -> exit 0).
+#
+# NOTE: full cargo test deferred (very large workspace suite); build + smoke are
+# the signal.
+RUST = "//toolchains:rust_rootfs"
+
+repo_build(
+    name = "ruff",
+    repo = "https://github.com/astral-sh/ruff",
+    commit = "219bd72ec8f15a2638f16075ae1054ebc969ac9f",
+    build = "CARGO_HOME=/work/ruff/.cargo cargo build --bin ruff",
+    toolchain = RUST,
+)
+
+repo_smoke(
+    name = "ruff",
+    built = ":ruff",
+    toolchain = RUST,
+)
