@@ -182,7 +182,7 @@ in `state.json`. Set `CLAUDE_BUDGET_SECONDS` to change the per-project time budg
 
 ## Status
 
-**31 projects landed, 6 deferred** (see ledger). Six cached language toolchains:
+**31 projects landed, 7 deferred** (see ledger). Six cached language toolchains:
 `node` (24), `python`, `go` (1.26), `rust` (1.96 + clippy/rustfmt), `shell`
 (bats), `c` (autotools + g++-14 + cmake). `bazel test //projects/...` is the
 cross-project health check (build+test+smoke per project). Each landed project is
@@ -212,6 +212,7 @@ offline/core test subset over network/TTY/root-coupled tests.
 | 676 | httpie | Python | venv + `pip install` | (deferred: root/net/TTY-coupled) | `http --version` + `--offline` request | ✅⏸️ |
 | 669 | jq | C | autoreconf + configure + make | `make check` (8/9 groups; tzdata) | `jq` filters (`.foo`, `add`) | ✅✅ |
 | 666 | gin | Go | `go build ./...` | `go test ./...` (localhost via /etc/hosts) | in-process route serves a request | ✅✅ |
+| 626 | sniffnet | Rust | — | — | — | ⏸️ deferred |
 | 617 | echo | Go | `go build ./...` | `go test ./...` | in-process route serves a request | ✅✅ |
 | 612 | OCRmyPDF | Python | — | — | — | ⏸️ deferred |
 | 611 | alacritty | Rust | — | — | — | ⏸️ deferred |
@@ -260,6 +261,13 @@ pages into desktop apps via Tauri v2. On Linux, Tauri v2 requires
 for compilation — none are present in the `rust_rootfs` toolchain. The resulting
 app creates an OS window to display the wrapped URL; no meaningful headless
 execution exists. Same category as alacritty and tabby.
+
+**sniffnet — deferred (GUI network monitor; needs libpcap + GTK + display).** sniffnet
+is an iced/wgpu GUI application that captures packets via libpcap. On Linux, compiling
+it requires `libpcap-dev` (pcap crate), `libgtk-3-dev` (rfd native-file-dialog crate),
+and X11/Wayland dev headers (winit/iced) — none present in `rust_rootfs`. The app opens
+a graphical window for all normal operation; there is no headless mode. Same category as
+alacritty, pake, and tabby.
 
 **GUI / heavy-system-dep deferrals.** alacritty (OpenGL terminal), tabby
 (Electron), and pake (Tauri) are GUI apps with no meaningful headless run.
