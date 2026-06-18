@@ -6,3 +6,6 @@
 /automation/logs/
 /automation/.result.json
 /automation/.lock
+# Python bytecode (would otherwise trip the orchestrator's clean-tree guard)
+__pycache__/
+*.pyc
