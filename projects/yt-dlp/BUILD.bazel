@@ -1,0 +1,30 @@
+load("//harness:defs.bzl", "repo_build", "repo_smoke", "repo_test")
+
+# yt-dlp (rank_code_size 249): Python audio/video downloader CLI.
+#
+# build: venv install + pytest.
+# test:  the offline suite (`-m "not download"`); the download-marked tests fetch
+#        from real sites (network, flaky). ~886 tests.
+# smoke: run the CLI (version + help).
+PY = "//toolchains:python_rootfs"
+
+repo_build(
+    name = "yt-dlp",
+    repo = "https://github.com/yt-dlp/yt-dlp",
+    commit = "4af5541bb56b08d462f32773dfa15c207de13b74",
+    build = "python3 -m venv .venv && .venv/bin/pip install . pytest",
+    toolchain = PY,
+)
+
+repo_test(
+    name = "yt-dlp",
+    built = ":yt-dlp",
+    test = ". .venv/bin/activate && pytest test -m \"not download\"",
+    toolchain = PY,
+)
+
+repo_smoke(
+    name = "yt-dlp",
+    built = ":yt-dlp",
+    toolchain = PY,
+)

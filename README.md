@@ -145,7 +145,7 @@ from the cached toolchain, so Node projects do no apt. Test targets are tagged
 
 ## Status
 
-**19 projects landed, 7 deferred** (see ledger). Six cached language toolchains:
+**27 projects landed, 6 deferred** (see ledger). Six cached language toolchains:
 `node` (24), `python`, `go` (1.26), `rust` (1.96 + clippy/rustfmt), `shell`
 (bats), `c` (autotools + g++-14 + cmake). `bazel test //projects/...` is the
 cross-project health check (build+test+smoke per project). Each landed project is
@@ -191,6 +191,7 @@ offline/core test subset over network/TTY/root-coupled tests.
 | 404 | textual | Python | venv + `pip install` | `pytest` (~3005; excl. snapshot/optional) | run a headless Textual app via pilot | ✅✅ |
 | 357 | black | Python | venv + `pip install` | `pytest` (~465) | format `x=1` → `x = 1` via the CLI | ✅✅ |
 | 311 | cli/cli | Go | `go build` | (deferred: root-permission tests) | `gh --version`/`--help` | ✅⏸️ |
+| 249 | yt-dlp | Python | venv + `pip install` | `pytest -m "not download"` (~886) | `yt-dlp --version`/`--help` | ✅✅ |
 | 319 | esbuild | Go | `go build` | `go test ./...` | minify `let x = 1 ;` → `let x=1;` | ✅✅ |
 
 **playwright-mcp — deferred (needs a browser toolchain).** Spike confirmed
