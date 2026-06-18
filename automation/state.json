@@ -82,6 +82,13 @@
     "status": "deferred",
     "ts": "2026-06-18T18:31:20.786562+00:00"
   },
+  "https://github.com/nlohmann/json": {
+    "commit": "02dfbea39d94b8d19ddcd0eabfdc943a65bf3368",
+    "log": "20260618-232001-https-github-com-nlohmann-json.log",
+    "project": "json",
+    "status": "landed",
+    "ts": "2026-06-18T23:28:26.383992+00:00"
+  },
   "https://github.com/ocrmypdf/OCRmyPDF": {
     "log": "pre-automation",
     "reason": "needs an OCR toolchain (tesseract/ghostscript/unpaper/qpdf) + large real-OCR suite",

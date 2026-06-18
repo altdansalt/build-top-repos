@@ -1,0 +1,30 @@
+load("//harness:defs.bzl", "repo_build", "repo_smoke", "repo_test")
+
+# nlohmann/json (rank_code_size 373): header-only C++ JSON library (JSON for Modern C++).
+#
+# build: cmake configures + builds the test suite (Catch2 fetched via FetchContent;
+#        nlohmann_json_test_data fetched via FetchContent; needs network).
+# test:  ctest unit suite — all tests are offline JSON parsing/serialisation.
+# smoke: compile a tiny C++ snippet against the header and verify parse + dump.
+C = "//toolchains:c_rootfs"
+
+repo_build(
+    name = "json",
+    repo = "https://github.com/nlohmann/json",
+    commit = "02dfbea39d94b8d19ddcd0eabfdc943a65bf3368",
+    build = "cmake -B build -DJSON_BuildTests=ON -DCMAKE_BUILD_TYPE=Release -DJSON_MultipleHeaders=OFF && cmake --build build -j8",
+    toolchain = C,
+)
+
+repo_test(
+    name = "json",
+    built = ":json",
+    test = "cd build && ctest --output-on-failure -j4",
+    toolchain = C,
+)
+
+repo_smoke(
+    name = "json",
+    built = ":json",
+    toolchain = C,
+)
