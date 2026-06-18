@@ -174,7 +174,7 @@ automation/run.sh --no-push                         # ... but keep the commit lo
 Install on cron (the flock guard makes overlapping ticks exit immediately):
 
 ```
-*/30 * * * * /home/exedev/build-top-repos/automation/run.sh >> /home/exedev/build-top-repos/automation/logs/cron.log 2>&1
+*/10 * * * * /home/exedev/build-top-repos/automation/run.sh >> /home/exedev/build-top-repos/automation/logs/cron.log 2>&1
 ```
 
 **Selection** picks the next *unhandled, buildable* project (handled = repos with a

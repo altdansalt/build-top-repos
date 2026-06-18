@@ -52,6 +52,10 @@ LANG_TOOLCHAIN = {
 
 MODEL = os.environ.get("CLAUDE_MODEL", "sonnet")
 BUDGET_SECONDS = int(os.environ.get("CLAUDE_BUDGET_SECONDS", "5400"))  # 90 min default
+# Per-call cap on the verification gate's bazel commands. Verify build is normally
+# a cache hit (seconds); this only bounds a genuinely hung action so it can't block
+# the orchestrator forever.
+VERIFY_TIMEOUT = int(os.environ.get("BAZEL_VERIFY_TIMEOUT", "1200"))  # 20 min/call
 BAZEL = os.environ.get("BAZEL", "bazel")
 # Trailer reflects who actually authored the change: the headless Sonnet pipeline.
 COAUTHOR = "Co-Authored-By: Claude (headless Sonnet via automation) <noreply@anthropic.com>"
@@ -69,9 +73,16 @@ def normalize_url(url):
     return u.rstrip("/")
 
 
-def run(cmd, **kw):
-    """Run a command, return CompletedProcess (text)."""
-    return subprocess.run(cmd, cwd=REPO_ROOT, text=True, capture_output=True, **kw)
+def run(cmd, timeout=None, **kw):
+    """Run a command, return CompletedProcess (text). On timeout, return a
+    synthetic rc=124 result so callers treat it as a failure instead of hanging."""
+    try:
+        return subprocess.run(cmd, cwd=REPO_ROOT, text=True, capture_output=True,
+                              timeout=timeout, **kw)
+    except subprocess.TimeoutExpired as e:
+        return subprocess.CompletedProcess(
+            cmd, 124, stdout=e.stdout or "",
+            stderr=(e.stderr or "") + f"\n[killed: exceeded {timeout}s]")
 
 
 def git(*args):
@@ -233,18 +244,28 @@ def find_bazel():
 
 
 def bazel_targets(project):
-    cp = run([BAZEL, "query", f'kind("sh_test", //projects/{project}:*)'])
+    cp = run([BAZEL, "query", f'kind("sh_test", //projects/{project}:*)'], timeout=120)
     return [t.strip() for t in cp.stdout.splitlines() if t.strip().startswith("//")]
 
 
 def verify_landed(project):
-    """Re-derive truth from Bazel. Returns (ok: bool, report: dict)."""
+    """Re-derive truth from Bazel. Returns (ok: bool, report: dict).
+
+    Every bazel call is bounded by VERIFY_TIMEOUT so a hung build/test can't block
+    the orchestrator forever. The verify build is normally a cache hit (claude
+    already built it), so the timeout only bites a genuinely stuck action; if it
+    does fire, shut the bazel server down so its orphaned action can't wedge the
+    next tick's build.
+    """
     report = {"build": None, "smoke": None, "tests": {}}
-    log(f"verify: bazel build //projects/{project}")
-    build = run([BAZEL, "build", f"//projects/{project}"])
+    log(f"verify: bazel build //projects/{project} (timeout {VERIFY_TIMEOUT}s)")
+    build = run([BAZEL, "build", f"//projects/{project}"], timeout=VERIFY_TIMEOUT)
     report["build"] = build.returncode == 0
     if not report["build"]:
         report["build_err"] = build.stderr[-2000:]
+        if build.returncode == 124:
+            log("verify build timed out — shutting down bazel server to clear it")
+            run([BAZEL, "shutdown"], timeout=60)
         return False, report
 
     targets = bazel_targets(project)
@@ -253,13 +274,13 @@ def verify_landed(project):
     report["smoke_target_exists"] = bool(smoke_targets)
 
     for t in test_targets:
-        log(f"verify: bazel test {t}")
-        cp = run([BAZEL, "test", t])
+        log(f"verify: bazel test {t} (timeout {VERIFY_TIMEOUT}s)")
+        cp = run([BAZEL, "test", t], timeout=VERIFY_TIMEOUT)
         report["tests"][t] = cp.returncode == 0
 
     if smoke_targets:
-        log(f"verify: bazel test {smoke_targets[0]}")
-        cp = run([BAZEL, "test", smoke_targets[0]])
+        log(f"verify: bazel test {smoke_targets[0]} (timeout {VERIFY_TIMEOUT}s)")
+        cp = run([BAZEL, "test", smoke_targets[0]], timeout=VERIFY_TIMEOUT)
         report["smoke"] = cp.returncode == 0
 
     ok = (report["build"]

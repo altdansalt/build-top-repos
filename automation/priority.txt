@@ -7,7 +7,6 @@
 
 # Fast Rust/Go/Node CLIs & TUIs
 https://github.com/astral-sh/uv
-https://github.com/zellij-org/zellij
 https://github.com/helix-editor/helix
 https://github.com/fish-shell/fish-shell
 https://github.com/google-gemini/gemini-cli
@@ -26,3 +25,9 @@ https://github.com/numpy/numpy
 https://github.com/protocolbuffers/protobuf
 https://github.com/duckdb/duckdb
 https://github.com/php/php-src
+
+# Deprioritized 2026-06-18: a fresh build network-stalled for 30+ min (a cmake-
+# building dependency trickling over the container network) and was killed. Kept
+# in the queue for one more try after the faster wins; the verify-gate timeout now
+# bounds it so a re-stall defers it instead of wedging the queue.
+https://github.com/zellij-org/zellij
