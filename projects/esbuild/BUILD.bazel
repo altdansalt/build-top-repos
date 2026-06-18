@@ -1,0 +1,25 @@
+load("//harness:defs.bzl", "repo_build", "repo_smoke", "repo_test")
+
+# esbuild (rank_code_size 319): Go JavaScript/TypeScript bundler.
+GO = "//toolchains:go_rootfs"
+
+repo_build(
+    name = "esbuild",
+    repo = "https://github.com/evanw/esbuild",
+    commit = "6ff1d8b0d8c134e867a397eef39702a223ebef9e",
+    build = "go build -o esbuild ./cmd/esbuild",
+    toolchain = GO,
+)
+
+repo_test(
+    name = "esbuild",
+    built = ":esbuild",
+    test = "go test ./...",
+    toolchain = GO,
+)
+
+repo_smoke(
+    name = "esbuild",
+    built = ":esbuild",
+    toolchain = GO,
+)
