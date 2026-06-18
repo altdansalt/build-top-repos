@@ -1,0 +1,25 @@
+load("//harness:defs.bzl", "repo_build", "repo_smoke")
+
+# helix (rank_code_size 381): post-modern modal text editor written in Rust.
+#
+# build: cargo build (CARGO_HOME in the tree so deps ride along).
+# smoke: `hx --version` and `hx --help`.
+#
+# NOTE: full cargo test deferred — helix-term's integration suite tests TUI
+# interaction (TestApplication with a fake terminal); matching the full
+# terminal environment reliably is complex. Build + smoke are the signal.
+RUST = "//toolchains:rust_rootfs"
+
+repo_build(
+    name = "helix",
+    repo = "https://github.com/helix-editor/helix",
+    commit = "460d3be574a514d327ea5e55a50dc4fea67d60fc",
+    build = "CARGO_HOME=/work/helix/.cargo cargo build",
+    toolchain = RUST,
+)
+
+repo_smoke(
+    name = "helix",
+    built = ":helix",
+    toolchain = RUST,
+)
