@@ -254,6 +254,7 @@ offline/core test subset over network/TTY/root-coupled tests.
 | 381 | helix | Rust | `cargo build` | (deferred: TUI integration suite) | `hx --version`/`--help` | ✅⏸️ |
 | 371 | fish | Rust | `cargo build` | (deferred: CMake-driven test suite; no clean offline subset) | `fish --version` + `fish -c 'echo ...'` | ✅⏸️ |
 | 146 | gemini-cli | TS/npm | `npm ci && node scripts/build.js` | (deferred: snapshot+docker+TTY-coupled suite) | `gemini --version`/`--help` | ✅⏸️ |
+| 218 | ollama | Go+C++ | — | — | — | ⏸️ deferred |
 
 **playwright-mcp — deferred (needs a browser toolchain).** Spike confirmed
 `npm ci` + `npx playwright install --with-deps` work against our snapshot apt, but
@@ -295,6 +296,15 @@ targets Chrome APIs (`chrome148`), its `postinstall` step downloads native Elect
 binaries via `electron-builder install-app-deps`, and the packaged app opens a GUI
 window for all normal operation — lossless video/audio editing. There is no CLI or
 headless mode. Same category as tabby, pake, and alacritty.
+
+**ollama — deferred (CGo + cmake/C++ build; needs combined Go+C++ toolchain).** Ollama's
+main binary imports `runner`, which in turn imports `x/imagegen` and `x/mlxrunner` — both
+packages contain CGo directives (`#cgo LDFLAGS: -lstdc++`) and depend on C headers generated
+by `go generate ./...`. Compiling those requires `g++` and the generated wrapper headers.
+Additionally, the `llama/server` component is built separately via CMake before the Go
+link step. Neither `go_rootfs` (no C++ compiler or cmake) nor `c_rootfs` (no Go) covers
+the full build; a new combined `go_c_rootfs` toolchain holding Go + cmake + g++ would be
+required. That toolchain investment is a human decision — deferred.
 
 **GUI / heavy-system-dep deferrals.** alacritty (OpenGL terminal), tabby
 (Electron), lossless-cut (Electron), and pake (Tauri) are GUI apps with no
