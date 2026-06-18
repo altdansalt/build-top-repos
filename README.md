@@ -185,6 +185,7 @@ offline/core test subset over network/TTY/root-coupled tests.
 | 551 | glances | Python | venv + `pip install` | `pytest tests/test_core.py` (52) | `--version` + one-shot CPU reading | ✅✅ |
 | 485 | rtk | Rust | `cargo build` | `cargo test` (2199) | `rtk --version`/`--help` | ✅✅ |
 | 479 | scrapy | Python | venv + `pip install` | (deferred: twisted/network suite) | `scrapy version` + `startproject` | ✅⏸️ |
+| 461 | Xray-core | Go | `go build` | (deferred: needs geoip/geosite data) | `xray version` | ✅⏸️ |
 | 435 | syncthing | Go | `go run build.go build` | `go test -short ./lib/...` (40 pkgs) | `syncthing --version` | ✅✅ |
 | 422 | sing-box | Go | `go build` | (deferred: netlink/real-TLS integ.) | `sing-box version`/`--help` | ✅⏸️ |
 | 404 | textual | Python | venv + `pip install` | `pytest` (~3005; excl. snapshot/optional) | run a headless Textual app via pilot | ✅✅ |

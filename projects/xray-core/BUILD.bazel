@@ -1,0 +1,25 @@
+load("//harness:defs.bzl", "repo_build", "repo_smoke")
+
+# Xray-core (rank_code_size 461): Go proxy platform.
+#
+# build: `go build` the xray binary.
+# smoke: run the CLI (version + help).
+#
+# NOTE: full `go test ./...` DEFERRED. 73 packages pass; 4 fail because they need
+# external geoip/geosite data files (geoip.dat/geosite.dat) that aren't bundled in
+# the repo. build + smoke are the signal.
+GO = "//toolchains:go_rootfs"
+
+repo_build(
+    name = "xray-core",
+    repo = "https://github.com/XTLS/Xray-core",
+    commit = "641273848694934d6aec7992bb71162ec69f2a53",
+    build = "go build -o xray ./main",
+    toolchain = GO,
+)
+
+repo_smoke(
+    name = "xray-core",
+    built = ":xray-core",
+    toolchain = GO,
+)
