@@ -123,6 +123,7 @@ def render_prompt(row):
         "{{REPO_URL}}": row["repo_url"],
         "{{LANGUAGE}}": row.get("language", ""),
         "{{DESCRIPTION}}": row.get("description", ""),
+        "{{RANK}}": row.get("rank_code_size", ""),
         "{{EVIDENCE}}": row.get("evidence", ""),
         "{{RESULT_PATH}}": str(RESULT_PATH.relative_to(REPO_ROOT)),
     }

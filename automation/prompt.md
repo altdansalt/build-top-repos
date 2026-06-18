@@ -6,10 +6,11 @@ verification, and recording. Your job is to produce the project files, get Bazel
 green (or cleanly defer), and write a result file.
 
 ## The project to add
-- repo_url:    {{REPO_URL}}
-- language:    {{LANGUAGE}}
-- description: {{DESCRIPTION}}
-- evidence:    {{EVIDENCE}}
+- repo_url:        {{REPO_URL}}
+- language:        {{LANGUAGE}}
+- description:     {{DESCRIPTION}}
+- rank_code_size:  {{RANK}}   ← use this exact number as the `#` in the README ledger row
+- evidence:        {{EVIDENCE}}
 
 ## Learn the pattern first (do this before writing anything)
 1. Read `README.md` in full — especially **The working recipe**, **Build / test
@@ -68,7 +69,7 @@ is a human decision — defer rather than build one.
 
 ## Update the README
 Either way, update `README.md`: add a row to the **Project ledger** table (use the
-project's `rank_code_size` = the evidence/CSV rank as the `#`), and if it landed,
+`rank_code_size` value given above as the `#`), and if it landed,
 bump the "**N projects landed**" count in the Status section. Match the existing
 table format and tone. For deferrals, add a short explanatory paragraph like the
 existing ones.
