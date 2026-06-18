@@ -23,9 +23,11 @@ import csv
 import json
 import os
 import re
+import shutil
 import subprocess
 import sys
 import time
+import traceback
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -219,6 +221,17 @@ def detect_new_project_dir():
     return sorted(names)
 
 
+def find_bazel():
+    """Absolute path to bazel, robust to cron's stripped PATH. None if missing."""
+    p = shutil.which(BAZEL)
+    if p:
+        return p
+    for cand in (Path.home() / "bin" / "bazel", Path("/usr/local/bin/bazel")):
+        if cand.exists():
+            return str(cand)
+    return None
+
+
 def bazel_targets(project):
     cp = run([BAZEL, "query", f'kind("sh_test", //projects/{project}:*)'])
     return [t.strip() for t in cp.stdout.splitlines() if t.strip().startswith("//")]
@@ -329,6 +342,17 @@ def main():
     if args.dry_run:
         return 0
 
+    # Resolve bazel to an absolute path and fail fast if it's missing — the
+    # verification gate needs it, and discovering that *after* building wastes a
+    # run and (historically) wedged the queue. Must come before any work.
+    global BAZEL
+    bz = find_bazel()
+    if not bz:
+        log(f"bazel not found (PATH={os.environ.get('PATH','')}); aborting before any work")
+        return 1
+    BAZEL = bz
+    log(f"bazel: {BAZEL}")
+
     # Make sure we start from a clean tree on the default branch.
     if working_tree_paths():
         log("working tree is dirty — refusing to start; clean it first")
@@ -342,6 +366,27 @@ def main():
 
     rc = invoke_claude(render_prompt(row), log_path)
     log(f"claude exited rc={rc}")
+
+    # Any failure after this point must NOT leave a dirty tree (that wedges every
+    # future tick on the clean-tree guard). Wrap outcome handling: on an unexpected
+    # error, discard changes and record the project deferred, then move on.
+    try:
+        return handle_outcome(state, url, slug, rc, log_path, push)
+    except Exception:
+        log("orchestrator error after claude — discarding changes, recording "
+            "deferred:\n" + traceback.format_exc())
+        reset_clean()
+        record(state, url, "deferred", push,
+               reason="could not land: orchestrator error (see cron.log)",
+               log=log_path.name)
+        commit_and_push(f"Record {slug} as deferred (orchestrator error)",
+                        f"Headless add of {url} crashed the orchestrator after the "
+                        f"claude step.\nSee automation/logs/{log_path.name} and cron.log.",
+                        push)
+        return 0
+
+
+def handle_outcome(state, url, slug, rc, log_path, push):
     result = read_result() or {}
 
     # Determine the project name (result contract, else a new projects/ dir).

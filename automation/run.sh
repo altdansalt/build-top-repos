@@ -14,7 +14,10 @@ cd "$REPO_ROOT"
 mkdir -p automation/logs
 
 # cron runs with a minimal PATH; ensure the tools we shell out to are findable.
-export PATH="$HOME/.local/bin:/usr/local/bin:/usr/bin:/bin:$PATH"
+# $HOME/bin holds bazel/bazelisk here — without it the verification gate can't
+# find bazel under cron (the orchestrator also resolves bazel absolutely as a
+# backstop, but keep the PATH correct for git/gh/claude too).
+export PATH="$HOME/bin:$HOME/.local/bin:/usr/local/bin:/usr/bin:/bin:$PATH"
 
 LOCK="automation/.lock"
 exec 9>"$LOCK"
