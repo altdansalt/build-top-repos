@@ -143,6 +143,43 @@ invoke crun and git/apt, which Bazel's sandbox would block). Build targets start
 from the cached toolchain, so Node projects do no apt. Test targets are tagged
 `external` (always re-run) so the health check reflects reality, not a cached pass.
 
+## Automated project addition
+
+`automation/` works down the CSV unattended, one project per run. Headless
+`claude` (Sonnet) does the judgement-heavy part (pin a commit, pick a toolchain,
+write `BUILD.bazel` + `smoke.sh`, iterate to green or defer); the orchestrator owns
+everything deterministic — selection, an **independent Bazel verification gate**,
+git, and bookkeeping. It never trusts the agent's self-report: it re-runs
+`bazel build` + the declared `sh_test` targets itself and only lands a project when
+Bazel agrees (build green + smoke passes + any declared test passes). Anything that
+can't land is recorded as `deferred` and never retried.
+
+```
+automation/
+  add_next_project.py   select -> invoke claude -> verify -> commit/push -> record
+  run.sh                cron wrapper (flock so ticks never overlap; sets PATH)
+  prompt.md             the headless task template (repo conventions + the project)
+  state.json            durable handled-record (deferrals; landed are read from BUILD)
+  logs/                 per-run transcripts (gitignored)
+```
+
+```
+python3 automation/add_next_project.py --dry-run   # show the next project, do nothing
+automation/run.sh                                  # add the next one (commits + pushes)
+automation/run.sh --no-push                         # ... but keep the commit local
+```
+
+Install on cron (the flock guard makes overlapping ticks exit immediately):
+
+```
+*/30 * * * * /home/exedev/build-top-repos/automation/run.sh >> /home/exedev/build-top-repos/automation/logs/cron.log 2>&1
+```
+
+The "next" project is the first CSV row not already handled — handled = repos with
+a `projects/<name>/` dir (read from each `BUILD.bazel`'s `repo =` line) ∪ deferrals
+in `state.json`. Set `CLAUDE_BUDGET_SECONDS` to change the per-project time budget
+(default 5400s).
+
 ## Status
 
 **30 projects landed, 6 deferred** (see ledger). Six cached language toolchains:
@@ -222,7 +259,9 @@ real-OCR test suite — revisitable if we invest in an OCR toolchain.
 
 ### Next
 1. Keep working down the CSV: one `repo_build` + `repo_test`/`repo_smoke` per
-   project. Heavy/browser/GUI projects → cache the weight in a toolchain or defer.
+   project — now driven by `automation/` (headless Sonnet + a Bazel verification
+   gate) on a cron. Heavy/browser/GUI projects → cache the weight in a toolchain
+   or defer.
 2. Optional **reproducibility check** target: build twice, diff the artifact hash
    (turns the "determinism is measured" idea into data per project).
 3. Revisit deferrals worth a toolchain investment: a browser toolchain

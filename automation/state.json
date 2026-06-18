@@ -1,0 +1,38 @@
+{
+  "https://github.com/microsoft/playwright-mcp": {
+    "status": "deferred",
+    "ts": "2026-06-18T00:00:00+00:00",
+    "reason": "needs a browser toolchain (Chrome/chromium ~646M); deferred until we invest in a cached playwright_rootfs",
+    "log": "pre-automation"
+  },
+  "https://github.com/chubin/cheat.sh": {
+    "status": "deferred",
+    "ts": "2026-06-18T00:00:00+00:00",
+    "reason": "server + data-fetch heavy; only one trivial offline unit test, no honest offline smoke",
+    "log": "pre-automation"
+  },
+  "https://github.com/coder/code-server": {
+    "status": "deferred",
+    "ts": "2026-06-18T00:00:00+00:00",
+    "reason": "vendors all of VS Code (multi-GB, long build); out of scope",
+    "log": "pre-automation"
+  },
+  "https://github.com/ocrmypdf/OCRmyPDF": {
+    "status": "deferred",
+    "ts": "2026-06-18T00:00:00+00:00",
+    "reason": "needs an OCR toolchain (tesseract/ghostscript/unpaper/qpdf) + large real-OCR suite",
+    "log": "pre-automation"
+  },
+  "https://github.com/alacritty/alacritty": {
+    "status": "deferred",
+    "ts": "2026-06-18T00:00:00+00:00",
+    "reason": "GUI OpenGL terminal; no meaningful headless run",
+    "log": "pre-automation"
+  },
+  "https://github.com/Eugeny/tabby": {
+    "status": "deferred",
+    "ts": "2026-06-18T00:00:00+00:00",
+    "reason": "Electron GUI app; no meaningful headless run",
+    "log": "pre-automation"
+  }
+}
