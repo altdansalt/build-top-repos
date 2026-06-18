@@ -1,0 +1,25 @@
+load("//harness:defs.bzl", "repo_build", "repo_smoke")
+
+# v2ray-core (rank_code_size 386): Go proxy platform for bypassing network restrictions.
+#
+# build: `go build` the v2ray binary.
+# smoke: run the CLI (version + help).
+#
+# NOTE: full `go test ./...` DEFERRED. Several packages require external
+# geoip/geosite data files (geoip.dat/geosite.dat) not bundled in the repo,
+# mirroring the same limitation seen in Xray-core (its downstream fork).
+GO = "//toolchains:go_rootfs"
+
+repo_build(
+    name = "v2ray-core",
+    repo = "https://github.com/v2fly/v2ray-core",
+    commit = "63f97f5a5616bf008033225461fce5686a157da6",
+    build = "go build -o v2ray ./main",
+    toolchain = GO,
+)
+
+repo_smoke(
+    name = "v2ray-core",
+    built = ":v2ray-core",
+    toolchain = GO,
+)

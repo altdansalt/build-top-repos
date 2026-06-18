@@ -99,5 +99,12 @@
     "reason": "Pake is a Tauri v2 desktop GUI application. Its src-tauri/Cargo.toml depends on tauri 2.10.2 and tauri-build 2.5.5. On Linux, Tauri v2 requires libwebkit2gtk-4.1-dev, libgtk-3-dev, and related GTK/display-server headers for compilation \u2014 none of which are present in the rust_rootfs toolchain. The resulting app creates an OS window to render the wrapped URL; there is no meaningful headless execution path. This is the same deferral category as alacritty (OpenGL terminal) and tabby (Electron).",
     "status": "deferred",
     "ts": "2026-06-18T16:16:21.175964+00:00"
+  },
+  "https://github.com/v2fly/v2ray-core": {
+    "commit": "63f97f5a5616bf008033225461fce5686a157da6",
+    "log": "20260618-221001-https-github-com-v2fly-v2ray-core.log",
+    "project": "v2ray-core",
+    "status": "landed",
+    "ts": "2026-06-18T22:12:28.719760+00:00"
   }
 }
