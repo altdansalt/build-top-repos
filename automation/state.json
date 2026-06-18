@@ -106,5 +106,12 @@
     "project": "v2ray-core",
     "status": "landed",
     "ts": "2026-06-18T22:12:28.719760+00:00"
+  },
+  "https://github.com/v2ray/v2ray-core": {
+    "commit": "63f97f5a5616bf008033225461fce5686a157da6",
+    "log": "20260618-222001-https-github-com-v2ray-v2ray-core.log",
+    "project": "v2ray-core",
+    "status": "landed",
+    "ts": "2026-06-18T22:21:04.769423+00:00"
   }
 }
