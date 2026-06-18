@@ -1,0 +1,25 @@
+load("//harness:defs.bzl", "repo_build", "repo_smoke")
+
+# sing-box (rank_code_size 422): Go universal proxy platform.
+#
+# build: `go build` the CLI binary.
+# smoke: run the CLI (version + help).
+#
+# NOTE: full `go test ./...` DEFERRED. Most unit packages pass, but a couple are
+# environment/network-coupled: common/process (netlink socket-diag) and the
+# real-TLS integration tests (live handshakes). build + smoke are the signal.
+GO = "//toolchains:go_rootfs"
+
+repo_build(
+    name = "sing-box",
+    repo = "https://github.com/SagerNet/sing-box",
+    commit = "17852ccaaa494f664cbe90e59e2d1558c7f1db34",
+    build = "go build -o sing-box ./cmd/sing-box",
+    toolchain = GO,
+)
+
+repo_smoke(
+    name = "sing-box",
+    built = ":sing-box",
+    toolchain = GO,
+)
