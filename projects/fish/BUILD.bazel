@@ -1,0 +1,26 @@
+load("//harness:defs.bzl", "repo_build", "repo_smoke")
+
+# fish (rank_code_size 371): the user-friendly command line shell, written in Rust.
+#
+# build: cargo build (CARGO_HOME in the tree so deps ride along).
+# smoke: `fish --version` + run a simple fish command.
+#
+# NOTE: test deferred — the upstream test suite (`make test` via CMake) runs
+# fish scripts that require a full cmake-configured install with completion
+# files and documentation; the cargo unit tests are minimal. No clean offline
+# subset usable here.
+RUST = "//toolchains:rust_rootfs"
+
+repo_build(
+    name = "fish",
+    repo = "https://github.com/fish-shell/fish-shell",
+    commit = "60ab561be1a2e67dcebbedca4845ada105fcd5c8",
+    build = "CARGO_HOME=/work/fish/.cargo cargo build",
+    toolchain = RUST,
+)
+
+repo_smoke(
+    name = "fish",
+    built = ":fish",
+    toolchain = RUST,
+)

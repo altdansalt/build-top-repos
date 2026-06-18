@@ -30,6 +30,13 @@
     "status": "deferred",
     "ts": "2026-06-18T00:00:00+00:00"
   },
+  "https://github.com/fish-shell/fish-shell": {
+    "commit": "60ab561be1a2e67dcebbedca4845ada105fcd5c8",
+    "log": "20260618-213001-https-github-com-fish-shell-fish-shell.log",
+    "project": "fish",
+    "status": "landed",
+    "ts": "2026-06-18T21:33:17.045540+00:00"
+  },
   "https://github.com/genymobile/scrcpy": {
     "log": "20260618-190001-https-github-com-genymobile-scrcpy.log",
     "reason": "scrcpy is split into a Java server APK (built with Gradle + Android SDK, deployed via adb) and a C client (meson + SDL2 + FFmpeg). The Android SDK is not in any cached toolchain, and the client requires SDL2 (display) and FFmpeg/libav dev packages not in c_rootfs. At runtime the app opens a GUI window showing the device screen \u2014 there is no headless or CLI mode and no meaningful smoke test without a connected Android device.",
