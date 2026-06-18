@@ -194,7 +194,7 @@ Set `CLAUDE_BUDGET_SECONDS` to change the per-project time budget (default 5400s
 
 ## Status
 
-**36 projects landed, 8 deferred** (see ledger). Six cached language toolchains:
+**37 projects landed, 8 deferred** (see ledger). Six cached language toolchains:
 `node` (24), `python`, `go` (1.26), `rust` (1.96 + clippy/rustfmt), `shell`
 (bats), `c` (autotools + g++-14 + cmake). `bazel test //projects/...` is the
 cross-project health check (build+test+smoke per project). Each landed project is
@@ -256,6 +256,7 @@ offline/core test subset over network/TTY/root-coupled tests.
 | 371 | fish | Rust | `cargo build` | (deferred: CMake-driven test suite; no clean offline subset) | `fish --version` + `fish -c 'echo ...'` | ✅⏸️ |
 | 146 | gemini-cli | TS/npm | `npm ci && node scripts/build.js` | (deferred: snapshot+docker+TTY-coupled suite) | `gemini --version`/`--help` | ✅⏸️ |
 | 218 | ollama | Go+C++ | — | — | — | ⏸️ deferred |
+| 195 | qdrant | Rust | `apt cmake+protoc && cargo build --bin qdrant` | (deferred: integration tests need live server + REST/gRPC endpoints) | `qdrant --version`/`--help` | ✅⏸️ |
 
 **playwright-mcp — deferred (needs a browser toolchain).** Spike confirmed
 `npm ci` + `npx playwright install --with-deps` work against our snapshot apt, but

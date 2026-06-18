@@ -1,0 +1,27 @@
+load("//harness:defs.bzl", "repo_build", "repo_smoke")
+
+# qdrant (rank_code_size 195): High-performance vector database and vector
+# search engine. Standalone Rust server with REST and gRPC APIs.
+#
+# build: apt-install cmake + protobuf-compiler (needed for RocksDB and gRPC
+#        stub generation), then cargo build the qdrant server binary.
+# smoke: qdrant --version + --help.
+#
+# NOTE: cargo test DEFERRED. Integration tests require a live qdrant server
+# instance (REST/gRPC endpoints), collection setup, and point indexing — not
+# reproducible in a hermetic offline container.
+RUST = "//toolchains:rust_rootfs"
+
+repo_build(
+    name = "qdrant",
+    repo = "https://github.com/qdrant/qdrant",
+    commit = "44ad62f8cd69642be5afa6441612525e24a0d063",
+    build = "DEBIAN_FRONTEND=noninteractive apt-get update -qq && apt-get install -y -q cmake protobuf-compiler && CARGO_HOME=/work/qdrant/.cargo cargo build --bin qdrant",
+    toolchain = RUST,
+)
+
+repo_smoke(
+    name = "qdrant",
+    built = ":qdrant",
+    toolchain = RUST,
+)
