@@ -200,6 +200,7 @@ offline/core test subset over network/TTY/root-coupled tests.
 | 877 | husky | JS/npm | `npm pack` | 12-script suite vs packed tgz | install tgz → `husky init` → hook fires | ✅✅ |
 | 867 | gulp | JS/npm | `npm install` | `npm test` (eslint + 42 mocha) | install gulp → run a gulpfile task | ✅✅ |
 | 857 | playwright-mcp | TS/npm | (no-op; `echo OK`) | `playwright test` (Chrome) | — | ⏸️ deferred |
+| 834 | pake | Rust | — | — | — | ⏸️ deferred |
 | 826 | sherlock | Python | venv + `pip install` | `pytest -m "not online"` (14 pass) | `sherlock --version`/`--help` | ✅✅ |
 | 767 | cheat.sh | Python | venv + `pip install -r` | `pytest lib/` (1 trivial test) | — | ⏸️ deferred |
 | 761 | zx | JS/TS | esbuild + tsc | (deferred: TTY/color-coupled) | `zx -v` + run a zx script | ✅⏸️ |
@@ -252,10 +253,18 @@ A custom toolchain to land one trivial test, with no honest offline smoke — sk
 compiles the bundled `microsoft/vscode` submodule — a multi-GB, long build. Out of
 scope for now.
 
-**GUI / heavy-system-dep deferrals.** alacritty (OpenGL terminal) and tabby
-(Electron) are GUI apps with no meaningful headless run. OCRmyPDF is feasible but
-heavy: it needs OCR engines (tesseract, ghostscript, unpaper, qpdf, …) and a large
-real-OCR test suite — revisitable if we invest in an OCR toolchain.
+**pake — deferred (Tauri desktop GUI app; requires WebkitGTK).** Pake wraps web
+pages into desktop apps via Tauri v2. On Linux, Tauri v2 requires
+`libwebkit2gtk-4.1-dev`, `libgtk-3-dev`, and related GTK/display-server headers
+for compilation — none are present in the `rust_rootfs` toolchain. The resulting
+app creates an OS window to display the wrapped URL; no meaningful headless
+execution exists. Same category as alacritty and tabby.
+
+**GUI / heavy-system-dep deferrals.** alacritty (OpenGL terminal), tabby
+(Electron), and pake (Tauri) are GUI apps with no meaningful headless run.
+OCRmyPDF is feasible but heavy: it needs OCR engines (tesseract, ghostscript,
+unpaper, qpdf, …) and a large real-OCR test suite — revisitable if we invest in
+an OCR toolchain.
 
 ### Next
 1. Keep working down the CSV: one `repo_build` + `repo_test`/`repo_smoke` per
