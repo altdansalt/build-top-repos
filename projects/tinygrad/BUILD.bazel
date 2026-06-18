@@ -1,0 +1,25 @@
+load("//harness:defs.bzl", "repo_build", "repo_smoke")
+
+# tinygrad (rank_code_size 105): deep learning framework in ~1000 lines of Python.
+#
+# build: venv install + numpy (the PYTHON/numpy backend dep).
+# test:  DEFERRED. test/unit/ needs either a JIT backend (CLANG, not present in
+#        python_rootfs) or a GPU for most ops; the two torch-comparison tests are
+#        uncollectable; and test_gguf.py downloads GGUF models from the network.
+#        No clean offline subset available.
+# smoke: import Tensor, tensor add + .numpy() via the DEV=PYTHON (numpy) backend.
+PY = "//toolchains:python_rootfs"
+
+repo_build(
+    name = "tinygrad",
+    repo = "https://github.com/tinygrad/tinygrad",
+    commit = "4a4b6956dfd233ab04817702ad7c156f0a229dc8",
+    build = "python3 -m venv .venv && .venv/bin/pip install . numpy",
+    toolchain = PY,
+)
+
+repo_smoke(
+    name = "tinygrad",
+    built = ":tinygrad",
+    toolchain = PY,
+)
