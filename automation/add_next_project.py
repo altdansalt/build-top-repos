@@ -36,6 +36,17 @@ STATE_PATH = AUTO_DIR / "state.json"
 PROMPT_PATH = AUTO_DIR / "prompt.md"
 RESULT_PATH = AUTO_DIR / ".result.json"
 LOGS_DIR = AUTO_DIR / "logs"
+PRIORITY_PATH = AUTO_DIR / "priority.txt"
+
+# Languages we have a cached //toolchains:*_rootfs for. A pending project in any
+# other language is pre-filtered (never sent to claude): the prompt forbids
+# building a new toolchain, so claude could only ever defer it. Reversible — add
+# a toolchain + a mapping here and those projects re-enter the queue automatically.
+LANG_TOOLCHAIN = {
+    "javascript": "node", "typescript": "node",
+    "python": "python", "go": "go", "rust": "rust",
+    "shell": "shell", "c": "c", "c++": "c",
+}
 
 MODEL = os.environ.get("CLAUDE_MODEL", "sonnet")
 BUDGET_SECONDS = int(os.environ.get("CLAUDE_BUDGET_SECONDS", "5400"))  # 90 min default
@@ -102,17 +113,46 @@ def read_csv_rows():
         return list(csv.DictReader(f))
 
 
-def pick_next(rows, handled, force_repo=None):
-    if force_repo:
+def buildable(row):
+    """True if we have a cached toolchain for this project's language."""
+    return row.get("language", "").strip().lower() in LANG_TOOLCHAIN
+
+
+def load_priority():
+    """Lands-first list: normalized repo_urls attempted before CSV order."""
+    if not PRIORITY_PATH.exists():
+        return []
+    out = []
+    for line in PRIORITY_PATH.read_text().splitlines():
+        line = line.split("#", 1)[0].strip()
+        if line:
+            out.append(normalize_url(line))
+    return out
+
+
+def select_next(rows, handled, priority, force_repo=None):
+    """Pick the next project to attempt. Returns (row_or_None, prefiltered_list).
+
+    Ordering: priority-list entries first (in listed order), then the rest in CSV
+    order. Projects whose language has no cached toolchain are pre-filtered out
+    (returned separately for logging) rather than sent to claude.
+    """
+    if force_repo:  # --repo bypasses the filter/priority (force any CSV row)
         target = normalize_url(force_repo)
-        for row in rows:
-            if normalize_url(row["repo_url"]) == target:
-                return row
-        return None
-    for row in rows:
-        if normalize_url(row["repo_url"]) not in handled:
-            return row
-    return None
+        return next((r for r in rows if normalize_url(r["repo_url"]) == target), None), []
+
+    prefiltered, candidates = [], []
+    for idx, row in enumerate(rows):
+        u = normalize_url(row["repo_url"])
+        if u in handled:
+            continue
+        if not buildable(row):
+            prefiltered.append(row)
+            continue
+        prank = priority.index(u) if u in priority else len(priority)
+        candidates.append((prank, idx, row))
+    candidates.sort(key=lambda t: (t[0], t[1]))
+    return (candidates[0][2] if candidates else None), prefiltered
 
 
 # --------------------------------------------------------------------------- claude
@@ -267,14 +307,23 @@ def main():
     state = load_state()
     rows = read_csv_rows()
     handled = handled_set(state)
-    log(f"{len(handled)} projects handled; scanning CSV for the next one")
+    priority = load_priority()
+    log(f"{len(handled)} projects handled; selecting next (lands-first, "
+        f"{len(priority)} prioritized)")
 
-    row = pick_next(rows, handled, force_repo=args.repo)
+    row, prefiltered = select_next(rows, handled, priority, force_repo=args.repo)
+    if prefiltered:
+        sample = ", ".join(f"{r['repo_url'].split('/')[-1]} [{r['language']}]"
+                           for r in prefiltered[:4])
+        log(f"pre-filtered {len(prefiltered)} pending project(s) with no cached "
+            f"toolchain (skipped, not sent to claude): {sample}"
+            + (" …" if len(prefiltered) > 4 else ""))
     if row is None:
-        log("no unhandled project found — all done (or --repo not in CSV)")
+        log("no buildable unhandled project found — all done (or --repo not in CSV)")
         return 0
     url = row["repo_url"]
-    log(f"next: {url}  ({row.get('language')}, rank_code_size={row.get('rank_code_size')})")
+    via = "priority" if normalize_url(url) in priority else "CSV order"
+    log(f"next: {url}  ({row.get('language')}, rank_code_size={row.get('rank_code_size')}, via {via})")
     log(f"  desc: {row.get('description')}")
 
     if args.dry_run:

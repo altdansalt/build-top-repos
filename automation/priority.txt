@@ -1,0 +1,28 @@
+# Lands-first queue. Pending projects whose repo_url is listed here are attempted
+# before the rest (which then follow in CSV order). One URL per line; # comments
+# and blank lines ignored. Editing this file is safe and takes effect next tick.
+#
+# Curated 2026-06-18: high-confidence LAND candidates (CLI/lib/server with a
+# headless smoke, buildable on a cached toolchain). Ordered fast build -> slow.
+
+# Fast Rust/Go/Node CLIs & TUIs
+https://github.com/astral-sh/uv
+https://github.com/zellij-org/zellij
+https://github.com/helix-editor/helix
+https://github.com/fish-shell/fish-shell
+https://github.com/google-gemini/gemini-cli
+https://github.com/ollama/ollama
+https://github.com/v2fly/v2ray-core
+https://github.com/v2ray/v2ray-core
+
+# Servers / libraries
+https://github.com/qdrant/qdrant
+https://github.com/tinygrad/tinygrad
+https://github.com/nlohmann/json
+https://github.com/webpack/webpack
+
+# Heavier native builds (C/C++/meson) — still high-confidence, just slower
+https://github.com/numpy/numpy
+https://github.com/protocolbuffers/protobuf
+https://github.com/duckdb/duckdb
+https://github.com/php/php-src

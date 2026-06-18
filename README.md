@@ -159,8 +159,10 @@ automation/
   add_next_project.py   select -> invoke claude -> verify -> commit/push -> record
   run.sh                cron wrapper (flock so ticks never overlap; sets PATH)
   prompt.md             the headless task template (repo conventions + the project)
+  priority.txt          lands-first queue (high-confidence projects, attempted first)
   state.json            durable handled-record (deferrals; landed are read from BUILD)
   logs/                 per-run transcripts (gitignored)
+  tail.sh               follow logs: tail.sh [cron|claude|raw]
 ```
 
 ```
@@ -175,10 +177,20 @@ Install on cron (the flock guard makes overlapping ticks exit immediately):
 */30 * * * * /home/exedev/build-top-repos/automation/run.sh >> /home/exedev/build-top-repos/automation/logs/cron.log 2>&1
 ```
 
-The "next" project is the first CSV row not already handled — handled = repos with
-a `projects/<name>/` dir (read from each `BUILD.bazel`'s `repo =` line) ∪ deferrals
-in `state.json`. Set `CLAUDE_BUDGET_SECONDS` to change the per-project time budget
-(default 5400s).
+**Selection** picks the next *unhandled, buildable* project (handled = repos with a
+`projects/<name>/` dir, read from each `BUILD.bazel`'s `repo =` line, ∪ deferrals in
+`state.json`), ordered **lands-first**: repos listed in `priority.txt` come before
+the rest, which follow CSV order. Two filters keep ticks productive:
+
+- **Toolchain pre-filter.** A pending project whose `language` has no cached
+  toolchain (C#/Java/Ruby/Zig/Clojure/Dart/V/…) is skipped without spending a
+  claude call — the prompt forbids building new toolchains, so it could only defer.
+  Reversible: add a toolchain + a `LANG_TOOLCHAIN` entry and it re-enters the queue.
+- **`priority.txt`.** A curated list of high-confidence lands attempted first, so
+  early ticks do real porting instead of grinding through predictable deferrals
+  (GUI/desktop/heavy apps still cost a tick — Sonnet judges those case by case).
+
+Set `CLAUDE_BUDGET_SECONDS` to change the per-project time budget (default 5400s).
 
 ## Status
 
