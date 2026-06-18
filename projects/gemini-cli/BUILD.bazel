@@ -1,0 +1,30 @@
+load("//harness:defs.bzl", "repo_build", "repo_smoke")
+
+# gemini-cli (rank_code_size 146): Google Gemini AI agent for the terminal.
+# TypeScript npm-workspaces monorepo: packages/cli (the binary), packages/core
+# (AI runtime), plus sdk, devtools, a2a-server, vscode-ide-companion.
+#
+# build: `npm ci` installs from the lockfile (including prepare lifecycle which
+#        pre-bundles assets); `node scripts/build.js` compiles all TypeScript
+#        workspaces — it explicitly builds core first (others depend on it), then
+#        the rest in parallel via npm-run-all.
+# smoke: Run the built CLI with --version and --help; both flags exit cleanly
+#        without requiring a Gemini API key or network access.
+#
+# NOTE: repo_test is DEFERRED. The test suite spans 400+ files in core and cli
+#       with vitest, including 120 committed snapshots (environment-sensitive),
+#       sandbox/docker integration tests (need docker), and React/Ink UI tests
+#       with TTY coupling. No clean offline subset without significant filtering.
+repo_build(
+    name = "gemini-cli",
+    repo = "https://github.com/google-gemini/gemini-cli",
+    commit = "d5e25b99291ca510fe357b29323d636c15b6cd49",
+    build = "npm ci && node scripts/build.js",
+    toolchain = "//toolchains:node_rootfs",
+)
+
+repo_smoke(
+    name = "gemini-cli",
+    built = ":gemini-cli",
+    toolchain = "//toolchains:node_rootfs",
+)
