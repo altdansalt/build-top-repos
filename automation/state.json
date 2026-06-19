@@ -451,6 +451,12 @@
     "status": "deferred",
     "ts": "2026-06-19T12:22:54.619237+00:00"
   },
+  "https://github.com/telegramdesktop/tdesktop": {
+    "log": "20260619-223001-https-github-com-telegramdesktop-tdesktop.log",
+    "reason": "tdesktop is a Qt5/Qt6 GUI desktop messaging application. Building it requires Qt5 or Qt6 dev headers (QtWidgets, QtNetwork, QtCore, QtGui) plus many additional libs (OpenSSL, FFmpeg, OpenAL, libxcb, libvpx, opus, lz4) \u2014 none present in c_rootfs. At runtime, QApplication unconditionally opens an X11/Wayland display connection before any argument processing, so even a --version early-exit is impossible in the headless container. There is no CLI or headless operation mode. This is the same deferral category as obs-studio and qbittorrent (both need a c_qt_rootfs toolchain with Qt6 + display libs baked in).",
+    "status": "deferred",
+    "ts": "2026-06-19T22:31:47.076706+00:00"
+  },
   "https://github.com/tinygrad/tinygrad": {
     "commit": "4a4b6956dfd233ab04817702ad7c156f0a229dc8",
     "log": "20260618-225001-https-github-com-tinygrad-tinygrad.log",
