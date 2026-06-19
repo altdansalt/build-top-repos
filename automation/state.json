@@ -159,6 +159,13 @@
     "status": "landed",
     "ts": "2026-06-19T06:34:10.141202+00:00"
   },
+  "https://github.com/microsoft/autogen": {
+    "commit": "027ecf0a379bcc1d09956d46d12d44a3ad9cee14",
+    "log": "20260619-110001-https-github-com-microsoft-autogen.log",
+    "project": "autogen",
+    "status": "landed",
+    "ts": "2026-06-19T11:11:32.101292+00:00"
+  },
   "https://github.com/microsoft/playwright-mcp": {
     "log": "pre-automation",
     "reason": "needs a browser toolchain (Chrome/chromium ~646M); deferred until we invest in a cached playwright_rootfs",

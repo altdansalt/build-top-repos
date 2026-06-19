@@ -1,0 +1,45 @@
+load("//harness:defs.bzl", "repo_build", "repo_smoke", "repo_test")
+
+# autogen (rank_code_size 314): Microsoft's agentic AI programming framework.
+#
+# The repo is a monorepo; Python packages live in python/packages/.  We install
+# autogen-core + autogen-agentchat from source (both use hatchling; transitive
+# deps — pydantic-core, protobuf, pillow — arrive as manylinux wheels).
+#
+# build: venv + pip install core packages + test infrastructure.
+# test:  autogen-core unit tests (runtime, agents, tools, serialization, …).
+#        Excludes test_code_executor.py (needs pandas) and
+#        test_model_context.py (needs live LLM API keys). Regressions excluded
+#        (needs asyncio_atexit).
+# smoke: import autogen_core + autogen_agentchat; verify version strings and
+#        basic API object construction (no LLM call).
+PY = "//toolchains:python_rootfs"
+
+repo_build(
+    name = "autogen",
+    repo = "https://github.com/microsoft/autogen",
+    commit = "027ecf0a379bcc1d09956d46d12d44a3ad9cee14",
+    build = "python3 -m venv .venv" +
+            " && .venv/bin/pip install python/packages/autogen-core python/packages/autogen-agentchat python/packages/autogen-test-utils" +
+            " && .venv/bin/pip install pytest pytest-asyncio opentelemetry-sdk pytest-mock email-validator",
+    toolchain = PY,
+)
+
+repo_test(
+    name = "autogen",
+    built = ":autogen",
+    test = ". .venv/bin/activate" +
+           " && cd python/packages/autogen-core" +
+           " && pytest tests" +
+           " --ignore=tests/test_code_executor.py" +
+           " --ignore=tests/test_model_context.py" +
+           " --ignore=tests/regressions" +
+           " -x -q",
+    toolchain = PY,
+)
+
+repo_smoke(
+    name = "autogen",
+    built = ":autogen",
+    toolchain = PY,
+)

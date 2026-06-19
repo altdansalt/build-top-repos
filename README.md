@@ -194,7 +194,7 @@ Set `CLAUDE_BUDGET_SECONDS` to change the per-project time budget (default 5400s
 
 ## Status
 
-**64 projects landed, 17 deferred** (see ledger). Six cached language toolchains:
+**65 projects landed, 17 deferred** (see ledger). Six cached language toolchains:
 `node` (24), `python`, `go` (1.26), `rust` (1.96 + clippy/rustfmt), `shell`
 (bats), `c` (autotools + g++-14 + cmake). `bazel test //projects/...` is the
 cross-project health check (build+test+smoke per project). Each landed project is
@@ -290,6 +290,7 @@ offline/core test subset over network/TTY/root-coupled tests.
 | 342 | pixijs | TS | — | — | — | ⏸️ deferred |
 | 322 | ecc | JS/npm | `npm install` | CI validators (agents/commands/rules/skills/hooks/catalog/registry; deferred: hooks+Python-invoking tests need python3) | `ecc --help` + `ecc catalog` | ✅⏸️ |
 | 315 | astro | TS/pnpm | pnpm@11.5.0 install + turbo build (`astro` + `@astrojs/*`; tsc + WASM compiler copy) | (deferred: integration tests need Playwright browser; e2e needs Firefox/Chrome) | `astro --version` + build a minimal static page (WASM compiler + Vite pipeline) | ✅⏸️ |
+| 314 | autogen | Python | venv + `pip install` (monorepo: autogen-core + autogen-agentchat from `python/packages/`) | `pytest` autogen-core unit suite (215; excl. code-executor/model-context/regressions) | `import autogen_core`/`autogen_agentchat` + version + basic API objects | ✅✅ |
 
 **playwright-mcp — deferred (needs a browser toolchain).** Spike confirmed
 `npm ci` + `npx playwright install --with-deps` work against our snapshot apt, but
