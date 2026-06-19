@@ -1,0 +1,29 @@
+load("//harness:defs.bzl", "repo_build", "repo_smoke")
+
+# mempalace (rank_code_size 407): Python AI memory system — CLI + MCP server
+# that mines project files / conversations into a searchable local vector store
+# (ChromaDB-backed).
+#
+# build: venv + pip install (pure-Python core; all wheels available for Linux
+#        x86_64 without compiler).
+# test:  DEFERRED — a subset of tests (test_closets, test_miner, test_searcher)
+#        use the seeded_collection fixture which calls chromadb.add() with text
+#        documents, triggering ChromaDB's default ONNX embedding model download
+#        (~79 MB from HuggingFace) at test time; no offline marker exists to
+#        exclude just those tests cleanly.
+# smoke: mempalace --version / --help; import check via Python.
+PY = "//toolchains:python_rootfs"
+
+repo_build(
+    name = "mempalace",
+    repo = "https://github.com/MemPalace/mempalace",
+    commit = "afa749c141e60cf9c797c602f0d667e722fa0a75",
+    build = "python3 -m venv .venv && .venv/bin/pip install .",
+    toolchain = PY,
+)
+
+repo_smoke(
+    name = "mempalace",
+    built = ":mempalace",
+    toolchain = PY,
+)
