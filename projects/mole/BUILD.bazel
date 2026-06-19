@@ -1,0 +1,34 @@
+load("//harness:defs.bzl", "repo_build", "repo_smoke", "repo_test")
+
+# mole (rank_code_size 506): Shell+Go Mac terminal tool — clean, uninstall,
+# analyze, optimize, and monitor.
+#
+# build: compile the two Go helper binaries (analyze-go, status-go).
+#        cmd/analyze is darwin-only; the !darwin stub exits 1 with a clear
+#        message on Linux. cmd/status is cross-platform (gopsutil).
+# test:  `go test ./...` — cmd/analyze tests carry //go:build darwin and are
+#        skipped on Linux; cmd/status and internal/units tests are portable.
+# smoke: run status-go --json (piped stdout triggers auto-JSON mode) and verify
+#        the output is valid JSON with the expected "cpu" field.
+GO = "//toolchains:go_rootfs"
+
+repo_build(
+    name = "mole",
+    repo = "https://github.com/tw93/Mole",
+    commit = "16cd7265e63ebf573cc66b467fa6732bb57d64ad",
+    build = "go build -o bin/analyze-go ./cmd/analyze && go build -o bin/status-go ./cmd/status",
+    toolchain = GO,
+)
+
+repo_test(
+    name = "mole",
+    built = ":mole",
+    test = "go test ./...",
+    toolchain = GO,
+)
+
+repo_smoke(
+    name = "mole",
+    built = ":mole",
+    toolchain = GO,
+)
