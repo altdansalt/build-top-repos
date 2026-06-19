@@ -1,0 +1,31 @@
+load("//harness:defs.bzl", "repo_build", "repo_smoke", "repo_test")
+
+# new-api (rank_code_size 442): Unified AI model hub — aggregates & distributes various
+# LLMs, converting between OpenAI/Claude/Gemini-compatible API formats.
+# Uses glebarez/sqlite (pure Go; no CGo) with embedded React frontends (web/default +
+# web/classic). We create placeholder dist/ directories so go:embed compiles.
+# --version and --help flags exit cleanly (declared in common/init.go via the flag pkg).
+# Test: safe offline subset (common, dto, pkg/billingexpr, setting) — controller/model
+# tests use in-process SQLite but the model package wires global DB state; deferred.
+GO = "//toolchains:go_rootfs"
+
+repo_build(
+    name = "new-api",
+    repo = "https://github.com/QuantumNous/new-api",
+    commit = "6ad5dbb641c40771b8ca4c2e75f8ee8f56d831c2",
+    build = "mkdir -p web/default/dist web/classic/dist && echo placeholder > web/default/dist/index.html && echo placeholder > web/classic/dist/index.html && go build -o new-api .",
+    toolchain = GO,
+)
+
+repo_test(
+    name = "new-api",
+    built = ":new-api",
+    test = "go test ./common/... ./dto/... ./pkg/billingexpr/... ./setting/config/... ./setting/model_setting/... ./setting/operation_setting/...",
+    toolchain = GO,
+)
+
+repo_smoke(
+    name = "new-api",
+    built = ":new-api",
+    toolchain = GO,
+)
