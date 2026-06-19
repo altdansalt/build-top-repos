@@ -194,7 +194,7 @@ Set `CLAUDE_BUDGET_SECONDS` to change the per-project time budget (default 5400s
 
 ## Status
 
-**75 projects landed, 22 deferred** (see ledger). Six cached language toolchains:
+**76 projects landed, 22 deferred** (see ledger). Six cached language toolchains:
 `node` (26), `python`, `go` (1.26), `rust` (1.96 + clippy/rustfmt), `shell`
 (bats), `c` (autotools + g++-14 + cmake). `bazel test //projects/...` is the
 cross-project health check (build+test+smoke per project). Each landed project is
@@ -306,6 +306,7 @@ offline/core test subset over network/TTY/root-coupled tests.
 | 220 | obs-studio | C | — | — | — | ⏸️ deferred |
 | 203 | codewhale | Rust | `apt pkg-config+libdbus-1-dev`; `cargo build --bin codewhale` (CLI only; avoids TUI's arboard/X11+starlark deps); bundle libdbus-1+deps .so into `.libs/` | (deferred: TUI integration tests drive a real PTY; parity tests for state/protocol/tools are offline but small) | `codewhale --version`/`--help` | ✅⏸️ |
 | 190 | ruview | Rust | `git submodule update --init` (rufield + ruview-swarm + worldgraph); `cargo build -p wifi-densepose-cli --no-default-features` (skips mat→ONNX/libtorch; pure-Rust dep chain) | `cargo test` core + calibration + signal `--no-default-features` (101+ tests) | `wifi-densepose --version`/`--help` | ✅✅ |
+| 179 | trilium | TS/pnpm | `pnpm@11.7.0 install --ignore-scripts`; `npm rebuild better-sqlite3` (runs prebuild-install/node-gyp in node_modules/ so the .node binary lands in the project tree, not pnpm store); sed-patch `apps/server/scripts/build.ts` to remove `buildFrontend()` (skips Vite/CKEditor5 client); `pnpm run --filter @triliumnext/server build` (esbuild → `dist/main.cjs`); `mkdir -p apps/server/dist/public` (server checks directory exists at startup) | (deferred: 258 vitest specs with `pool:forks maxWorkers:6`; risks 5-min Bazel timeout; offline suite itself is sound) | start `dist/main.cjs` → `/api/health-check` HTTP 200 (no auth, no client frontend needed) | ✅⏸️ |
 
 **playwright-mcp — deferred (needs a browser toolchain).** Spike confirmed
 `npm ci` + `npx playwright install --with-deps` work against our snapshot apt, but

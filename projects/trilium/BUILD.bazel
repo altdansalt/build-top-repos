@@ -1,0 +1,33 @@
+load("//harness:defs.bzl", "repo_build", "repo_smoke")
+
+# trilium (rank_code_size 179): Build your personal knowledge base with TriliumNext Notes.
+# TypeScript pnpm@11.7.0 monorepo (server/client/desktop/standalone — 2959 packages total).
+#
+# build: Full pnpm install with --ignore-scripts (skips Electron download and
+#        electron-rebuild postinstall); npm rebuild better-sqlite3 to run its
+#        prebuild-install/node-gyp script from node_modules/better-sqlite3/ so the
+#        compiled .node binary lands inside the project tree (pnpm rebuild writes to
+#        the pnpm store instead); sed-patch apps/server/scripts/build.ts to remove
+#        the buildFrontend() call (skips heavy Vite/CKEditor5 client build); then run
+#        the server build which esbuild-bundles all server TypeScript to dist/main.cjs
+#        and copies better-sqlite3 + assets.
+# test:  DEFERRED — 258 vitest spec files (server src/ + trilium-core packages);
+#        running them with pool:forks and maxWorkers:6 risks the 5-minute Bazel
+#        sh_test timeout; the offline suite itself is sound (in-memory SQLite,
+#        no network/TTY/service coupling).
+# smoke: Start dist/main.cjs on port 3000, wait for /api/health-check to return
+#        HTTP 200 ({"status":"ok"}), then kill. The health-check route has no auth
+#        and does not require the built client frontend.
+repo_build(
+    name = "trilium",
+    repo = "https://github.com/TriliumNext/Trilium",
+    commit = "cf3021a05897ce8d241ed0b0449cf9e7843d25c2",
+    build = "npm install -g pnpm@11.7.0 && pnpm install --frozen-lockfile --ignore-scripts && npm rebuild better-sqlite3 && sed -i \"s,build\\.buildFrontend();,,g\" apps/server/scripts/build.ts && pnpm run --filter @triliumnext/server build && mkdir -p apps/server/dist/public",
+    toolchain = "//toolchains:node_rootfs",
+)
+
+repo_smoke(
+    name = "trilium",
+    built = ":trilium",
+    toolchain = "//toolchains:node_rootfs",
+)
