@@ -1,0 +1,29 @@
+load("//harness:defs.bzl", "repo_build", "repo_smoke")
+
+# ruflo (rank_code_size 121): Enterprise AI agent orchestration meta-harness for
+# Claude Code. TypeScript pnpm monorepo (v3/@claude-flow/*). We build the CLI
+# package via targeted pnpm workspace builds: shared → swarm → cli-core → mcp →
+# memory → neural → cli.  The top-level bin/cli.js proxies to
+# v3/@claude-flow/cli/bin/cli.js, which has a fast --version path (no dist
+# needed) and loads dist/src/index.js for all other commands.
+#
+# build: install pnpm@8.15.0; pnpm install in v3/; build workspace packages in
+#        dependency order so local symlinks resolve correctly.
+# test:  deferred — root tests need agentdb/@ruvector/rvf-wasm (vector DB);
+#        v3 vitest suite is large and has optional-dep boundaries that are
+#        best handled after observing the offline-safe subset.
+# smoke: --version (fast path in bin/cli.js, no dist import) +
+#        --help (imports dist/src/index.js, exercises the compiled TypeScript).
+repo_build(
+    name = "ruflo",
+    repo = "https://github.com/ruvnet/ruflo",
+    commit = "9c28fe038cf49ac6db0bb4e04b6158076f03894d",
+    build = "npm install -g pnpm@8.15.0 && cd v3 && pnpm install && pnpm --filter '@claude-flow/shared' build && pnpm --filter '@claude-flow/swarm' build && pnpm --filter '@claude-flow/cli-core' build && pnpm --filter '@claude-flow/mcp' build && pnpm --filter '@claude-flow/memory' build && pnpm --filter '@claude-flow/neural' build && pnpm --filter '@claude-flow/cli' build",
+    toolchain = "//toolchains:node_rootfs",
+)
+
+repo_smoke(
+    name = "ruflo",
+    built = ":ruflo",
+    toolchain = "//toolchains:node_rootfs",
+)

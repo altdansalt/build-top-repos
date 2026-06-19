@@ -194,8 +194,8 @@ Set `CLAUDE_BUDGET_SECONDS` to change the per-project time budget (default 5400s
 
 ## Status
 
-**84 projects landed, 23 deferred** (see ledger). Six cached language toolchains:
-`node` (27), `python`, `go` (1.26), `rust` (1.96 + clippy/rustfmt), `shell`
+**85 projects landed, 23 deferred** (see ledger). Six cached language toolchains:
+`node` (28), `python`, `go` (1.26), `rust` (1.96 + clippy/rustfmt), `shell`
 (bats), `c` (autotools + g++-14 + cmake). `bazel test //projects/...` is the
 cross-project health check (build+test+smoke per project). Each landed project is
 a `repo_build` + `repo_test`/`repo_smoke` in `projects/<name>/BUILD.bazel`.
@@ -317,6 +317,7 @@ offline/core test subset over network/TTY/root-coupled tests.
 | 142 | llama-index | Python | venv + `pip install llama-index-core/` | (deferred: test suite tightly coupled to LLM API calls and model downloads; no clean offline subset) | import core; `Document` + `SentenceSplitter` (offline text-split) | ✅⏸️ |
 | 140 | bitcoin | C++ | apt libevent-dev+boost+python3; cmake (Release; g++-14; `-DENABLE_IPC=OFF`; no GUI/ZMQ/wallet); bundle libevent `.libs` | (deferred: functional tests need live node; unit suite >300 s) | `bitcoind --version` + `bitcoin-cli --version` | ✅⏸️ |
 | 123 | polars | Rust | `rm rust-toolchain.toml && cargo build -p polars-plan --bin dsl-schema --features dsl-schema` (stable 1.96; nightly pin in toolchain.toml skipped — polars runs on stable, nightly only enables SIMD) | (deferred: large workspace test suite; integration tests reference CSV files at relative paths; no clean offline subset) | `dsl-schema generate` → DSL plan JSON schema (contains `DslPlan` root type) | ✅⏸️ |
+| 121 | ruflo | TS/pnpm | pnpm@8.15.0 workspace install (v3/); targeted builds: `@claude-flow/shared` → `swarm` → `cli-core` → `mcp` → `memory` → `neural` → `cli` (tsc; 7 packages) | (deferred: root tests need agentdb/@ruvector/rvf-wasm; no clean offline subset in the v3 suite) | `claude-flow --version` (fast-path; no dist import) + `--help` (loads dist/src/index.js) | ✅⏸️ |
 
 **playwright-mcp — deferred (needs a browser toolchain).** Spike confirmed
 `npm ci` + `npx playwright install --with-deps` work against our snapshot apt, but
