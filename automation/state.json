@@ -72,6 +72,12 @@
     "status": "deferred",
     "ts": "2026-06-18T00:00:00+00:00"
   },
+  "https://github.com/code-yeongyu/oh-my-openagent": {
+    "log": "20260619-183001-https-github-com-code-yeongyu-oh-my-openagent.log",
+    "reason": "The project's entire build chain is Bun-native. CI pins Bun 1.3.12 via oven-sh/setup-bun@v2. All bundling uses Bun.build() (a Bun-specific API), deps are in bun.lock (not package-lock.json), and tests run via bun test. There is no Node.js-only build path. The published linux-x64 binary is a Bun-compiled executable distributed as a separate optional npm package; the source tree ships only an empty placeholder. Building from source requires a new bun_rootfs toolchain \u2014 a human decision, so deferred.",
+    "status": "deferred",
+    "ts": "2026-06-19T18:34:42.348144+00:00"
+  },
   "https://github.com/coder/code-server": {
     "log": "pre-automation",
     "reason": "vendors all of VS Code (multi-GB, long build); out of scope",
