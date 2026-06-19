@@ -1,0 +1,29 @@
+load("//harness:defs.bzl", "repo_build", "repo_smoke")
+
+# ultralytics (rank_code_size 440): Ultralytics YOLO — state-of-the-art object
+# detection and computer vision framework in Python.
+#
+# build: apt libgl1 (OpenCV runtime dep); CPU-only torch+torchvision from the
+#        PyTorch whl index; pip install ultralytics; bundle libGL/libGLdispatch
+#        .so files into .libs/ so the smoke container needs no apt-get update
+#        (which would exceed the 300s sh_test timeout).
+# test:  DEFERRED — all real tests download model weights (yolov8n.pt etc.)
+#        from the network and require a GPU for non-trivial inference; no
+#        offline subset exists.
+# smoke: LD_LIBRARY_PATH=.libs/ + yolo --version / yolo --help — exercises the
+#        CLI entry point and full import graph (torch, cv2, ultralytics).
+PY = "//toolchains:python_rootfs"
+
+repo_build(
+    name = "ultralytics",
+    repo = "https://github.com/ultralytics/ultralytics",
+    commit = "d03e470ad14a5505c66985e27eb9e752c877983c",
+    build = "DEBIAN_FRONTEND=noninteractive apt-get update -qq && apt-get install -y -qq libgl1 libglib2.0-0 && python3 -m venv .venv && .venv/bin/pip install --quiet torch torchvision --index-url https://download.pytorch.org/whl/cpu && .venv/bin/pip install --quiet ultralytics && mkdir -p .libs && for lib in libGL libGLX libGLdispatch libglib-2.0 libgthread-2.0 libgobject-2.0 libgmodule-2.0 libgio-2.0; do for f in /usr/lib/x86_64-linux-gnu/$${lib}*.so* /lib/x86_64-linux-gnu/$${lib}*.so*; do test -f \"$$f\" && cp -nL \"$$f\" .libs/ 2>/dev/null || true; done; done",
+    toolchain = PY,
+)
+
+repo_smoke(
+    name = "ultralytics",
+    built = ":ultralytics",
+    toolchain = PY,
+)
