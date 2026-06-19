@@ -211,6 +211,12 @@
     "status": "landed",
     "ts": "2026-06-19T01:07:06.943797+00:00"
   },
+  "https://github.com/pixijs/pixijs": {
+    "log": "20260619-093001-https-github-com-pixijs-pixijs.log",
+    "reason": "PixiJS is a browser WebGL/Canvas 2D rendering library with no CLI and no Node.js/headless mode. Its Jest test runner is @pixi/jest-electron, which boots a full Electron process to provide WebGL + Canvas 2D APIs \u2014 incompatible with node_rootfs. The built output targets browsers and fails immediately when imported in Node.js due to missing window/document/WebGLRenderingContext. There is no meaningful headless smoke: the library requires a live browser context for any operation beyond reading package.json metadata. Landing would require a playwright_rootfs or electron_rootfs toolchain baking Chromium alongside Node.js.",
+    "status": "deferred",
+    "ts": "2026-06-19T09:33:06.395301+00:00"
+  },
   "https://github.com/protocolbuffers/protobuf": {
     "log": "20260619-002001-https-github-com-protocolbuffers-protobuf.log",
     "reason": "could not land: claude rc=1, no changes",

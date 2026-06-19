@@ -194,7 +194,7 @@ Set `CLAUDE_BUDGET_SECONDS` to change the per-project time budget (default 5400s
 
 ## Status
 
-**62 projects landed, 16 deferred** (see ledger). Six cached language toolchains:
+**62 projects landed, 17 deferred** (see ledger). Six cached language toolchains:
 `node` (24), `python`, `go` (1.26), `rust` (1.96 + clippy/rustfmt), `shell`
 (bats), `c` (autotools + g++-14 + cmake). `bazel test //projects/...` is the
 cross-project health check (build+test+smoke per project). Each landed project is
@@ -287,6 +287,7 @@ offline/core test subset over network/TTY/root-coupled tests.
 | 563 | openscreen | TS | — | — | — | ⏸️ deferred |
 | 353 | qbittorrent | C++ | — | — | — | ⏸️ deferred |
 | 344 | zen-browser | JS | — | — | — | ⏸️ deferred |
+| 342 | pixijs | TS | — | — | — | ⏸️ deferred |
 
 **playwright-mcp — deferred (needs a browser toolchain).** Spike confirmed
 `npm ci` + `npx playwright install --with-deps` work against our snapshot apt, but
@@ -357,6 +358,8 @@ timeout (ICU data alone is ~36 MB to download). Ubuntu's Qt6 packages do not shi
 static libraries, so static linking without building Qt6 from source is not available.
 A dedicated `c_qt_rootfs` toolchain baking Qt6 + libtorrent-rasterbar is the right
 investment — deferred until that toolchain is built.
+
+**pixijs — deferred (browser WebGL graphics library; Electron test runner; no headless mode).** PixiJS is a 2D WebGL/Canvas rendering engine for browsers. Its test suite uses `@pixi/jest-electron` (a custom Jest runner that boots Electron to provide a real WebGL + Canvas 2D context) — incompatible with `node_rootfs`. The built output (`lib/index.js`, `dist/pixi.min.js`) targets browsers: importing it in plain Node.js immediately fails on missing `window`/`document`/`WebGLRenderingContext` APIs. There is no CLI entrypoint, no server-side/headless rendering mode, and no honest smoke possible without a browser context. Same category as playwright-mcp (browser toolchain required).
 
 **GUI / heavy-system-dep deferrals.** alacritty (OpenGL terminal), tabby
 (Electron), lossless-cut (Electron), pake (Tauri), and imhex (Dear ImGui hex
