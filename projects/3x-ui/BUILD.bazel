@@ -1,0 +1,30 @@
+load("//harness:defs.bzl", "repo_build", "repo_smoke", "repo_test")
+
+# 3x-ui (rank_code_size 398): Xray-based web panel for multi-protocol proxy management.
+# Go binary + embedded React frontend (internal/web/dist/ via go:embed).
+# CGO required for mattn/go-sqlite3; build installs gcc + libsqlite3-dev via apt.
+# dist/ is not pre-committed; CI stubs it with .gitkeep, so we do the same.
+# Tests use in-memory SQLite (t.TempDir()) and mocked HTTP — fully offline-capable.
+# Xray E2E test is skipped unless XRAY_E2E_BINARY env var is set (it isn't here).
+GO = "//toolchains:go_rootfs"
+
+repo_build(
+    name = "3x-ui",
+    repo = "https://github.com/MHSanaei/3x-ui",
+    commit = "4f99e48ab7a1147671e00dec56fe1e89653701a4",
+    build = "DEBIAN_FRONTEND=noninteractive apt-get update -qq && apt-get install -y -q gcc libsqlite3-dev && mkdir -p internal/web/dist && touch internal/web/dist/.gitkeep && CGO_ENABLED=1 go build -o 3x-ui .",
+    toolchain = GO,
+)
+
+repo_test(
+    name = "3x-ui",
+    built = ":3x-ui",
+    test = "DEBIAN_FRONTEND=noninteractive apt-get update -qq && apt-get install -y -q gcc libsqlite3-dev && CGO_ENABLED=1 go test -count=1 ./...",
+    toolchain = GO,
+)
+
+repo_smoke(
+    name = "3x-ui",
+    built = ":3x-ui",
+    toolchain = GO,
+)
