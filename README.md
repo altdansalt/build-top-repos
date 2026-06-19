@@ -194,7 +194,7 @@ Set `CLAUDE_BUDGET_SECONDS` to change the per-project time budget (default 5400s
 
 ## Status
 
-**49 projects landed, 8 deferred** (see ledger). Six cached language toolchains:
+**50 projects landed, 8 deferred** (see ledger). Six cached language toolchains:
 `node` (24), `python`, `go` (1.26), `rust` (1.96 + clippy/rustfmt), `shell`
 (bats), `c` (autotools + g++-14 + cmake). `bazel test //projects/...` is the
 cross-project health check (build+test+smoke per project). Each landed project is
@@ -244,6 +244,7 @@ offline/core test subset over network/TTY/root-coupled tests.
 | 489 | uptime-kuma | JS/npm | `npm ci && npm run build` (vite) | (deferred: test suite drives the live server via integration tests; no offline unit subset) | start Node.js server → HTTP response on port 3001 | ✅⏸️ |
 | 485 | rtk | Rust | `cargo build` | `cargo test` (2199) | `rtk --version`/`--help` | ✅✅ |
 | 479 | scrapy | Python | venv + `pip install` | (deferred: twisted/network suite) | `scrapy version` + `startproject` | ✅⏸️ |
+| 467 | dokku | Shell/Go | compile Go common plugin helpers (prop, common) | (deferred: all 108 bats + Go tests require a running Docker daemon) | `dokku version` via bash CLI with minimal env | ✅⏸️ |
 | 461 | Xray-core | Go | `go build` | (deferred: needs geoip/geosite data) | `xray version` | ✅⏸️ |
 | 435 | syncthing | Go | `go run build.go build` | `go test -short ./lib/...` (40 pkgs) | `syncthing --version` | ✅✅ |
 | 422 | sing-box | Go | `go build` | (deferred: netlink/real-TLS integ.) | `sing-box version`/`--help` | ✅⏸️ |

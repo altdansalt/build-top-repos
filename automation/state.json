@@ -30,6 +30,13 @@
     "status": "deferred",
     "ts": "2026-06-18T00:00:00+00:00"
   },
+  "https://github.com/dokku/dokku": {
+    "commit": "ef5f2f70866507d4f34953c6985d4fc1fe2b4cd2",
+    "log": "20260619-031001-https-github-com-dokku-dokku.log",
+    "project": "dokku",
+    "status": "landed",
+    "ts": "2026-06-19T03:26:29.984788+00:00"
+  },
   "https://github.com/duckdb/duckdb": {
     "commit": "2bfea2aa198bc1fcd4486707e7b8c1562aa6a67c",
     "log": "20260619-003001-https-github-com-duckdb-duckdb.log",

@@ -1,0 +1,28 @@
+load("//harness:defs.bzl", "repo_build", "repo_smoke")
+
+# dokku (rank_code_size 467): Shell + Go Docker-powered PaaS.
+#
+# build: compile the two Go helper binaries in plugins/common (prop: property
+#        manager; common: compose/docker helpers). The main `dokku` entrypoint
+#        is a committed bash script that needs no compilation.
+# test:  deferred — every test (108 bats files + Go unit tests) requires a
+#        live Docker daemon and a full system installation; no offline subset.
+# smoke: set up a minimal environment (VERSION file, plugin dirs, dokku user)
+#        and invoke `dokku version` through the main bash CLI.
+GO_TC = "//toolchains:go_rootfs"
+
+repo_build(
+    name = "dokku",
+    repo = "https://github.com/dokku/dokku",
+    commit = "ef5f2f70866507d4f34953c6985d4fc1fe2b4cd2",
+    build = "cd plugins/common && go build -o prop src/prop/prop.go && go build -o common src/common/common.go",
+    toolchain = GO_TC,
+)
+
+# No repo_test: full suite requires a running Docker daemon + system install.
+
+repo_smoke(
+    name = "dokku",
+    built = ":dokku",
+    toolchain = GO_TC,
+)
