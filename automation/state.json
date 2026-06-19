@@ -108,6 +108,12 @@
     "status": "deferred",
     "ts": "2026-06-18T22:04:16.582313+00:00"
   },
+  "https://github.com/protocolbuffers/protobuf": {
+    "log": "20260619-002001-https-github-com-protocolbuffers-protobuf.log",
+    "reason": "could not land: claude rc=1, no changes",
+    "status": "deferred",
+    "ts": "2026-06-19T00:20:48.102327+00:00"
+  },
   "https://github.com/qdrant/qdrant": {
     "commit": "44ad62f8cd69642be5afa6441612525e24a0d063",
     "log": "20260618-223001-https-github-com-qdrant-qdrant.log",
