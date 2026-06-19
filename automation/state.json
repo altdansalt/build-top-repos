@@ -18,6 +18,12 @@
     "status": "deferred",
     "ts": "2026-06-18T00:00:00+00:00"
   },
+  "https://github.com/aseprite/aseprite": {
+    "log": "20260619-115001-https-github-com-aseprite-aseprite.log",
+    "reason": "Aseprite is a GUI pixel art editor that cannot run without a display on Linux. The laf GUI framework (used by aseprite) unconditionally initialises X11 in main() before app_main() is called \u2014 XOpenDisplay(nullptr) returns NULL without $DISPLAY set, and XOpenIM(NULL,...) crashes immediately. This happens even in --batch mode. While the binary compiles with X11 dev headers, there is no headless runtime path and no honest smoke is possible. The default Skia rendering backend also requires prebuilt Skia binaries not available as Ubuntu packages. LAF_BACKEND=none avoids Skia but the X11 startup crash remains. Same category as alacritty, imhex, and tabby.",
+    "status": "deferred",
+    "ts": "2026-06-19T11:59:32.647328+00:00"
+  },
   "https://github.com/astral-sh/uv": {
     "commit": "3d7e2f945091edeea8edf6cea5c480b5aabe4720",
     "log": "20260618-193001-https-github-com-astral-sh-uv.log",

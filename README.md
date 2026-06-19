@@ -194,7 +194,7 @@ Set `CLAUDE_BUDGET_SECONDS` to change the per-project time budget (default 5400s
 
 ## Status
 
-**66 projects landed, 17 deferred** (see ledger). Six cached language toolchains:
+**66 projects landed, 18 deferred** (see ledger). Six cached language toolchains:
 `node` (24), `python`, `go` (1.26), `rust` (1.96 + clippy/rustfmt), `shell`
 (bats), `c` (autotools + g++-14 + cmake). `bazel test //projects/...` is the
 cross-project health check (build+test+smoke per project). Each landed project is
@@ -292,6 +292,7 @@ offline/core test subset over network/TTY/root-coupled tests.
 | 315 | astro | TS/pnpm | pnpm@11.5.0 install + turbo build (`astro` + `@astrojs/*`; tsc + WASM compiler copy) | (deferred: integration tests need Playwright browser; e2e needs Firefox/Chrome) | `astro --version` + build a minimal static page (WASM compiler + Vite pipeline) | ✅⏸️ |
 | 314 | autogen | Python | venv + `pip install` (monorepo: autogen-core + autogen-agentchat from `python/packages/`) | `pytest` autogen-core unit suite (215; excl. code-executor/model-context/regressions) | `import autogen_core`/`autogen_agentchat` + version + basic API objects | ✅✅ |
 | 303 | spacy | Python | apt python3-dev+g++; venv + `pip install` + explicit click (typer 0.12+ dropped click as hard dep; spaCy code imports it directly) | (deferred: test suite fixtures load NLP models; no clean offline subset) | `spacy info` + blank-model tokenization from /tmp | ✅⏸️ |
+| 300 | aseprite | C++ | — | — | — | ⏸️ deferred |
 
 **playwright-mcp — deferred (needs a browser toolchain).** Spike confirmed
 `npm ci` + `npx playwright install --with-deps` work against our snapshot apt, but
@@ -364,6 +365,8 @@ A dedicated `c_qt_rootfs` toolchain baking Qt6 + libtorrent-rasterbar is the rig
 investment — deferred until that toolchain is built.
 
 **pixijs — deferred (browser WebGL graphics library; Electron test runner; no headless mode).** PixiJS is a 2D WebGL/Canvas rendering engine for browsers. Its test suite uses `@pixi/jest-electron` (a custom Jest runner that boots Electron to provide a real WebGL + Canvas 2D context) — incompatible with `node_rootfs`. The built output (`lib/index.js`, `dist/pixi.min.js`) targets browsers: importing it in plain Node.js immediately fails on missing `window`/`document`/`WebGLRenderingContext` APIs. There is no CLI entrypoint, no server-side/headless rendering mode, and no honest smoke possible without a browser context. Same category as playwright-mcp (browser toolchain required).
+
+**aseprite — deferred (GUI pixel art editor; X11 display required even in batch mode).** Aseprite is an animated sprite editor whose GUI framework (laf) unconditionally opens an X11 display connection at program startup on Linux — before `main()` even calls `app_main()`. The laf `common/main.cpp` entry point runs `const os::X11 x11;` which calls `XOpenDisplay(nullptr)` regardless of whether `--batch` mode is requested. Without a `$DISPLAY` set, this crashes immediately, making even `aseprite --version` impossible in our headless container. While the binary compiles fine with X11 dev headers (libx11-dev + libxcursor-dev + libxi-dev + libxrandr-dev, all installable from the snapshot), there is no honest smoke without a virtual framebuffer (Xvfb). The default Skia rendering backend also requires prebuilt Skia binaries (~150 MB, not in any Ubuntu package); `LAF_BACKEND=none` avoids Skia but not the X11 runtime requirement. Same category as alacritty, imhex, and tabby.
 
 **GUI / heavy-system-dep deferrals.** alacritty (OpenGL terminal), tabby
 (Electron), lossless-cut (Electron), pake (Tauri), and imhex (Dear ImGui hex
