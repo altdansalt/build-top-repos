@@ -1,0 +1,24 @@
+load("//harness:defs.bzl", "repo_build", "repo_smoke")
+
+# llama.cpp (rank_code_size 104): LLM inference in C/C++.
+#
+# build: cmake (CPU-only; g++-14; no CUDA; no curl). Produces llama-cli and
+#        many other tools (llama-server, llama-bench, etc.).
+# test:  deferred — all test executables require a downloaded GGUF model file
+#        at runtime; no offline unit subset exists.
+# smoke: run llama-cli --help (works without a model file).
+C = "//toolchains:c_rootfs"
+
+repo_build(
+    name = "llama-cpp",
+    repo = "https://github.com/ggml-org/llama.cpp",
+    commit = "4b48a53b6cc60e051f35f2acbd06264a909bb255",
+    build = "cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=g++-14 -DGGML_CUDA=OFF -DLLAMA_CURL=OFF && cmake --build build -j8",
+    toolchain = C,
+)
+
+repo_smoke(
+    name = "llama-cpp",
+    built = ":llama-cpp",
+    toolchain = C,
+)

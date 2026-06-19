@@ -165,6 +165,13 @@
     "status": "deferred",
     "ts": "2026-06-18T19:01:34.314454+00:00"
   },
+  "https://github.com/ggml-org/llama.cpp": {
+    "commit": "4b48a53b6cc60e051f35f2acbd06264a909bb255",
+    "log": "20260619-224001-https-github-com-ggml-org-llama-cpp.log",
+    "project": "llama-cpp",
+    "status": "landed",
+    "ts": "2026-06-19T22:45:41.041224+00:00"
+  },
   "https://github.com/ggml-org/whisper.cpp": {
     "commit": "5ed76e9a079962f1c85cfce44edd325c27ef1f97",
     "log": "20260619-171001-https-github-com-ggml-org-whisper-cpp.log",
