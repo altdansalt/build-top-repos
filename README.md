@@ -194,7 +194,7 @@ Set `CLAUDE_BUDGET_SECONDS` to change the per-project time budget (default 5400s
 
 ## Status
 
-**58 projects landed, 14 deferred** (see ledger). Six cached language toolchains:
+**59 projects landed, 14 deferred** (see ledger). Six cached language toolchains:
 `node` (24), `python`, `go` (1.26), `rust` (1.96 + clippy/rustfmt), `shell`
 (bats), `c` (autotools + g++-14 + cmake). `bazel test //projects/...` is the
 cross-project health check (build+test+smoke per project). Each landed project is
@@ -260,6 +260,7 @@ offline/core test subset over network/TTY/root-coupled tests.
 | 391 | imhex | C++ | — | — | — | ⏸️ deferred |
 | 386 | v2ray-core | Go | `go build` | (deferred: needs geoip/geosite data) | `v2ray version`/`help` | ✅⏸️ |
 | 382 | xx-net | Python | venv + `pip install` (pyOpenSSL/babel/jinja2) | (deferred: all tests hit live proxy or external net; no offline subset) | version + noarch lib imports (utils/dnslib/xlog) | ✅⏸️ |
+| 366 | babel | TS/Yarn | yarn install + `set-module-type.js` + `gulp build-vendor` + `gulp build-no-bundle` (7.x pinned; Node 22.14.0 incompat with Babel 8) | (deferred: Jest + git-fetched test262/TS/Flow corpus; no offline subset) | `--version` + `@babel/core` `transformSync` | ✅⏸️ |
 | 357 | black | Python | venv + `pip install` | `pytest` (~465) | format `x=1` → `x = 1` via the CLI | ✅✅ |
 | 311 | cli/cli | Go | `go build` | (deferred: root-permission tests) | `gh --version`/`--help` | ✅⏸️ |
 | 249 | yt-dlp | Python | venv + `pip install` | `pytest -m "not download"` (~886) | `yt-dlp --version`/`--help` | ✅✅ |

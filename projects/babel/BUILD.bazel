@@ -1,0 +1,37 @@
+load("//harness:defs.bzl", "repo_build", "repo_smoke")
+
+# babel (rank_code_size 366): Babel is a JavaScript compiler. Babel 7.x (v7.29.7).
+#
+# NOTE: We pin the 7.x branch HEAD (v7.29.7) rather than main (v8.0.2) because
+# Babel 8 requires Node ^22.18.0 or >=24.11.0 while our node_rootfs is Node 22.14.0.
+# Babel 7.x has no Node version restriction (engines: "yarn >= 1.4.0").
+#
+# build: yarn 4.10.3 is bundled in .yarn/releases/. We invoke it directly with node,
+#        which reads .yarnrc.yml (yarnPath, nodeLinker: node-modules, enableScripts: false)
+#        and installs all workspace deps. The devDependencies include @babel/core@8.0.0-beta.3
+#        (the bootstrap compiler, from npm) which is used by the babel-worker to compile
+#        all TypeScript/JS source files (packages/*/src/) -> packages/*/lib/.
+#        gulp build-dev: build-vendor (vendor import-meta-resolve into babel-core/src/),
+#        build-no-bundle (compile all TS/JS to lib/), then generate runtime/type helpers
+#        and a final re-compile pass.
+#
+# test:  Deferred. The suite uses Jest + test262/TypeScript/Flow corpus clones
+#        fetched via git (network), and the CI matrix takes ~40 min per run.
+#        No clean offline/fast subset.
+#
+# smoke: Run the built CLI (packages/babel-cli/bin/babel.mjs, the ESM entry) to
+#        check --version, then pipe a simple arrow function through the transpiler
+#        without any presets (parse + regenerate) to exercise the compiler core.
+repo_build(
+    name = "babel",
+    repo = "https://github.com/babel/babel",
+    commit = "39f38e064a9f13c3de2b25185d2bab91652b3b86",
+    build = "node .yarn/releases/yarn-4.10.3.cjs install && node scripts/set-module-type.js && node .yarn/releases/yarn-4.10.3.cjs gulp build-vendor && node .yarn/releases/yarn-4.10.3.cjs gulp build-no-bundle",
+    toolchain = "//toolchains:node_rootfs",
+)
+
+repo_smoke(
+    name = "babel",
+    built = ":babel",
+    toolchain = "//toolchains:node_rootfs",
+)
