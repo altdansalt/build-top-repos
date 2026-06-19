@@ -31,6 +31,13 @@
     "status": "landed",
     "ts": "2026-06-18T19:38:20+00:00"
   },
+  "https://github.com/astrbotdevs/astrbot": {
+    "commit": "3760abb39b430307d76ca8b60d978362bedef606",
+    "log": "20260619-123001-https-github-com-astrbotdevs-astrbot.log",
+    "project": "astrbot",
+    "status": "landed",
+    "ts": "2026-06-19T12:36:26.685973+00:00"
+  },
   "https://github.com/babel/babel": {
     "commit": null,
     "log": "20260619-073001-https-github-com-babel-babel.log",

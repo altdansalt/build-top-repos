@@ -1,0 +1,29 @@
+load("//harness:defs.bzl", "repo_build", "repo_smoke", "repo_test")
+
+# astrbot (rank_code_size 278): AI Agent Assistant & development framework
+# integrating IM platforms (QQ, Telegram, WeChat, Feishu, DingTalk, Discord, Slack),
+# LLMs (OpenAI, Gemini, Claude, Dashscope, …), plugins, and AI features.
+#
+# build: venv + pip install (all deps have manylinux wheels; hatch build hook is
+#        gated behind ASTRBOT_BUILD_DASHBOARD=1, so no npm needed here).
+# test:  deferred — async test suite (pytest-asyncio) across 35+ unit test files
+#        covering the AI agent pipeline, IM adapters, and LLM providers; most mock
+#        extensively but the full suite needs careful asyncio-mode tuning and some
+#        tests exercise aiosqlite/faiss/apscheduler in ways that could be flaky
+#        headless.  The offline unit subset is worth revisiting.
+# smoke: astrbot --version (click version_option) + import the core pipeline.
+PY = "//toolchains:python_rootfs"
+
+repo_build(
+    name = "astrbot",
+    repo = "https://github.com/AstrBotDevs/AstrBot",
+    commit = "3760abb39b430307d76ca8b60d978362bedef606",
+    build = "python3 -m venv .venv && .venv/bin/pip install . pytest pytest-asyncio",
+    toolchain = PY,
+)
+
+repo_smoke(
+    name = "astrbot",
+    built = ":astrbot",
+    toolchain = PY,
+)
