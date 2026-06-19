@@ -264,6 +264,7 @@ offline/core test subset over network/TTY/root-coupled tests.
 | 75 | duckdb | C++ | `cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=g++-14 -DBUILD_UNITTESTS=OFF && cmake --build -j8` | (deferred: large C++ test suite) | `duckdb --version` + SQL queries | ✅⏸️ |
 | 19 | php-src | C | apt re2c; buildconf + configure (no libxml/sqlite3/dom; HEAD removed pre-gen lexers + bundled SQLite) + make | (deferred: ~15 000-test suite) | `sapi/cli/php --version` + eval PHP expressions | ✅⏸️ |
 | 244 | zellij | Rust | apt cmake+perl; `cargo build --no-default-features --features vendored_curl,web_server_capability` (pre-compiled WASM plugins embedded from assets) | (deferred: integration suite drives TUI sessions via fake PTY; no offline unit subset) | `zellij --version`/`--help` | ✅⏸️ |
+| 563 | openscreen | TS | — | — | — | ⏸️ deferred |
 
 **playwright-mcp — deferred (needs a browser toolchain).** Spike confirmed
 `npm ci` + `npx playwright install --with-deps` work against our snapshot apt, but
@@ -314,6 +315,8 @@ Additionally, the `llama/server` component is built separately via CMake before 
 link step. Neither `go_rootfs` (no C++ compiler or cmake) nor `c_rootfs` (no Go) covers
 the full build; a new combined `go_c_rootfs` toolchain holding Go + cmake + g++ would be
 required. That toolchain investment is a human decision — deferred.
+
+**openscreen — deferred (Electron screen-recording GUI app; native screen-capture modules).** openscreen is a screen-recording and demo-creation app (alternative to Screen Studio). Its repo contains `CMakeLists.txt` and `Package.swift` (native macOS screen-capture modules built around AVFoundation/ScreenCaptureKit) alongside a `package.json` Electron frontend — the classic Electron + native addon shape. The app opens a GUI window for recording and editing; there is no headless or CLI mode. Same category as lossless-cut, tabby, pake, and alacritty.
 
 **GUI / heavy-system-dep deferrals.** alacritty (OpenGL terminal), tabby
 (Electron), lossless-cut (Electron), and pake (Tauri) are GUI apps with no

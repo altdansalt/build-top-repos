@@ -135,6 +135,12 @@
     "status": "landed",
     "ts": "2026-06-18T22:47:04.670009+00:00"
   },
+  "https://github.com/siddharthvaddem/openscreen": {
+    "log": "20260619-013001-https-github-com-siddharthvaddem-openscreen.log",
+    "reason": "openscreen is a GUI desktop application for screen recording and demo creation, the TypeScript equivalent of Screen Studio. Its repo contains CMakeLists.txt (cross-platform native screen-capture code), Package.swift (macOS AVFoundation/ScreenCaptureKit Swift wrapper), and package.json (Electron frontend) \u2014 the standard shape of an Electron app with native addons. The application opens a graphical window for all normal operation; there is no CLI or headless mode. Same deferral category as lossless-cut, tabby, pake, and alacritty.",
+    "status": "deferred",
+    "ts": "2026-06-19T01:31:34.122555+00:00"
+  },
   "https://github.com/tinygrad/tinygrad": {
     "commit": "4a4b6956dfd233ab04817702ad7c156f0a229dc8",
     "log": "20260618-225001-https-github-com-tinygrad-tinygrad.log",
