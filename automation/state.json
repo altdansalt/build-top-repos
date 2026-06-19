@@ -30,6 +30,13 @@
     "status": "deferred",
     "ts": "2026-06-18T00:00:00+00:00"
   },
+  "https://github.com/duckdb/duckdb": {
+    "commit": "2bfea2aa198bc1fcd4486707e7b8c1562aa6a67c",
+    "log": "20260619-003001-https-github-com-duckdb-duckdb.log",
+    "project": "duckdb",
+    "status": "landed",
+    "ts": "2026-06-19T00:39:39.103851+00:00"
+  },
   "https://github.com/fish-shell/fish-shell": {
     "commit": "60ab561be1a2e67dcebbedca4845ada105fcd5c8",
     "log": "20260618-213001-https-github-com-fish-shell-fish-shell.log",

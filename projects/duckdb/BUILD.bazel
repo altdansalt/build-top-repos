@@ -1,0 +1,22 @@
+load("//harness:defs.bzl", "repo_build", "repo_smoke")
+
+# duckdb (rank_code_size 75): Analytical in-process SQL database (C++).
+#
+# build: cmake + g++-14; DuckDB bundles all C++ deps so no extra apt is needed.
+# test:  deferred — the C++ test suite is very large and time-consuming.
+# smoke: run the built duckdb binary against basic SQL queries.
+C = "//toolchains:c_rootfs"
+
+repo_build(
+    name = "duckdb",
+    repo = "https://github.com/duckdb/duckdb",
+    commit = "2bfea2aa198bc1fcd4486707e7b8c1562aa6a67c",
+    build = "cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=g++-14 -DBUILD_UNITTESTS=OFF && cmake --build build -j8",
+    toolchain = C,
+)
+
+repo_smoke(
+    name = "duckdb",
+    built = ":duckdb",
+    toolchain = C,
+)
