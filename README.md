@@ -194,7 +194,7 @@ Set `CLAUDE_BUDGET_SECONDS` to change the per-project time budget (default 5400s
 
 ## Status
 
-**73 projects landed, 22 deferred** (see ledger). Six cached language toolchains:
+**74 projects landed, 22 deferred** (see ledger). Six cached language toolchains:
 `node` (26), `python`, `go` (1.26), `rust` (1.96 + clippy/rustfmt), `shell`
 (bats), `c` (autotools + g++-14 + cmake). `bazel test //projects/...` is the
 cross-project health check (build+test+smoke per project). Each landed project is
@@ -304,6 +304,7 @@ offline/core test subset over network/TTY/root-coupled tests.
 | 239 | goose | Rust | apt pkg-config+libsqlite3-dev; `cargo build --bin goose --no-default-features --features portable-default` (skips local-inference/llama-cpp-2 + system-keyring/dbus; pure-Rust feature set) | (deferred: all tests require live LLM API keys; no offline subset) | `goose --version`/`--help` | ✅⏸️ |
 | 238 | podman | Go | `CGO_ENABLED=0 go build -tags remote,exclude_graphdriver_btrfs,containers_image_openpgp` (remote-client variant; vendored deps; pure-Go) | (deferred: suite requires running container daemon, root/deep userns, cgroups v2, and kernel services; no offline unit subset) | `podman --version`/`--help` | ✅⏸️ |
 | 220 | obs-studio | C | — | — | — | ⏸️ deferred |
+| 203 | codewhale | Rust | `apt pkg-config+libdbus-1-dev`; `cargo build --bin codewhale` (CLI only; avoids TUI's arboard/X11+starlark deps); bundle libdbus-1+deps .so into `.libs/` | (deferred: TUI integration tests drive a real PTY; parity tests for state/protocol/tools are offline but small) | `codewhale --version`/`--help` | ✅⏸️ |
 
 **playwright-mcp — deferred (needs a browser toolchain).** Spike confirmed
 `npm ci` + `npx playwright install --with-deps` work against our snapshot apt, but

@@ -1,0 +1,30 @@
+load("//harness:defs.bzl", "repo_build", "repo_smoke")
+
+# codewhale (rank_code_size 203): Open-source, community-driven Rust agent harness
+# with a CLI + TUI front-end.
+#
+# build: apt-install pkg-config + libdbus-1-dev (keyring crate's
+#        dbus-secret-service dep links system libdbus-1 on glibc Linux),
+#        then cargo build only the CLI binary — avoids codewhale-tui which
+#        pulls in arboard (X11), starlark, and portable-pty.
+# smoke: codewhale --version + --help.
+#
+# NOTE: cargo test DEFERRED. TUI integration tests drive the binary through a
+#       real PTY (qa_pty.rs / eval_harness.rs) and require the TUI binary which
+#       links X11/arboard. The parity tests in state/protocol/tools are offline
+#       but small; deferring the whole suite to keep the test container simple.
+RUST = "//toolchains:rust_rootfs"
+
+repo_build(
+    name = "codewhale",
+    repo = "https://github.com/Hmbown/CodeWhale",
+    commit = "d7c1a578c3cc14061f974b358997d89f2525bfc7",
+    build = "DEBIAN_FRONTEND=noninteractive apt-get update -qq && apt-get install -y -q pkg-config libdbus-1-dev && CARGO_HOME=/work/codewhale/.cargo cargo build --bin codewhale && mkdir -p .libs && for lib in libdbus-1 libsystemd libcap libgcrypt libgpg-error liblz4 liblzma libzstd; do for f in /usr/lib/x86_64-linux-gnu/$${lib}*.so* /lib/x86_64-linux-gnu/$${lib}*.so*; do test -f \"$$f\" && cp -nL \"$$f\" .libs/ 2>/dev/null || true; done; done",
+    toolchain = RUST,
+)
+
+repo_smoke(
+    name = "codewhale",
+    built = ":codewhale",
+    toolchain = RUST,
+)
