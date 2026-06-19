@@ -1,0 +1,27 @@
+load("//harness:defs.bzl", "repo_build", "repo_smoke")
+
+# manim (rank_code_size 464): Python framework for creating mathematical animations.
+#
+# build: apt libcairo2-dev/libpango1.0-dev/pkgconf/python3-dev for pycairo and
+#        manimpango C-extension compilation; venv + pip install; copy all runtime
+#        .so files needed by pycairo/manimpango into .libs/ so smoke does not
+#        need apt-get update (which would exceed the 300s sh_test timeout).
+# test:  DEFERRED — test suite renders animations and needs the same bundled libs
+#        plus is tightly coupled to snapshot comparisons.
+# smoke: set LD_LIBRARY_PATH to .libs/, manim --version + render a minimal scene
+#        to PNG via the Cairo renderer (headless, no display required).
+PY = "//toolchains:python_rootfs"
+
+repo_build(
+    name = "manim",
+    repo = "https://github.com/ManimCommunity/manim",
+    commit = "4c4622df54ecdbd3c2f7f6a1cc08accdbeb10821",
+    build = "apt-get update -qq && apt-get install -y -qq libcairo2-dev libpango1.0-dev pkgconf python3-dev && python3 -m venv .venv && .venv/bin/pip install --quiet . && mkdir -p .libs && for lib in libcairo libpng16 libfontconfig libfreetype libX11 libXext libXrender libxcb libxcb-render libxcb-shm libpixman-1 libexpat libbz2 libbrotlidec libbrotlicommon libXau libXdmcp libbsd libmd libpangocairo-1.0 libpango-1.0 libgobject-2.0 libglib-2.0 libpangoft2-1.0 libharfbuzz libgio-2.0 libfribidi libthai libffi libpcre2-8 libgraphite2 libgmodule-2.0 libmount libselinux libdatrie libblkid; do for f in /usr/lib/x86_64-linux-gnu/$${lib}*.so* /lib/x86_64-linux-gnu/$${lib}*.so*; do test -f \"$$f\" && cp -nL \"$$f\" .libs/ 2>/dev/null || true; done; done; test -f .venv/bin/manim",
+    toolchain = PY,
+)
+
+repo_smoke(
+    name = "manim",
+    built = ":manim",
+    toolchain = PY,
+)

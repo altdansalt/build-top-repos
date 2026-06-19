@@ -91,6 +91,13 @@
     "status": "landed",
     "ts": "2026-06-19T03:02:54.349592+00:00"
   },
+  "https://github.com/manimcommunity/manim": {
+    "commit": null,
+    "log": "20260619-033001-https-github-com-manimcommunity-manim.log",
+    "project": "manim",
+    "status": "landed",
+    "ts": "2026-06-19T04:51:18.562342+00:00"
+  },
   "https://github.com/microsoft/playwright-mcp": {
     "log": "pre-automation",
     "reason": "needs a browser toolchain (Chrome/chromium ~646M); deferred until we invest in a cached playwright_rootfs",
