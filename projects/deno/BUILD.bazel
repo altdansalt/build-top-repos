@@ -1,0 +1,31 @@
+load("//harness:defs.bzl", "repo_build", "repo_smoke")
+
+# deno (rank_code_size 99): A modern runtime for JavaScript and TypeScript.
+#
+# build: apt cmake (aws-lc-rs/BoringSSL uses cmake), protobuf-compiler (prost
+#        codegen), pkg-config (sys crate lookup), curl (v8 build.rs downloads
+#        prebuilt V8 static lib ~80 MB from GitHub), clang (bindgen needs
+#        libclang for libsqlite3-sys FFI generation).
+#        Remove rust-toolchain.toml so cargo uses the cached 1.96 stable
+#        toolchain. CARGO_HOME in-tree so it rides along in the artifact.
+#        Build the deno binary (statically links prebuilt V8 via the v8 crate).
+# smoke: deno --version + eval a trivial JS snippet.
+#
+# NOTE: cargo test DEFERRED. Deno's test suite requires the full Deno runtime
+#       already built, a network connection, and a display-capable environment
+#       for some tests; no clean offline/hermetic subset exists.
+RUST = "//toolchains:rust_rootfs"
+
+repo_build(
+    name = "deno",
+    repo = "https://github.com/denoland/deno",
+    commit = "818af9c90035acf436b28a49743bf339bb1bde18",
+    build = "DEBIAN_FRONTEND=noninteractive apt-get update -qq && apt-get install -y -q cmake protobuf-compiler pkg-config curl clang && rm -f rust-toolchain.toml && CARGO_HOME=/work/deno/.cargo cargo build --bin deno",
+    toolchain = RUST,
+)
+
+repo_smoke(
+    name = "deno",
+    built = ":deno",
+    toolchain = RUST,
+)
