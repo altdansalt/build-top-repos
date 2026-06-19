@@ -1,0 +1,41 @@
+load("//harness:defs.bzl", "repo_build", "repo_smoke", "repo_test")
+
+# ecc (rank_code_size 322): Agent harness configuration system (ecc-universal) for
+# AI coding assistants — Claude Code, Codex, OpenCode, Cursor. Packages skills,
+# rules, hooks, MCP conventions, and install tooling via npm.
+#
+# build: `npm install` resolves 3 runtime deps (ajv, @iarna/toml, sql.js) plus
+#        dev tooling (eslint, c8, markdownlint-cli). Source is pure JS — no
+#        compile step (ecc2/ Rust TUI is a separate component, not built here).
+# test:  CI validator subset: Unicode safety, agents/commands/rules/skills/hooks/
+#        install-manifest validators, catalog-count check, command-registry check.
+#        Deferred: tests/run-all.js includes hooks/*.test.js and
+#        scripts/instinct-cli-projects.test.js which invoke python3/instinct-cli.py
+#        — not available in node_rootfs.
+# smoke: invoke the ecc CLI (scripts/ecc.js) to show help and run catalog.
+repo_build(
+    name = "ecc",
+    repo = "https://github.com/affaan-m/ECC",
+    commit = "34faa39bd3cd496a0aece0245f2b7e38b7923abc",
+    build = "npm install",
+)
+
+repo_test(
+    name = "ecc",
+    built = ":ecc",
+    test = "node scripts/ci/check-unicode-safety.js" +
+           " && node scripts/ci/validate-agents.js" +
+           " && node scripts/ci/validate-commands.js" +
+           " && node scripts/ci/validate-rules.js" +
+           " && node scripts/ci/validate-skills.js" +
+           " && node scripts/ci/validate-hooks.js" +
+           " && node scripts/ci/validate-install-manifests.js" +
+           " && node scripts/ci/validate-no-personal-paths.js" +
+           " && npm run catalog:check" +
+           " && npm run command-registry:check",
+)
+
+repo_smoke(
+    name = "ecc",
+    built = ":ecc",
+)

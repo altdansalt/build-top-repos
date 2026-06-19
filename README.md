@@ -194,7 +194,7 @@ Set `CLAUDE_BUDGET_SECONDS` to change the per-project time budget (default 5400s
 
 ## Status
 
-**62 projects landed, 17 deferred** (see ledger). Six cached language toolchains:
+**63 projects landed, 17 deferred** (see ledger). Six cached language toolchains:
 `node` (24), `python`, `go` (1.26), `rust` (1.96 + clippy/rustfmt), `shell`
 (bats), `c` (autotools + g++-14 + cmake). `bazel test //projects/...` is the
 cross-project health check (build+test+smoke per project). Each landed project is
@@ -288,6 +288,7 @@ offline/core test subset over network/TTY/root-coupled tests.
 | 353 | qbittorrent | C++ | — | — | — | ⏸️ deferred |
 | 344 | zen-browser | JS | — | — | — | ⏸️ deferred |
 | 342 | pixijs | TS | — | — | — | ⏸️ deferred |
+| 322 | ecc | JS/npm | `npm install` | CI validators (agents/commands/rules/skills/hooks/catalog/registry; deferred: hooks+Python-invoking tests need python3) | `ecc --help` + `ecc catalog` | ✅⏸️ |
 
 **playwright-mcp — deferred (needs a browser toolchain).** Spike confirmed
 `npm ci` + `npx playwright install --with-deps` work against our snapshot apt, but
