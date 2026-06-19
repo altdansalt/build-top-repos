@@ -97,6 +97,12 @@
     "status": "landed",
     "ts": "2026-06-18T16:25:21.733397+00:00"
   },
+  "https://github.com/janhq/jan": {
+    "log": "20260619-070002-https-github-com-janhq-jan.log",
+    "reason": "could not land: verification failed {\"build\": true, \"smoke\": false, \"tests\": {}, \"smoke_target_exists\": true}",
+    "status": "deferred",
+    "ts": "2026-06-19T07:25:15.040388+00:00"
+  },
   "https://github.com/louislam/uptime-kuma": {
     "commit": "a2ac12fb65e64c1d8db89bd5e4ad5abbe311de86",
     "log": "20260619-025001-https-github-com-louislam-uptime-kuma.log",
