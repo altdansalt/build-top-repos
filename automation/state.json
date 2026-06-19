@@ -50,6 +50,13 @@
     "status": "deferred",
     "ts": "2026-06-19T06:14:08.311703+00:00"
   },
+  "https://github.com/dioxuslabs/dioxus": {
+    "commit": "b00ff7525901984f3a07fa5cfa175b537b64630b",
+    "log": "20260619-091001-https-github-com-dioxuslabs-dioxus.log",
+    "project": "dioxus",
+    "status": "landed",
+    "ts": "2026-06-19T09:21:40.492408+00:00"
+  },
   "https://github.com/dokku/dokku": {
     "commit": "ef5f2f70866507d4f34953c6985d4fc1fe2b4cd2",
     "log": "20260619-031001-https-github-com-dokku-dokku.log",

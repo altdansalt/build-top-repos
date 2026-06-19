@@ -1,0 +1,27 @@
+load("//harness:defs.bzl", "repo_build", "repo_smoke")
+
+# dioxus (rank_code_size 343): Fullstack app framework for web, desktop, and
+# mobile in Rust.
+#
+# build: apt-install libgit2-dev + pkg-config (git2 crate links system libgit2
+#        on glibc), then cargo build only the dx CLI — avoids dioxus-desktop
+#        which links webkit2gtk.
+# smoke: dx --version + dx --help.
+#
+# NOTE: cargo test DEFERRED. The suite spans wasm32 build targets, Playwright
+# browser integration tests, and tool downloads — no clean offline subset.
+RUST = "//toolchains:rust_rootfs"
+
+repo_build(
+    name = "dioxus",
+    repo = "https://github.com/DioxusLabs/dioxus",
+    commit = "b00ff7525901984f3a07fa5cfa175b537b64630b",
+    build = "DEBIAN_FRONTEND=noninteractive apt-get update -qq && apt-get install -y -q libgit2-dev pkg-config && CARGO_HOME=/work/dioxus/.cargo cargo build -p dioxus-cli",
+    toolchain = RUST,
+)
+
+repo_smoke(
+    name = "dioxus",
+    built = ":dioxus",
+    toolchain = RUST,
+)
