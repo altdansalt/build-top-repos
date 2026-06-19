@@ -1,0 +1,26 @@
+load("//harness:defs.bzl", "repo_build", "repo_smoke", "repo_test")
+
+# parcel (rank_code_size 361): zero-config web bundler (JS/TS/HTML).
+#
+# build: `yarn install --immutable` using the bundled Yarn 4.9.1 binary.
+#        The Rust native module (@parcel/rust) ships prebuilt platform packages
+#        as optional npm deps (@parcel/rust-linux-x64-gnu), so no Rust compiler
+#        is needed. The parcel CLI (src/bin.js) auto-loads @parcel/babel-register
+#        in dev mode and runs from source without a separate compile step.
+# test:  deferred — `test:unit` includes `cargo test` (needs Rust); the mocha
+#        portion alone is unclear without the compiled native module built from
+#        source. Running the full suite offline is not straightforward.
+# smoke: `parcel --version` + bundle a trivial Node.js project and run it.
+repo_build(
+    name = "parcel",
+    repo = "https://github.com/parcel-bundler/parcel",
+    commit = "59484858a1a0bcbb71f74088956bb437a2db6505",
+    build = "HUSKY=0 node .yarn/releases/yarn-4.9.1.cjs install --immutable && mkdir -p /tmp/rust-pkg && npm install --prefix /tmp/rust-pkg @parcel/rust-linux-x64-gnu@2.16.4 && rm node_modules/@parcel/rust-linux-x64-gnu && cp -r /tmp/rust-pkg/node_modules/@parcel/rust-linux-x64-gnu node_modules/@parcel/",
+    toolchain = "//toolchains:node_rootfs",
+)
+
+repo_smoke(
+    name = "parcel",
+    built = ":parcel",
+    toolchain = "//toolchains:node_rootfs",
+)
