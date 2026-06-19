@@ -194,7 +194,7 @@ Set `CLAUDE_BUDGET_SECONDS` to change the per-project time budget (default 5400s
 
 ## Status
 
-**73 projects landed, 21 deferred** (see ledger). Six cached language toolchains:
+**73 projects landed, 22 deferred** (see ledger). Six cached language toolchains:
 `node` (26), `python`, `go` (1.26), `rust` (1.96 + clippy/rustfmt), `shell`
 (bats), `c` (autotools + g++-14 + cmake). `bazel test //projects/...` is the
 cross-project health check (build+test+smoke per project). Each landed project is
@@ -303,6 +303,7 @@ offline/core test subset over network/TTY/root-coupled tests.
 | 240 | continue | TS/npm | packages/* `npm install + tsc` in dep order (config-types, llm-info, terminal-security, fetch, config-yaml, openai-adapters); core `npm install` (70 deps; esbuild inlines source); CLI `npm install + node build.mjs` (esbuild → 12.7 MB ESM bundle) | (deferred: vitest 16-file suite mocks API calls but TypeScript resolution across core's 70 transitive deps risks container failures; no clean offline subset) | `cn --version`/`--help` | ✅⏸️ |
 | 239 | goose | Rust | apt pkg-config+libsqlite3-dev; `cargo build --bin goose --no-default-features --features portable-default` (skips local-inference/llama-cpp-2 + system-keyring/dbus; pure-Rust feature set) | (deferred: all tests require live LLM API keys; no offline subset) | `goose --version`/`--help` | ✅⏸️ |
 | 238 | podman | Go | `CGO_ENABLED=0 go build -tags remote,exclude_graphdriver_btrfs,containers_image_openpgp` (remote-client variant; vendored deps; pure-Go) | (deferred: suite requires running container daemon, root/deep userns, cgroups v2, and kernel services; no offline unit subset) | `podman --version`/`--help` | ✅⏸️ |
+| 220 | obs-studio | C | — | — | — | ⏸️ deferred |
 
 **playwright-mcp — deferred (needs a browser toolchain).** Spike confirmed
 `npm ci` + `npx playwright install --with-deps` work against our snapshot apt, but
@@ -383,6 +384,8 @@ investment — deferred until that toolchain is built.
 **electron — deferred (Chromium+Node.js desktop runtime; depot_tools/gclient multi-GB build chain required).** electron/electron is the Electron framework itself — it merges Chromium and Node.js into a single distributable runtime. Building it from source requires Google's `depot_tools` (`gn` + `ninja`) and `gclient sync` to check out the full Chromium source tree (~20 GB of C++), then a multi-hour compilation step not covered by any cached toolchain (`c_rootfs` has autotools/cmake/g++ but not gn/ninja or the Chromium build infrastructure). Even if compiled, the resulting binary is a full browser runtime that opens a Chromium window for all meaningful operation — `electron --version` works but is not an honest smoke without the build first succeeding. Same build-chain category as zen-browser (Mozilla build system) and code-server (vendors all of VS Code).
 
 **spacedrive — deferred (Tauri desktop GUI file explorer; WebkitGTK + GTK3 required).** Spacedrive is a cross-platform file explorer built on Tauri v1, with a React/TypeScript frontend and a Rust virtual-distributed-filesystem backend (`sd-core`). On Linux, Tauri requires `libwebkit2gtk-4.0-dev` (or `libwebkit2gtk-4.1-dev`) and `libgtk-3-dev` for compilation — none are present in `rust_rootfs`. The application's primary interface is a graphical desktop window; there is no CLI or headless server mode that constitutes an honest smoke. The multi-stack build (Rust + pnpm/Node.js for the frontend, Tauri CLI) additionally requires a combined toolchain that neither `rust_rootfs` nor `node_rootfs` alone provides. Same category as pake (Tauri) and alacritty (OpenGL terminal).
+
+**obs-studio — deferred (GUI desktop studio; Qt6 + FFmpeg + X11/Wayland required).** OBS Studio is a screen-recording and live-streaming desktop application built around a Qt6 GUI. Its CMake build unconditionally requires Qt6 (`libqt6*-dev`), FFmpeg libraries (`libavcodec-dev`, `libavformat-dev`, `libavutil-dev`, `libswresample-dev`), X11 or Wayland display headers, and a large set of audio/video capture libs (PulseAudio, V4L2, libx264, etc.) — none of which are in `c_rootfs`. The application initializes a Qt `QApplication` before any argument processing, requiring a live display connection for even `obs --version`; there is no headless or CLI operation mode. Providing the required Qt6 + FFmpeg + display stack would require a dedicated `c_qt_rootfs` toolchain (similar to what qbittorrent needs). Same category as aseprite (X11 required at startup), imhex (OpenGL + display), and qbittorrent (Qt6 runtime dep).
 
 **GUI / heavy-system-dep deferrals.** alacritty (OpenGL terminal), tabby
 (Electron), lossless-cut (Electron), pake (Tauri), and imhex (Dear ImGui hex

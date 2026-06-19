@@ -266,6 +266,12 @@
     "status": "landed",
     "ts": "2026-06-19T00:10:07.341995+00:00"
   },
+  "https://github.com/obsproject/obs-studio": {
+    "log": "20260619-144001-https-github-com-obsproject-obs-studio.log",
+    "reason": "OBS Studio is a Qt6 GUI desktop application for live streaming and screen recording. Its CMake build requires Qt6 dev packages, FFmpeg/libav headers, X11 or Wayland display headers, and many audio/video capture libraries (PulseAudio, V4L2, libx264, etc.) \u2014 none present in c_rootfs. The application initializes Qt QApplication before any argument processing, requiring a live display connection even for --version; there is no headless or CLI operation mode. A dedicated toolchain baking Qt6 + FFmpeg + display stack would be needed \u2014 the same investment flagged for qbittorrent. Deferred.",
+    "status": "deferred",
+    "ts": "2026-06-19T14:42:15.300717+00:00"
+  },
   "https://github.com/ocrmypdf/OCRmyPDF": {
     "log": "pre-automation",
     "reason": "needs an OCR toolchain (tesseract/ghostscript/unpaper/qpdf) + large real-OCR suite",
