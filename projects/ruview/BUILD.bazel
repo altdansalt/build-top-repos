@@ -1,0 +1,38 @@
+load("//harness:defs.bzl", "repo_build", "repo_smoke", "repo_test")
+
+# ruview (rank_code_size 190): WiFi CSI-based spatial intelligence, vital sign
+# monitoring, and presence detection — Rust workspace (v2/).
+#
+# build: cd into v2/ workspace; build wifi-densepose-cli with
+#        --no-default-features to avoid the "mat" feature that pulls in
+#        wifi-densepose-mat -> wifi-densepose-nn -> ort (ONNX Runtime) and
+#        openssl-sys. The eigenvalue/BLAS path is also disabled (off by default
+#        on signal with no-default-features). Pure-Rust dep chain:
+#        core + signal (no eigenvalue) + calibration + clap + tokio + axum;
+#        reqwest in ruvector-core uses hyper-rustls (no OpenSSL).
+# smoke: wifi-densepose --version + --help.
+# test:  unit tests in wifi-densepose-core (39) + wifi-densepose-calibration
+#        (62) + wifi-densepose-signal (2 integration tests; CIR tests gated on
+#        feature "cir" are skipped when built without default features).
+RUST = "//toolchains:rust_rootfs"
+
+repo_build(
+    name = "ruview",
+    repo = "https://github.com/ruvnet/RuView",
+    commit = "4bf88e12830053173bee1769da7cafe82e1195da",
+    build = "git -C /work/ruview submodule update --init vendor/rufield v2/crates/ruview-swarm v2/crates/worldgraph && cd /work/ruview/v2 && CARGO_HOME=/work/ruview/.cargo cargo build -p wifi-densepose-cli --no-default-features",
+    toolchain = RUST,
+)
+
+repo_test(
+    name = "ruview",
+    built = ":ruview",
+    test = "cd /work/ruview/v2 && CARGO_HOME=/work/ruview/.cargo cargo test -p wifi-densepose-core -p wifi-densepose-calibration -p wifi-densepose-signal --no-default-features",
+    toolchain = RUST,
+)
+
+repo_smoke(
+    name = "ruview",
+    built = ":ruview",
+    toolchain = RUST,
+)
