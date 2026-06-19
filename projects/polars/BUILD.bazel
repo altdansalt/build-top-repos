@@ -1,0 +1,31 @@
+load("//harness:defs.bzl", "repo_build", "repo_smoke")
+
+# polars (rank_code_size 123): Extremely fast DataFrame query engine in Rust.
+#
+# build: delete rust-toolchain.toml (pins nightly-2026-04-01 for SIMD perf;
+#        polars explicitly supports stable — build scripts detect stable and skip
+#        nightly-only SIMD features). Build the dsl-schema developer tool from
+#        polars-plan with --features dsl-schema; pulls pure-Rust dep chain
+#        (no openssl / no cloud deps activated by this feature set).
+# smoke: dsl-schema generate writes the full DSL plan JSON schema; verify it
+#        contains the root DslPlan type.
+#
+# NOTE: cargo test DEFERRED — the workspace test suite is very large and the
+#       integration tests in crates/polars/tests/it/ reference CSV data files
+#       at relative paths (e.g. examples/datasets/foods1.csv); no clean offline
+#       subset identified.
+RUST = "//toolchains:rust_rootfs"
+
+repo_build(
+    name = "polars",
+    repo = "https://github.com/pola-rs/polars",
+    commit = "05b86b473368f0dc9c3d4516095387bffe7849af",
+    build = "rm -f rust-toolchain.toml && CARGO_HOME=/work/polars/.cargo cargo build -p polars-plan --bin dsl-schema --features dsl-schema",
+    toolchain = RUST,
+)
+
+repo_smoke(
+    name = "polars",
+    built = ":polars",
+    toolchain = RUST,
+)
