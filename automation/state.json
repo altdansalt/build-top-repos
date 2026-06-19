@@ -324,5 +324,11 @@
     "project": "zellij",
     "status": "landed",
     "ts": "2026-06-19T01:28:00.974055+00:00"
+  },
+  "https://github.com/zen-browser/desktop": {
+    "log": "20260619-090001-https-github-com-zen-browser-desktop.log",
+    "reason": "zen-browser is a full Firefox-fork desktop browser. Building it requires the Mozilla build system (mach), clang, Rust, Python, and many native C/C++ libraries not present in any cached toolchain \u2014 multi-GB download and multi-hour build. The packaged application opens a GUI window for all operation; there is no --version early exit or headless mode without a display server. No meaningful smoke is possible. Deferred as a browser-toolchain investment decision, same as playwright-mcp.",
+    "status": "deferred",
+    "ts": "2026-06-19T09:01:39.512573+00:00"
   }
 }
