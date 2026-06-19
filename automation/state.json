@@ -458,6 +458,12 @@
     "status": "landed",
     "ts": "2026-06-18T23:12:35.107042+00:00"
   },
+  "https://github.com/toeverything/affine": {
+    "log": "20260619-222001-https-github-com-toeverything-affine.log",
+    "reason": "AFFiNE requires both Node.js (Yarn 4 monorepo) and Rust (cargo for @affine/native napi-rs addon) in the same build container. node_rootfs has no cargo; rust_rootfs has no Node.js/Yarn. The application is an Electron desktop GUI with no headless CLI mode, and the server component needs external databases (PostgreSQL, Redis, Elasticsearch). No honest smoke is possible without a combined toolchain.",
+    "status": "deferred",
+    "ts": "2026-06-19T22:23:51.118494+00:00"
+  },
   "https://github.com/tooljet/tooljet": {
     "commit": "5f3cce5aedc7a6e04329ee97346ab46a4805b32b",
     "log": "20260619-191001-https-github-com-tooljet-tooljet.log",

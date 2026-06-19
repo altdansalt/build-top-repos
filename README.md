@@ -194,7 +194,7 @@ Set `CLAUDE_BUDGET_SECONDS` to change the per-project time budget (default 5400s
 
 ## Status
 
-**85 projects landed, 23 deferred** (see ledger). Six cached language toolchains:
+**85 projects landed, 24 deferred** (see ledger). Six cached language toolchains:
 `node` (28), `python`, `go` (1.26), `rust` (1.96 + clippy/rustfmt), `shell`
 (bats), `c` (autotools + g++-14 + cmake). `bazel test //projects/...` is the
 cross-project health check (build+test+smoke per project). Each landed project is
@@ -318,6 +318,7 @@ offline/core test subset over network/TTY/root-coupled tests.
 | 140 | bitcoin | C++ | apt libevent-dev+boost+python3; cmake (Release; g++-14; `-DENABLE_IPC=OFF`; no GUI/ZMQ/wallet); bundle libevent `.libs` | (deferred: functional tests need live node; unit suite >300 s) | `bitcoind --version` + `bitcoin-cli --version` | ✅⏸️ |
 | 123 | polars | Rust | `rm rust-toolchain.toml && cargo build -p polars-plan --bin dsl-schema --features dsl-schema` (stable 1.96; nightly pin in toolchain.toml skipped — polars runs on stable, nightly only enables SIMD) | (deferred: large workspace test suite; integration tests reference CSV files at relative paths; no clean offline subset) | `dsl-schema generate` → DSL plan JSON schema (contains `DslPlan` root type) | ✅⏸️ |
 | 121 | ruflo | TS/pnpm | pnpm@8.15.0 workspace install (v3/); targeted builds: `@claude-flow/shared` → `swarm` → `cli-core` → `mcp` → `memory` → `neural` → `cli` (tsc; 7 packages) | (deferred: root tests need agentdb/@ruvector/rvf-wasm; no clean offline subset in the v3 suite) | `claude-flow --version` (fast-path; no dist import) + `--help` (loads dist/src/index.js) | ✅⏸️ |
+| 109 | affine | TS | — | — | — | ⏸️ deferred |
 
 **playwright-mcp — deferred (needs a browser toolchain).** Spike confirmed
 `npm ci` + `npx playwright install --with-deps` work against our snapshot apt, but
@@ -404,6 +405,8 @@ investment — deferred until that toolchain is built.
 **oh-my-openagent — deferred (Bun runtime required; no Node.js build path).** oh-my-openagent (also `omo` / `lazycodex`) is a TypeScript coding-agent harness for Codex and OpenCode. Its entire build chain is Bun-native: CI pins Bun 1.3.12 (`oven-sh/setup-bun@v2`), dependencies are managed by `bun install --frozen-lockfile` (the lockfile is `bun.lock`, not `package-lock.json`), and all bundling steps invoke `Bun.build()` — a Bun-specific API unavailable in plain Node.js. The published platform binaries (`oh-my-opencode-linux-x64`) are Bun-compiled executables distributed separately on npm; the source tree ships only empty placeholder stubs. A `bun_rootfs` toolchain holding a pinned Bun static binary is the right investment — deferred until then.
 
 **react-native — deferred (mobile framework; requires Android SDK/NDK or Xcode; no standalone CLI).** React Native is a framework for building native iOS and Android applications using React and JavaScript. Its C++ core (JSI — JavaScript Interface, in `ReactCommon/`) compiles as a static library designed to be linked into mobile apps built by Gradle (Android SDK + NDK) or Xcode (iOS, macOS only) — neither toolchain is available in our cached set. The top-level `package.json` has no `bin` entry, confirming there is no standalone CLI. Even `cmake --build ReactCommon/jsi` would only produce a static archive (`.a`) with no `main()` to drive a smoke. No honest headless smoke is possible: the framework's entire purpose is producing apps that run on a device or simulator. Same toolchain category as scrcpy (Android SDK required).
+
+**affine — deferred (Yarn 4 + Rust native addon; no combined toolchain; Electron GUI app; server needs PostgreSQL/Redis).** AFFiNE is a TypeScript/Yarn 4 monorepo with a required Rust native addon (`affine_server_native`, compiled via napi-rs/napi-build during postinstall) that provides cryptography, media processing, and LLM bindings. Building this addon requires `cargo`, which is only available in `rust_rootfs` — not in `node_rootfs`. The primary user-facing interface is an Electron desktop application (GUI, no headless CLI), and the server component requires PostgreSQL, Redis, and Elasticsearch to run. A combined `node_rust_rootfs` toolchain holding both Yarn/Node.js and a Rust toolchain would be the right investment — deferred until then. Same multi-toolchain category as spacedrive (Tauri + pnpm/Node.js).
 
 **GUI / heavy-system-dep deferrals.** alacritty (OpenGL terminal), tabby
 (Electron), lossless-cut (Electron), pake (Tauri), and imhex (Dear ImGui hex
