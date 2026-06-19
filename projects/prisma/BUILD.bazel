@@ -1,0 +1,30 @@
+load("//harness:defs.bzl", "repo_build", "repo_smoke")
+
+# prisma (rank_code_size 321): Next-generation ORM for Node.js & TypeScript.
+# Monorepo of prisma CLI + @prisma/client + internals packages, using pnpm.
+#
+# build: install pnpm via npm, then `pnpm install` (uses pnpm-lock.yaml at pinned
+#        commit) fetches all workspace deps and downloads pre-built query engine
+#        binaries (debian-openssl-3.0.x) via the @prisma/engines postinstall hook.
+#        `pnpm build` runs tsc across all workspace packages (packages/cli,
+#        packages/client, packages/internals, etc.) -> packages/*/build/.
+#
+# test:  Deferred. The full suite requires live databases (PostgreSQL, MySQL,
+#        SQLite, MongoDB, SQL Server) plus Docker for service containers. No
+#        offline/unit-only subset is cleanly extractable.
+#
+# smoke: Run the built prisma CLI (packages/cli/build/index.js) via node to
+#        verify help text and version resolution — no database needed.
+repo_build(
+    name = "prisma",
+    repo = "https://github.com/prisma/prisma",
+    commit = "918cf5d72c1ba85ed0bb85c50c34d483b02a19e1",
+    build = "apt-get update -qq && apt-get install -y -qq python3 build-essential && npm install -g pnpm && pnpm install && pnpm build",
+    toolchain = "//toolchains:node_rootfs",
+)
+
+repo_smoke(
+    name = "prisma",
+    built = ":prisma",
+    toolchain = "//toolchains:node_rootfs",
+)
