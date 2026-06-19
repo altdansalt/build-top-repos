@@ -144,6 +144,12 @@
     "status": "deferred",
     "ts": "2026-06-19T07:25:15.040388+00:00"
   },
+  "https://github.com/kovidgoyal/kitty": {
+    "log": "20260619-120001-https-github-com-kovidgoyal-kitty.log",
+    "reason": "kitty is a GPU-accelerated terminal emulator whose C extension (fast_data_types.so) links against libGL.so, libX11.so, and associated X11 libs. kitty/main.py does top-level imports that load this extension before any argument parsing, so even kitty --version would fail at dynamic-linker startup in python_rootfs (libGL/libX11 absent). Building requires an extensive apt set (libgl-dev, libx11-dev, libxrandr-dev, libxi-dev, libfontconfig-dev, GLFW C sources). Bundling the full GL+X11+GLFW runtime stack (far more transitive libs than manim's Cairo bundle) would technically enable kitty --version but yields no meaningful headless smoke of a terminal emulator. Same category as alacritty (OpenGL terminal, already deferred).",
+    "status": "deferred",
+    "ts": "2026-06-19T12:05:00.536044+00:00"
+  },
   "https://github.com/louislam/uptime-kuma": {
     "commit": "a2ac12fb65e64c1d8db89bd5e4ad5abbe311de86",
     "log": "20260619-025001-https-github-com-louislam-uptime-kuma.log",
