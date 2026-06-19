@@ -397,6 +397,13 @@
     "status": "deferred",
     "ts": "2026-06-19T18:43:31.268015+00:00"
   },
+  "https://github.com/run-llama/llama_index": {
+    "commit": "9f66e8a649856524ef0ff081a23d58cd071b6ae4",
+    "log": "20260619-193001-https-github-com-run-llama-llama-index.log",
+    "project": "llama-index",
+    "status": "landed",
+    "ts": "2026-06-19T19:34:52.822368+00:00"
+  },
   "https://github.com/ruvnet/ruview": {
     "commit": "4bf88e12830053173bee1769da7cafe82e1195da",
     "log": "20260619-151001-https-github-com-ruvnet-ruview.log",

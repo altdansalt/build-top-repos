@@ -1,0 +1,30 @@
+load("//harness:defs.bzl", "repo_build", "repo_smoke")
+
+# llama-index (rank_code_size 142): LlamaIndex — leading document-agent and
+# RAG framework for building LLM-powered applications over private data.
+#
+# Monorepo layout: llama-index-core/ holds the core package (llama_index.core);
+# the root pyproject.toml installs the metapackage pulling in all integrations.
+# We install just the core to keep the artifact lean; most integration tests
+# need live LLM API keys (OpenAI, Anthropic, etc.) anyway.
+#
+# build: venv + pip install llama-index-core from source.
+# test:  DEFERRED — the test suite is tightly coupled to LLM API calls and
+#        embedding-model downloads (tiktoken vocab files, sentence-transformers
+#        weights); no clean offline subset exists without heavy mocking.
+# smoke: import core package + version; create a Document and verify basic ops.
+PY = "//toolchains:python_rootfs"
+
+repo_build(
+    name = "llama-index",
+    repo = "https://github.com/run-llama/llama_index",
+    commit = "9f66e8a649856524ef0ff081a23d58cd071b6ae4",
+    build = "python3 -m venv .venv && .venv/bin/pip install llama-index-core/",
+    toolchain = PY,
+)
+
+repo_smoke(
+    name = "llama-index",
+    built = ":llama-index",
+    toolchain = PY,
+)
