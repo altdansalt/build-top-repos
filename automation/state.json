@@ -71,6 +71,13 @@
     "status": "landed",
     "ts": "2026-06-18T21:33:17.045540+00:00"
   },
+  "https://github.com/freqtrade/freqtrade": {
+    "commit": "a29762684b84d100d92bf59c05c6272b439fd5a0",
+    "log": "20260619-081001-https-github-com-freqtrade-freqtrade.log",
+    "project": "freqtrade",
+    "status": "landed",
+    "ts": "2026-06-19T08:29:03.156961+00:00"
+  },
   "https://github.com/genymobile/scrcpy": {
     "log": "20260618-190001-https-github-com-genymobile-scrcpy.log",
     "reason": "scrcpy is split into a Java server APK (built with Gradle + Android SDK, deployed via adb) and a C client (meson + SDL2 + FFmpeg). The Android SDK is not in any cached toolchain, and the client requires SDL2 (display) and FFmpeg/libav dev packages not in c_rootfs. At runtime the app opens a GUI window showing the device screen \u2014 there is no headless or CLI mode and no meaningful smoke test without a connected Android device.",
