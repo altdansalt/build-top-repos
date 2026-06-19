@@ -18,6 +18,13 @@
     "status": "landed",
     "ts": "2026-06-18T19:38:20+00:00"
   },
+  "https://github.com/browser-use/browser-use": {
+    "commit": "da3d6a3e81c751b5970a5e40a4210072fef98ae5",
+    "log": "20260619-055001-https-github-com-browser-use-browser-use.log",
+    "project": "browser-use",
+    "status": "landed",
+    "ts": "2026-06-19T05:55:48.244836+00:00"
+  },
   "https://github.com/chubin/cheat.sh": {
     "log": "pre-automation",
     "reason": "server + data-fetch heavy; only one trivial offline unit test, no honest offline smoke",

@@ -194,7 +194,7 @@ Set `CLAUDE_BUDGET_SECONDS` to change the per-project time budget (default 5400s
 
 ## Status
 
-**54 projects landed, 8 deferred** (see ledger). Six cached language toolchains:
+**55 projects landed, 8 deferred** (see ledger). Six cached language toolchains:
 `node` (24), `python`, `go` (1.26), `rust` (1.96 + clippy/rustfmt), `shell`
 (bats), `c` (autotools + g++-14 + cmake). `bazel test //projects/...` is the
 cross-project health check (build+test+smoke per project). Each landed project is
@@ -252,6 +252,7 @@ offline/core test subset over network/TTY/root-coupled tests.
 | 440 | ultralytics | Python | apt libgl1+libglib2.0-0; CPU-only torch+torchvision from whl index; venv + pip install; bundle libGL/glib .so into .libs/ | (deferred: all tests download model weights; no offline subset) | `yolo --version`/`--help` | ✅⏸️ |
 | 435 | syncthing | Go | `go run build.go build` | `go test -short ./lib/...` (40 pkgs) | `syncthing --version` | ✅✅ |
 | 422 | sing-box | Go | `go build` | (deferred: netlink/real-TLS integ.) | `sing-box version`/`--help` | ✅⏸️ |
+| 419 | browser-use | Python | venv + `pip install` | (deferred: needs Playwright browser + LLM API keys) | `import browser_use` + version | ✅⏸️ |
 | 404 | textual | Python | venv + `pip install` | `pytest` (~3005; excl. snapshot/optional) | run a headless Textual app via pilot | ✅✅ |
 | 386 | v2ray-core | Go | `go build` | (deferred: needs geoip/geosite data) | `v2ray version`/`help` | ✅⏸️ |
 | 357 | black | Python | venv + `pip install` | `pytest` (~465) | format `x=1` → `x = 1` via the CLI | ✅✅ |

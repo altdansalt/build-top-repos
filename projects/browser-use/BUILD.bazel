@@ -1,0 +1,26 @@
+load("//harness:defs.bzl", "repo_build", "repo_smoke")
+
+# browser-use (rank_code_size 419): Python library for AI-driven browser
+# automation. Wraps Playwright so LLM agents can control a browser to
+# complete web tasks.
+#
+# build: venv + pip install (pure-Python core; playwright wheels ship for
+#        Linux x86_64 without needing browser binaries at install time).
+# test:  DEFERRED — the test suite requires running Playwright browsers
+#        (Chromium) and live LLM API keys; no offline unit subset exists.
+# smoke: verify the library imports and its version is readable.
+PY = "//toolchains:python_rootfs"
+
+repo_build(
+    name = "browser-use",
+    repo = "https://github.com/browser-use/browser-use",
+    commit = "da3d6a3e81c751b5970a5e40a4210072fef98ae5",
+    build = "python3 -m venv .venv && .venv/bin/pip install .",
+    toolchain = PY,
+)
+
+repo_smoke(
+    name = "browser-use",
+    built = ":browser-use",
+    toolchain = PY,
+)
