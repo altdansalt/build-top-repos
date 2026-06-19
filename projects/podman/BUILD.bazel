@@ -1,0 +1,30 @@
+load("//harness:defs.bzl", "repo_build", "repo_smoke")
+
+# podman (rank_code_size 238): Podman — OCI container and pod management tool.
+#
+# build: CGO_ENABLED=0 remote-client build with pure-Go tags
+#   - "remote" tag: builds the podman-remote (client-only) variant
+#   - "exclude_graphdriver_btrfs containers_image_openpgp": drop CGo-coupled
+#     graphdriver backends and replace GPG with pure-Go OpenPGP
+#   - GOTOOLCHAIN=local: suppress any toolchain-download probe (go.mod 1.25.7,
+#     toolchain is 1.26)
+#   - vendor/ is committed; go build auto-selects -mod=vendor (go directive>=1.14)
+# test:  DEFERRED — suite requires a running podman/container daemon, root or
+#        deeply nested user namespaces, cgroups v2, and multiple system services;
+#        no offline unit subset.
+# smoke: --version and --help (both exit before contacting any daemon).
+GO = "//toolchains:go_rootfs"
+
+repo_build(
+    name = "podman",
+    repo = "https://github.com/podman-container-tools/podman",
+    commit = "835c8f2d1def7d20481220dc951eafe4c798a5bd",
+    build = "CGO_ENABLED=0 GOTOOLCHAIN=local go build -tags remote,exclude_graphdriver_btrfs,containers_image_openpgp -o podman ./cmd/podman/",
+    toolchain = GO,
+)
+
+repo_smoke(
+    name = "podman",
+    built = ":podman",
+    toolchain = GO,
+)
