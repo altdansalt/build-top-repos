@@ -145,6 +145,13 @@
     "status": "deferred",
     "ts": "2026-06-18T19:01:34.314454+00:00"
   },
+  "https://github.com/ggml-org/whisper.cpp": {
+    "commit": "5ed76e9a079962f1c85cfce44edd325c27ef1f97",
+    "log": "20260619-171001-https-github-com-ggml-org-whisper-cpp.log",
+    "project": "whisper-cpp",
+    "status": "landed",
+    "ts": "2026-06-19T18:16:55.912528+00:00"
+  },
   "https://github.com/google-gemini/gemini-cli": {
     "commit": "d5e25b99291ca510fe357b29323d636c15b6cd49",
     "log": "20260618-214001-https-github-com-google-gemini-gemini-cli.log",

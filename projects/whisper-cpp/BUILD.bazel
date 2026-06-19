@@ -1,0 +1,22 @@
+load("//harness:defs.bzl", "repo_build", "repo_smoke")
+
+# whisper.cpp (rank_code_size 170): C/C++ port of OpenAI's Whisper ASR model.
+#
+# build: cmake (CPU-only; g++-14). Produces whisper-cli + libwhisper.
+# test:  deferred — all tests require a downloaded .gguf model file.
+# smoke: run whisper-cli --help (works without a model file).
+C = "//toolchains:c_rootfs"
+
+repo_build(
+    name = "whisper-cpp",
+    repo = "https://github.com/ggml-org/whisper.cpp",
+    commit = "5ed76e9a079962f1c85cfce44edd325c27ef1f97",
+    build = "cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=g++-14 -DGGML_CUDA=OFF && cmake --build build -j8",
+    toolchain = C,
+)
+
+repo_smoke(
+    name = "whisper-cpp",
+    built = ":whisper-cpp",
+    toolchain = C,
+)
