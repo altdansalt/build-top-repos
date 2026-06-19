@@ -1,0 +1,25 @@
+load("//harness:defs.bzl", "repo_build", "repo_smoke")
+
+# gpt4free (rank_code_size 504): Python library providing unofficial free access
+# to various LLMs (GPT, Gemini, Llama, DeepSeek, Kimi, etc.) via provider APIs.
+#
+# build: venv + pip install (pure-Python package; native extensions like
+#        curl_cffi ship pre-built wheels for Linux x86_64).
+# test:  DEFERRED — the test suite requires live network calls to external AI
+#        provider endpoints; there is no offline unit subset.
+# smoke: import g4f + verify the Client/Provider API surface (offline).
+PY = "//toolchains:python_rootfs"
+
+repo_build(
+    name = "gpt4free",
+    repo = "https://github.com/xtekky/gpt4free",
+    commit = "bb8019db08a357de126d7d618b3074ffc1b36955",
+    build = "python3 -m venv .venv && .venv/bin/pip install .",
+    toolchain = PY,
+)
+
+repo_smoke(
+    name = "gpt4free",
+    built = ":gpt4free",
+    toolchain = PY,
+)

@@ -194,7 +194,7 @@ Set `CLAUDE_BUDGET_SECONDS` to change the per-project time budget (default 5400s
 
 ## Status
 
-**46 projects landed, 8 deferred** (see ledger). Six cached language toolchains:
+**47 projects landed, 8 deferred** (see ledger). Six cached language toolchains:
 `node` (24), `python`, `go` (1.26), `rust` (1.96 + clippy/rustfmt), `shell`
 (bats), `c` (autotools + g++-14 + cmake). `bazel test //projects/...` is the
 cross-project health check (build+test+smoke per project). Each landed project is
@@ -238,6 +238,7 @@ offline/core test subset over network/TTY/root-coupled tests.
 | 556 | one-api | Go | apt gcc+sqlite3-dev; placeholder `web/build`; CGO `go build` | (deferred: integration suite needs live DB + Redis) | `one-api --version`/`--help` | ✅⏸️ |
 | 551 | glances | Python | venv + `pip install` | `pytest tests/test_core.py` (52) | `--version` + one-shot CPU reading | ✅✅ |
 | 506 | mole | Shell/Go | `go build` (analyze-go + status-go) | `go test ./...` (status pkg + internal; darwin tests auto-skipped) | `status-go --json` → JSON with cpu+memory fields | ✅✅ |
+| 504 | gpt4free | Python | venv + `pip install` | (deferred: all tests require live AI provider endpoints) | `import g4f` + Client + Provider | ✅⏸️ |
 | 492 | hexo | TS/npm | `npm ci && tsc -b` | `npm test` (1274; FORCE_COLOR for ANSI assertions) | `hexo version` + `hexo help` | ✅✅ |
 | 485 | rtk | Rust | `cargo build` | `cargo test` (2199) | `rtk --version`/`--help` | ✅✅ |
 | 479 | scrapy | Python | venv + `pip install` | (deferred: twisted/network suite) | `scrapy version` + `startproject` | ✅⏸️ |
