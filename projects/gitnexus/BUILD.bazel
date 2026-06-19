@@ -1,0 +1,30 @@
+load("//harness:defs.bzl", "repo_build", "repo_smoke")
+
+# gitnexus (rank_code_size 172): Graph-powered code intelligence CLI and MCP server.
+# TypeScript npm monorepo with a CLI package (gitnexus/) and a browser frontend
+# (gitnexus-web/). We build only the CLI: gitnexus-shared (tsc) + gitnexus (tsc).
+#
+# build: apt install build-essential python3-dev as a native-addon safety net;
+#        npm ci in gitnexus-shared (TypeScript 6.0.3 for that package);
+#        npm ci in gitnexus/ (runs postinstall -> build-tree-sitter-grammars.cjs
+#        which loads vendored prebuilt .node binaries from vendor/);
+#        remove gitnexus-web to suppress the Vite/React web-UI build step;
+#        node scripts/build.js compiles both packages and links shared into
+#        dist/_shared -> dist/cli/index.js is the CLI entry point.
+# test:  DEFERRED — integration suite uses @ladybugdb/core (native graph DB),
+#        LLM-coupled analyze commands, and a deep vitest multi-project config;
+#        no clean offline unit subset.
+# smoke: node dist/cli/index.js --version + --help.
+repo_build(
+    name = "gitnexus",
+    repo = "https://github.com/abhigyanpatwari/GitNexus",
+    commit = "920958e4e336376bc173882d2812ee3c536e2282",
+    build = "cd gitnexus-shared && npm ci && cd ../gitnexus && npm ci --ignore-scripts && rm -rf ../gitnexus-web && node scripts/build.js",
+    toolchain = "//toolchains:node_rootfs",
+)
+
+repo_smoke(
+    name = "gitnexus",
+    built = ":gitnexus",
+    toolchain = "//toolchains:node_rootfs",
+)
