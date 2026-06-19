@@ -141,6 +141,13 @@
     "status": "deferred",
     "ts": "2026-06-19T01:31:34.122555+00:00"
   },
+  "https://github.com/songquanpeng/one-api": {
+    "commit": "8df4a2670b98266bd287c698243fff327d9748cf",
+    "log": "20260619-014001-https-github-com-songquanpeng-one-api.log",
+    "project": "one-api",
+    "status": "landed",
+    "ts": "2026-06-19T02:08:29.591391+00:00"
+  },
   "https://github.com/tinygrad/tinygrad": {
     "commit": "4a4b6956dfd233ab04817702ad7c156f0a229dc8",
     "log": "20260618-225001-https-github-com-tinygrad-tinygrad.log",

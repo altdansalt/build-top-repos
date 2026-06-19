@@ -1,0 +1,27 @@
+load("//harness:defs.bzl", "repo_build", "repo_smoke")
+
+# one-api (rank_code_size 556): LLM API management & key redistribution system.
+# Go binary that embeds a React frontend (web/build/*) via go:embed and uses
+# mattn/go-sqlite3 via CGO. The canonical multi-stage build needs Node (for the
+# 3 React themes) + Go + CGO. We have no combined toolchain, so we:
+#   1. Use go_rootfs (Go 1.26) + apt-install gcc + libsqlite3-dev for CGO.
+#   2. Create a minimal placeholder in web/build/default/ so go:embed compiles.
+#   3. Build the binary: CGO_ENABLED=1 go build -o one-api .
+# The smoke test only calls --version / --help which don't serve web content,
+# so the placeholder frontend is sufficient.
+# No offline test suite: integration tests require live DB + Redis; deferred.
+GO = "//toolchains:go_rootfs"
+
+repo_build(
+    name = "one-api",
+    repo = "https://github.com/songquanpeng/one-api",
+    commit = "8df4a2670b98266bd287c698243fff327d9748cf",
+    build = "DEBIAN_FRONTEND=noninteractive apt-get update -qq && apt-get install -y -q gcc libsqlite3-dev && mkdir -p web/build/default && echo placeholder > web/build/default/index.html && CGO_ENABLED=1 go build -o one-api .",
+    toolchain = GO,
+)
+
+repo_smoke(
+    name = "one-api",
+    built = ":one-api",
+    toolchain = GO,
+)
