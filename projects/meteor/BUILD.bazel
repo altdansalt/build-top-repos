@@ -1,0 +1,33 @@
+load("//harness:defs.bzl", "repo_build", "repo_smoke", "repo_test")
+
+# meteor (rank_code_size 253): Meteor, the JavaScript App Platform.
+#
+# build: apt curl (needed by the meteor launcher to fetch the dev bundle);
+#        install unit-test deps (Jest + SWC transformer, isolated in
+#        tools/unit-tests/); run `./meteor --arch` which downloads the
+#        pre-built dev bundle (~160 MB — Linux/x86_64 Node 22 + Meteor
+#        tool npm packages) from d3sqy0vbqsdhku.cloudfront.net and verifies
+#        the CLI bootstraps. dev_bundle/ is captured in the artifact so the
+#        smoke and test steps run offline.
+# test:  three offline Jest unit tests: tools/cli/examples, tools/runners/run-app,
+#        tools/utils/utils. All heavy Meteor tool-chain deps are mocked so the
+#        suite needs only the isolated tools/unit-tests/node_modules.
+# smoke: `$PROJECT/meteor --arch` (dev_bundle/bin/node + tools/index.js;
+#        --arch always exits 0 from a git checkout, unlike --version).
+repo_build(
+    name = "meteor",
+    repo = "https://github.com/meteor/meteor",
+    commit = "1a6166e43c627028e458ae24b8d666306f149d37",
+    build = "DEBIAN_FRONTEND=noninteractive apt-get update -qq && apt-get install -y -qq curl && (cd tools/unit-tests && npm install) && METEOR_ALLOW_SUPERUSER=1 ./meteor --arch",
+)
+
+repo_test(
+    name = "meteor",
+    built = ":meteor",
+    test = "node tools/unit-tests/node_modules/.bin/jest --config tools/unit-tests/jest.config.js --passWithNoTests --forceExit",
+)
+
+repo_smoke(
+    name = "meteor",
+    built = ":meteor",
+)
