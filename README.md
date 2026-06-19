@@ -194,7 +194,7 @@ Set `CLAUDE_BUDGET_SECONDS` to change the per-project time budget (default 5400s
 
 ## Status
 
-**79 projects landed, 23 deferred** (see ledger). Six cached language toolchains:
+**80 projects landed, 23 deferred** (see ledger). Six cached language toolchains:
 `node` (26), `python`, `go` (1.26), `rust` (1.96 + clippy/rustfmt), `shell`
 (bats), `c` (autotools + g++-14 + cmake). `bazel test //projects/...` is the
 cross-project health check (build+test+smoke per project). Each landed project is
@@ -281,6 +281,7 @@ offline/core test subset over network/TTY/root-coupled tests.
 | 105 | tinygrad | Python | venv + `pip install` + numpy | (deferred: unit suite needs CLANG/GPU backend or torch; gguf tests fetch models) | tensor add via `DEV=PYTHON` numpy backend | ✅⏸️ |
 | 373 | json | C++ | `cmake -DJSON_BuildTests=ON && cmake --build -j8` | `ctest` unit suite (~150 tests, all offline) | compile snippet + parse/dump round-trip | ✅✅ |
 | 153 | numpy | Python | apt gcc/ninja/python3-dev; venv + `scipy-openblas64` + `pip --no-build-isolation` | (deferred: thousands of tests; no fast offline subset) | `import numpy`; array add + dot product | ✅⏸️ |
+| 150 | bevy | Rust | `cargo build --example headless --no-default-features --features bevy_log` | (deferred: full suite exercises GPU/windowing; no offline subset) | run headless binary → "hello world" | ✅⏸️ |
 | 75 | duckdb | C++ | `cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=g++-14 -DBUILD_UNITTESTS=OFF && cmake --build -j8` | (deferred: large C++ test suite) | `duckdb --version` + SQL queries | ✅⏸️ |
 | 19 | php-src | C | apt re2c; buildconf + configure (no libxml/sqlite3/dom; HEAD removed pre-gen lexers + bundled SQLite) + make | (deferred: ~15 000-test suite) | `sapi/cli/php --version` + eval PHP expressions | ✅⏸️ |
 | 244 | zellij | Rust | apt cmake+perl; `cargo build --no-default-features --features vendored_curl,web_server_capability` (pre-compiled WASM plugins embedded from assets) | (deferred: integration suite drives TUI sessions via fake PTY; no offline unit subset) | `zellij --version`/`--help` | ✅⏸️ |

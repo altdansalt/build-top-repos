@@ -1,0 +1,30 @@
+load("//harness:defs.bzl", "repo_build", "repo_smoke")
+
+# bevy (rank_code_size 150): data-driven game engine in Rust.
+#
+# build: cargo build the headless example with --no-default-features --features bevy_log.
+#   Default features include bevy_winit (needs X11 headers) and bevy_render (needs
+#   Vulkan/GPU), neither of which are in rust_rootfs. The headless example itself
+#   documents this exact invocation: "cargo run --example headless
+#   --no-default-features --features bevy_log".
+#
+# test: deferred — the full workspace suite exercises GPU/windowing code and
+#   would need X11/Vulkan headers and a display; no clean offline subset.
+#
+# smoke: run the headless binary; it prints "hello world" from the run_once app,
+#   then enters a 60fps loop (killed by timeout). Grep for "hello world".
+RUST = "//toolchains:rust_rootfs"
+
+repo_build(
+    name = "bevy",
+    repo = "https://github.com/bevyengine/bevy",
+    commit = "f01eff8b55813e348ee30fc54f7382fc33b4de90",
+    build = "CARGO_HOME=/work/bevy/.cargo cargo build --example headless --no-default-features --features bevy_log",
+    toolchain = RUST,
+)
+
+repo_smoke(
+    name = "bevy",
+    built = ":bevy",
+    toolchain = RUST,
+)
