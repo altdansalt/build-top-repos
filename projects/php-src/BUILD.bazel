@@ -1,0 +1,33 @@
+load("//harness:defs.bzl", "repo_build", "repo_smoke")
+
+# php-src (rank_code_size 19): The PHP Interpreter, built from source.
+#
+# build: apt re2c — php-src HEAD no longer ships the pre-generated lexer .c
+#        files (Zend/zend_language_scanner.c etc.); re2c is now mandatory.
+#        buildconf regenerates configure from configure.ac (git has no pre-built
+#        configure). External libs are avoided to keep the smoke binary clean:
+#        --without-libxml + --disable-{dom,simplexml,xml,xmlreader,xmlwriter}
+#        (dom has its own pkg-config check independent of --without-libxml);
+#        --without-sqlite3/pdo-sqlite (PHP 8.4 no longer bundles SQLite3;
+#        system libsqlite3 absent in c_rootfs); PCRE2 is bundled in ext/pcre/.
+#        The resulting CLI links only against glibc (present in ubuntu base).
+# smoke: run sapi/cli/php --version and evaluate PHP expressions.
+#
+# NOTE: the full test suite (make test / run-tests.php) is enormous (~15 000+
+# tests, needs a running interpreter, network, and external test infra) —
+# deferred like cpython's regression suite.
+C = "//toolchains:c_rootfs"
+
+repo_build(
+    name = "php-src",
+    repo = "https://github.com/php/php-src",
+    commit = "e71b4e592864cfefe15f6861c6b477d89aec2f36",
+    build = "DEBIAN_FRONTEND=noninteractive apt-get update -qq && apt-get install -y -q --no-install-recommends re2c && ./buildconf && ./configure --without-pear --without-libxml --without-sqlite3 --without-pdo-sqlite --disable-dom --disable-simplexml --disable-xml --disable-xmlreader --disable-xmlwriter && make -j8",
+    toolchain = C,
+)
+
+repo_smoke(
+    name = "php-src",
+    built = ":php-src",
+    toolchain = C,
+)

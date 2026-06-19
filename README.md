@@ -194,7 +194,7 @@ Set `CLAUDE_BUDGET_SECONDS` to change the per-project time budget (default 5400s
 
 ## Status
 
-**42 projects landed, 8 deferred** (see ledger). Six cached language toolchains:
+**43 projects landed, 8 deferred** (see ledger). Six cached language toolchains:
 `node` (24), `python`, `go` (1.26), `rust` (1.96 + clippy/rustfmt), `shell`
 (bats), `c` (autotools + g++-14 + cmake). `bazel test //projects/...` is the
 cross-project health check (build+test+smoke per project). Each landed project is
@@ -262,6 +262,7 @@ offline/core test subset over network/TTY/root-coupled tests.
 | 373 | json | C++ | `cmake -DJSON_BuildTests=ON && cmake --build -j8` | `ctest` unit suite (~150 tests, all offline) | compile snippet + parse/dump round-trip | ✅✅ |
 | 153 | numpy | Python | apt gcc/ninja/python3-dev; venv + `scipy-openblas64` + `pip --no-build-isolation` | (deferred: thousands of tests; no fast offline subset) | `import numpy`; array add + dot product | ✅⏸️ |
 | 75 | duckdb | C++ | `cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=g++-14 -DBUILD_UNITTESTS=OFF && cmake --build -j8` | (deferred: large C++ test suite) | `duckdb --version` + SQL queries | ✅⏸️ |
+| 19 | php-src | C | apt re2c; buildconf + configure (no libxml/sqlite3/dom; HEAD removed pre-gen lexers + bundled SQLite) + make | (deferred: ~15 000-test suite) | `sapi/cli/php --version` + eval PHP expressions | ✅⏸️ |
 
 **playwright-mcp — deferred (needs a browser toolchain).** Spike confirmed
 `npm ci` + `npx playwright install --with-deps` work against our snapshot apt, but

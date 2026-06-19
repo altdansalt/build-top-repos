@@ -115,6 +115,13 @@
     "status": "deferred",
     "ts": "2026-06-18T22:04:16.582313+00:00"
   },
+  "https://github.com/php/php-src": {
+    "commit": "e71b4e592864cfefe15f6861c6b477d89aec2f36",
+    "log": "20260619-004001-https-github-com-php-php-src.log",
+    "project": "php-src",
+    "status": "landed",
+    "ts": "2026-06-19T01:07:06.943797+00:00"
+  },
   "https://github.com/protocolbuffers/protobuf": {
     "log": "20260619-002001-https-github-com-protocolbuffers-protobuf.log",
     "reason": "could not land: claude rc=1, no changes",
