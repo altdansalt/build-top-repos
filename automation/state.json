@@ -265,6 +265,12 @@
     "status": "landed",
     "ts": "2026-06-18T23:38:15.139247+00:00"
   },
+  "https://github.com/werwolv/imhex": {
+    "log": "20260619-064001-https-github-com-werwolv-imhex.log",
+    "reason": "ImHex is a Dear ImGui graphical hex editor that initialises a GLFW/OpenGL context before processing any arguments \u2014 there is no --version early-exit or headless mode. Building requires libgl-dev, libglfw3-dev, libglew-dev, and dozens of CMake FetchContent dependencies. Running without a display fails immediately at OpenGL context creation. Whole-project deferral; same category as alacritty and sniffnet.",
+    "status": "deferred",
+    "ts": "2026-06-19T06:45:03.099940+00:00"
+  },
   "https://github.com/xtekky/gpt4free": {
     "commit": "bb8019db08a357de126d7d618b3074ffc1b36955",
     "log": "20260619-022001-https-github-com-xtekky-gpt4free.log",

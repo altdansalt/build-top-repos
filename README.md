@@ -194,7 +194,7 @@ Set `CLAUDE_BUDGET_SECONDS` to change the per-project time budget (default 5400s
 
 ## Status
 
-**57 projects landed, 9 deferred** (see ledger). Six cached language toolchains:
+**57 projects landed, 14 deferred** (see ledger). Six cached language toolchains:
 `node` (24), `python`, `go` (1.26), `rust` (1.96 + clippy/rustfmt), `shell`
 (bats), `c` (autotools + g++-14 + cmake). `bazel test //projects/...` is the
 cross-project health check (build+test+smoke per project). Each landed project is
@@ -257,6 +257,7 @@ offline/core test subset over network/TTY/root-coupled tests.
 | 404 | textual | Python | venv + `pip install` | `pytest` (~3005; excl. snapshot/optional) | run a headless Textual app via pilot | ✅✅ |
 | 400 | openpilot | Python | — | — | — | ⏸️ deferred |
 | 398 | 3x-ui | Go | apt gcc+sqlite3-dev; stub `internal/web/dist`; CGO `go build` | `go test -count=1 ./...` (103 files; in-memory SQLite; mocked HTTP) | `3x-ui -v` | ✅✅ |
+| 391 | imhex | C++ | — | — | — | ⏸️ deferred |
 | 386 | v2ray-core | Go | `go build` | (deferred: needs geoip/geosite data) | `v2ray version`/`help` | ✅⏸️ |
 | 357 | black | Python | venv + `pip install` | `pytest` (~465) | format `x=1` → `x = 1` via the CLI | ✅✅ |
 | 311 | cli/cli | Go | `go build` | (deferred: root-permission tests) | `gh --version`/`--help` | ✅⏸️ |
@@ -334,11 +335,13 @@ required. That toolchain investment is a human decision — deferred.
 
 **openpilot — deferred (automotive ADAS OS; 22+ vendored native libs; no headless CLI).** openpilot is an open-source operating system for driver-assistance systems, designed to run on comma.ai hardware (comma 3/3X) and interface with a car's CAN bus via panda. Its `pyproject.toml` declares no scripts or entry-points — there is no `openpilot --version` or standalone CLI. The build pulls 22+ vendored C/C++ libraries (FFmpeg, Eigen, ZeroMQ, libjpeg, compiler toolchains) from a custom upstream repository, plus `pycapnp` (requires compiled capnproto headers) and a MetaDrive simulator for tools — effectively a multi-GB native build chain on top of the Python layer. No meaningful headless smoke exists: normal operation manages multiple ADAS subprocesses talking to car hardware, and the test suite requires hardware replay data or hardware-in-the-loop. Deferred pending a purpose-built toolchain that vendors the native deps.
 
+**imhex — deferred (Dear ImGui GUI hex editor; OpenGL + GLFW + display required).** ImHex is a graphical hex editor built on Dear ImGui with OpenGL 3.3 and GLFW for window management. Compiling it requires a large set of GUI dev headers (libgl-dev, libglew-dev, libglfw3-dev, and many more) plus dozens of C++ libraries fetched via CMake FetchContent during configuration. The application initialises an OpenGL context and GLFW window before doing anything useful — running it without a display server fails immediately at context creation; there is no `--version` early-exit, headless mode, or standalone CLI. Same category as alacritty and sniffnet.
+
 **GUI / heavy-system-dep deferrals.** alacritty (OpenGL terminal), tabby
-(Electron), lossless-cut (Electron), and pake (Tauri) are GUI apps with no
-meaningful headless run. OCRmyPDF is feasible but heavy: it needs OCR engines
-(tesseract, ghostscript, unpaper, qpdf, …) and a large real-OCR test suite —
-revisitable if we invest in an OCR toolchain.
+(Electron), lossless-cut (Electron), pake (Tauri), and imhex (Dear ImGui hex
+editor) are GUI apps with no meaningful headless run. OCRmyPDF is feasible but
+heavy: it needs OCR engines (tesseract, ghostscript, unpaper, qpdf, …) and a
+large real-OCR test suite — revisitable if we invest in an OCR toolchain.
 
 ### Next
 1. Keep working down the CSV: one `repo_build` + `repo_test`/`repo_smoke` per
