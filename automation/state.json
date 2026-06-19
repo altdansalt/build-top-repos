@@ -384,6 +384,12 @@
     "status": "landed",
     "ts": "2026-06-19T05:11:19.669954+00:00"
   },
+  "https://github.com/react/react-native": {
+    "log": "20260619-184001-https-github-com-react-react-native.log",
+    "reason": "React Native is a mobile framework whose C++ components (JSI, ReactCommon) build as static libraries linked into Android or iOS apps. Building requires Android SDK+NDK (for Android) or Xcode on macOS (for iOS) \u2014 neither is in the cached toolchains. package.json has no bin entry, so there is no standalone CLI. No meaningful headless smoke is possible without a mobile device or simulator.",
+    "status": "deferred",
+    "ts": "2026-06-19T18:43:31.268015+00:00"
+  },
   "https://github.com/ruvnet/ruview": {
     "commit": "4bf88e12830053173bee1769da7cafe82e1195da",
     "log": "20260619-151001-https-github-com-ruvnet-ruview.log",
