@@ -194,8 +194,8 @@ Set `CLAUDE_BUDGET_SECONDS` to change the per-project time budget (default 5400s
 
 ## Status
 
-**80 projects landed, 23 deferred** (see ledger). Six cached language toolchains:
-`node` (26), `python`, `go` (1.26), `rust` (1.96 + clippy/rustfmt), `shell`
+**81 projects landed, 23 deferred** (see ledger). Six cached language toolchains:
+`node` (27), `python`, `go` (1.26), `rust` (1.96 + clippy/rustfmt), `shell`
 (bats), `c` (autotools + g++-14 + cmake). `bazel test //projects/...` is the
 cross-project health check (build+test+smoke per project). Each landed project is
 a `repo_build` + `repo_test`/`repo_smoke` in `projects/<name>/BUILD.bazel`.
@@ -313,6 +313,7 @@ offline/core test subset over network/TTY/root-coupled tests.
 | 170 | whisper-cpp | C++ | cmake (CPU-only; g++-14; -DGGML_CUDA=OFF) | (deferred: all test executables require a downloaded GGUF model file at runtime) | `whisper-cli --help` (no model needed) | ✅⏸️ |
 | 165 | oh-my-openagent | TS/Bun | — | — | — | ⏸️ deferred |
 | 158 | react-native | C++ | — | — | — | ⏸️ deferred |
+| 143 | tooljet | JS/npm | `cd cli && npm ci && tsc -b` (standalone `@tooljet/cli`; ~660 pkgs) | (deferred: Jest unit suite bootstraps TypeORM against live PostgreSQL; globalSetup truncates tables; no offline subset) | `tooljet --version` + `tooljet info` (OS/Node/npm fingerprint) | ✅⏸️ |
 
 **playwright-mcp — deferred (needs a browser toolchain).** Spike confirmed
 `npm ci` + `npx playwright install --with-deps` work against our snapshot apt, but

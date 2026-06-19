@@ -1,0 +1,29 @@
+load("//harness:defs.bzl", "repo_build", "repo_smoke")
+
+# tooljet (rank_code_size 143): Open-source low-code platform for building
+# internal tools, dashboards, workflows, and AI agents.
+#
+# The full platform (NestJS server + React frontend + 48 plugins) requires
+# PostgreSQL at runtime and a very large multi-package npm install. Instead
+# we build the standalone @tooljet/cli (oclif/TypeScript; ~662 packages; tsc
+# compile to dist/) which is the developer-facing CLI tool published on npm.
+#
+# build: cd into cli/, npm ci from the checked-in lockfile, tsc compile.
+# test:  DEFERRED — Jest unit suite (server/) bootstraps TypeORM which connects
+#        to PostgreSQL; globalSetup truncates database tables before each run;
+#        no offline subset exists.
+# smoke: `tooljet --version` and `tooljet info` (prints OS, arch, Node, npm);
+#        both exit cleanly without a server or database.
+repo_build(
+    name = "tooljet",
+    repo = "https://github.com/ToolJet/ToolJet",
+    commit = "5f3cce5aedc7a6e04329ee97346ab46a4805b32b",
+    build = "cd cli && npm ci && npm run build",
+    toolchain = "//toolchains:node_rootfs",
+)
+
+repo_smoke(
+    name = "tooljet",
+    built = ":tooljet",
+    toolchain = "//toolchains:node_rootfs",
+)

@@ -430,6 +430,13 @@
     "status": "landed",
     "ts": "2026-06-18T23:12:35.107042+00:00"
   },
+  "https://github.com/tooljet/tooljet": {
+    "commit": "5f3cce5aedc7a6e04329ee97346ab46a4805b32b",
+    "log": "20260619-191001-https-github-com-tooljet-tooljet.log",
+    "project": "tooljet",
+    "status": "landed",
+    "ts": "2026-06-19T19:20:56.201550+00:00"
+  },
   "https://github.com/triliumnext/trilium": {
     "commit": "cf3021a05897ce8d241ed0b0449cf9e7843d25c2",
     "log": "20260619-153001-https-github-com-triliumnext-trilium.log",
