@@ -1,0 +1,28 @@
+load("//harness:defs.bzl", "repo_build", "repo_smoke")
+
+# unsloth (rank_code_size 167): fast LLM fine-tuning library with a Studio
+# web UI for training and running open models locally.
+#
+# build: venv + pip install (core deps only: typer/rich/pydantic/pyyaml/
+#        nest-asyncio; torch/transformers are optional-extra deps not pulled
+#        in by the base install).
+# test:  DEFERRED — the test suite requires torch/unsloth_zoo (GPU or mocked
+#        CUDA); no clean offline subset without those heavy packages installed.
+# smoke: run the `unsloth` CLI (--version, --help); the CLI defers all heavy
+#        ML imports to when commands are actually invoked, so torch is not
+#        needed at startup.
+PY = "//toolchains:python_rootfs"
+
+repo_build(
+    name = "unsloth",
+    repo = "https://github.com/unslothai/unsloth",
+    commit = "7ce8dc73ac52cf7a3e87501cce7546c30b66e010",
+    build = "python3 -m venv .venv && .venv/bin/pip install .",
+    toolchain = PY,
+)
+
+repo_smoke(
+    name = "unsloth",
+    built = ":unsloth",
+    toolchain = PY,
+)
