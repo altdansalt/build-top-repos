@@ -259,6 +259,12 @@
     "status": "deferred",
     "ts": "2026-06-18T18:31:20.786562+00:00"
   },
+  "https://github.com/mudler/localai": {
+    "log": "20260619-162001-https-github-com-mudler-localai.log",
+    "reason": "could not land: verification failed {\"build\": true, \"smoke\": false, \"tests\": {}, \"smoke_target_exists\": true}",
+    "status": "deferred",
+    "ts": "2026-06-19T16:42:06.191530+00:00"
+  },
   "https://github.com/nlohmann/json": {
     "commit": "02dfbea39d94b8d19ddcd0eabfdc943a65bf3368",
     "log": "20260618-232001-https-github-com-nlohmann-json.log",
