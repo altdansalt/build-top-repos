@@ -1,0 +1,30 @@
+load("//harness:defs.bzl", "repo_build", "repo_smoke")
+
+# zellij (rank_code_size 244): terminal workspace with batteries included.
+#
+# build: apt-install cmake + perl (needed for vendored curl/OpenSSL compilation),
+#        then cargo build the main zellij binary.
+#        Pre-compiled WASM plugins are already committed to the repo under
+#        zellij-utils/assets/plugins/ and embedded via include_dir! — no
+#        wasm32-wasip1 target needed.
+#
+# smoke: zellij --version + --help.
+#
+# NOTE: cargo test DEFERRED. The integration suite (zellij-integration-tests)
+# drives a full TUI session via fake PTY/server APIs but still needs a terminal
+# environment. No clean offline unit-test subset is exposed as a separate target.
+RUST = "//toolchains:rust_rootfs"
+
+repo_build(
+    name = "zellij",
+    repo = "https://github.com/zellij-org/zellij",
+    commit = "ff0925f2a71014609fae3d8f0095c7d1d2af5dbd",
+    build = "DEBIAN_FRONTEND=noninteractive apt-get update -qq && apt-get install -y -q cmake perl && CARGO_HOME=/work/zellij/.cargo cargo build --no-default-features --features vendored_curl,web_server_capability",
+    toolchain = RUST,
+)
+
+repo_smoke(
+    name = "zellij",
+    built = ":zellij",
+    toolchain = RUST,
+)

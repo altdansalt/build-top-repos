@@ -168,5 +168,12 @@
     "project": "webpack",
     "status": "landed",
     "ts": "2026-06-18T23:38:15.139247+00:00"
+  },
+  "https://github.com/zellij-org/zellij": {
+    "commit": "ff0925f2a71014609fae3d8f0095c7d1d2af5dbd",
+    "log": "20260619-011002-https-github-com-zellij-org-zellij.log",
+    "project": "zellij",
+    "status": "landed",
+    "ts": "2026-06-19T01:28:00.974055+00:00"
   }
 }
