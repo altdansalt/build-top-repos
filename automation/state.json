@@ -84,6 +84,12 @@
     "status": "landed",
     "ts": "2026-06-19T00:39:39.103851+00:00"
   },
+  "https://github.com/electron/electron": {
+    "log": "20260619-121001-https-github-com-electron-electron.log",
+    "reason": "Building Electron from source requires depot_tools (gn/ninja) and gclient to sync the full ~20 GB Chromium source tree, then a multi-hour compilation \u2014 far beyond c_rootfs (autotools/cmake/g++ only). A new combined toolchain bundling gn, ninja, and the Chromium build infrastructure would be required. Even after a successful build the binary is a GUI browser runtime with no meaningful headless smoke. Same category as zen-browser (Mozilla build system) and code-server (multi-GB vendor build).",
+    "status": "deferred",
+    "ts": "2026-06-19T12:11:29.629317+00:00"
+  },
   "https://github.com/explosion/spacy": {
     "commit": "e67199550e365dacee28b109210c3a43e1477638",
     "log": "20260619-112001-https-github-com-explosion-spacy.log",

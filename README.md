@@ -194,7 +194,7 @@ Set `CLAUDE_BUDGET_SECONDS` to change the per-project time budget (default 5400s
 
 ## Status
 
-**66 projects landed, 19 deferred** (see ledger). Six cached language toolchains:
+**66 projects landed, 20 deferred** (see ledger). Six cached language toolchains:
 `node` (24), `python`, `go` (1.26), `rust` (1.96 + clippy/rustfmt), `shell`
 (bats), `c` (autotools + g++-14 + cmake). `bazel test //projects/...` is the
 cross-project health check (build+test+smoke per project). Each landed project is
@@ -294,6 +294,7 @@ offline/core test subset over network/TTY/root-coupled tests.
 | 303 | spacy | Python | apt python3-dev+g++; venv + `pip install` + explicit click (typer 0.12+ dropped click as hard dep; spaCy code imports it directly) | (deferred: test suite fixtures load NLP models; no clean offline subset) | `spacy info` + blank-model tokenization from /tmp | ✅⏸️ |
 | 300 | aseprite | C++ | — | — | — | ⏸️ deferred |
 | 299 | kitty | Python | — | — | — | ⏸️ deferred |
+| 288 | electron | C++ | — | — | — | ⏸️ deferred |
 
 **playwright-mcp — deferred (needs a browser toolchain).** Spike confirmed
 `npm ci` + `npx playwright install --with-deps` work against our snapshot apt, but
@@ -370,6 +371,8 @@ investment — deferred until that toolchain is built.
 **aseprite — deferred (GUI pixel art editor; X11 display required even in batch mode).** Aseprite is an animated sprite editor whose GUI framework (laf) unconditionally opens an X11 display connection at program startup on Linux — before `main()` even calls `app_main()`. The laf `common/main.cpp` entry point runs `const os::X11 x11;` which calls `XOpenDisplay(nullptr)` regardless of whether `--batch` mode is requested. Without a `$DISPLAY` set, this crashes immediately, making even `aseprite --version` impossible in our headless container. While the binary compiles fine with X11 dev headers (libx11-dev + libxcursor-dev + libxi-dev + libxrandr-dev, all installable from the snapshot), there is no honest smoke without a virtual framebuffer (Xvfb). The default Skia rendering backend also requires prebuilt Skia binaries (~150 MB, not in any Ubuntu package); `LAF_BACKEND=none` avoids Skia but not the X11 runtime requirement. Same category as alacritty, imhex, and tabby.
 
 **kitty — deferred (GPU terminal emulator; OpenGL + X11 required at build and runtime).** kitty is a GPU-accelerated terminal emulator whose C extension (`fast_data_types.so`) links against `libGL.so`, `libX11.so`, and associated X11 libs. Building requires `libgl-dev`, `libx11-dev`, `libxrandr-dev`, `libxi-dev`, `libfontconfig-dev`, and GLFW C sources — an extensive apt set not present in `python_rootfs`. Crucially, `kitty/main.py` performs top-level imports that load `fast_data_types.so` before argument parsing, so even `kitty --version` would fail at dynamic-linker startup in the smoke container (where libGL/libX11 are absent). Bundling the full GL+X11+GLFW stack is technically possible but involves far more transitive libs than e.g. manim's Cairo bundle, with no meaningful headless operation to demonstrate at the end — kitty's entire purpose is to open a GPU-rendered terminal window. Same category as alacritty (OpenGL terminal).
+
+**electron — deferred (Chromium+Node.js desktop runtime; depot_tools/gclient multi-GB build chain required).** electron/electron is the Electron framework itself — it merges Chromium and Node.js into a single distributable runtime. Building it from source requires Google's `depot_tools` (`gn` + `ninja`) and `gclient sync` to check out the full Chromium source tree (~20 GB of C++), then a multi-hour compilation step not covered by any cached toolchain (`c_rootfs` has autotools/cmake/g++ but not gn/ninja or the Chromium build infrastructure). Even if compiled, the resulting binary is a full browser runtime that opens a Chromium window for all meaningful operation — `electron --version` works but is not an honest smoke without the build first succeeding. Same build-chain category as zen-browser (Mozilla build system) and code-server (vendors all of VS Code).
 
 **GUI / heavy-system-dep deferrals.** alacritty (OpenGL terminal), tabby
 (Electron), lossless-cut (Electron), pake (Tauri), and imhex (Dear ImGui hex
