@@ -194,7 +194,7 @@ Set `CLAUDE_BUDGET_SECONDS` to change the per-project time budget (default 5400s
 
 ## Status
 
-**66 projects landed, 20 deferred** (see ledger). Six cached language toolchains:
+**66 projects landed, 21 deferred** (see ledger). Six cached language toolchains:
 `node` (24), `python`, `go` (1.26), `rust` (1.96 + clippy/rustfmt), `shell`
 (bats), `c` (autotools + g++-14 + cmake). `bazel test //projects/...` is the
 cross-project health check (build+test+smoke per project). Each landed project is
@@ -295,6 +295,7 @@ offline/core test subset over network/TTY/root-coupled tests.
 | 300 | aseprite | C++ | — | — | — | ⏸️ deferred |
 | 299 | kitty | Python | — | — | — | ⏸️ deferred |
 | 288 | electron | C++ | — | — | — | ⏸️ deferred |
+| 287 | spacedrive | Rust | — | — | — | ⏸️ deferred |
 
 **playwright-mcp — deferred (needs a browser toolchain).** Spike confirmed
 `npm ci` + `npx playwright install --with-deps` work against our snapshot apt, but
@@ -373,6 +374,8 @@ investment — deferred until that toolchain is built.
 **kitty — deferred (GPU terminal emulator; OpenGL + X11 required at build and runtime).** kitty is a GPU-accelerated terminal emulator whose C extension (`fast_data_types.so`) links against `libGL.so`, `libX11.so`, and associated X11 libs. Building requires `libgl-dev`, `libx11-dev`, `libxrandr-dev`, `libxi-dev`, `libfontconfig-dev`, and GLFW C sources — an extensive apt set not present in `python_rootfs`. Crucially, `kitty/main.py` performs top-level imports that load `fast_data_types.so` before argument parsing, so even `kitty --version` would fail at dynamic-linker startup in the smoke container (where libGL/libX11 are absent). Bundling the full GL+X11+GLFW stack is technically possible but involves far more transitive libs than e.g. manim's Cairo bundle, with no meaningful headless operation to demonstrate at the end — kitty's entire purpose is to open a GPU-rendered terminal window. Same category as alacritty (OpenGL terminal).
 
 **electron — deferred (Chromium+Node.js desktop runtime; depot_tools/gclient multi-GB build chain required).** electron/electron is the Electron framework itself — it merges Chromium and Node.js into a single distributable runtime. Building it from source requires Google's `depot_tools` (`gn` + `ninja`) and `gclient sync` to check out the full Chromium source tree (~20 GB of C++), then a multi-hour compilation step not covered by any cached toolchain (`c_rootfs` has autotools/cmake/g++ but not gn/ninja or the Chromium build infrastructure). Even if compiled, the resulting binary is a full browser runtime that opens a Chromium window for all meaningful operation — `electron --version` works but is not an honest smoke without the build first succeeding. Same build-chain category as zen-browser (Mozilla build system) and code-server (vendors all of VS Code).
+
+**spacedrive — deferred (Tauri desktop GUI file explorer; WebkitGTK + GTK3 required).** Spacedrive is a cross-platform file explorer built on Tauri v1, with a React/TypeScript frontend and a Rust virtual-distributed-filesystem backend (`sd-core`). On Linux, Tauri requires `libwebkit2gtk-4.0-dev` (or `libwebkit2gtk-4.1-dev`) and `libgtk-3-dev` for compilation — none are present in `rust_rootfs`. The application's primary interface is a graphical desktop window; there is no CLI or headless server mode that constitutes an honest smoke. The multi-stack build (Rust + pnpm/Node.js for the frontend, Tauri CLI) additionally requires a combined toolchain that neither `rust_rootfs` nor `node_rootfs` alone provides. Same category as pake (Tauri) and alacritty (OpenGL terminal).
 
 **GUI / heavy-system-dep deferrals.** alacritty (OpenGL terminal), tabby
 (Electron), lossless-cut (Electron), pake (Tauri), and imhex (Dear ImGui hex

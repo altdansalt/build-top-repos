@@ -309,6 +309,12 @@
     "status": "landed",
     "ts": "2026-06-19T02:08:29.591391+00:00"
   },
+  "https://github.com/spacedriveapp/spacedrive": {
+    "log": "20260619-122001-https-github-com-spacedriveapp-spacedrive.log",
+    "reason": "Spacedrive is a Tauri v1 GUI desktop application (cross-platform file explorer). Building the desktop app on Linux requires libwebkit2gtk-4.0/4.1-dev and libgtk-3-dev which are not in rust_rootfs. The frontend is React/TypeScript requiring Node.js/pnpm alongside Rust, so neither rust_rootfs nor node_rootfs alone covers the full build. There is no standalone headless CLI or server mode that would provide an honest smoke test \u2014 the application's entire purpose is a graphical file explorer window. Same category as pake (Tauri v2) and alacritty.",
+    "status": "deferred",
+    "ts": "2026-06-19T12:22:54.619237+00:00"
+  },
   "https://github.com/tinygrad/tinygrad": {
     "commit": "4a4b6956dfd233ab04817702ad7c156f0a229dc8",
     "log": "20260618-225001-https-github-com-tinygrad-tinygrad.log",
