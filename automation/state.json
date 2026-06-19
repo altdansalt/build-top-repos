@@ -331,6 +331,13 @@
     "status": "deferred",
     "ts": "2026-06-19T06:45:03.099940+00:00"
   },
+  "https://github.com/withastro/astro": {
+    "commit": "7e7ab8775f1c70e00e30db9d3c4796246eaf1c5f",
+    "log": "20260619-103001-https-github-com-withastro-astro.log",
+    "project": "astro",
+    "status": "landed",
+    "ts": "2026-06-19T10:51:46.125363+00:00"
+  },
   "https://github.com/xtekky/gpt4free": {
     "commit": "bb8019db08a357de126d7d618b3074ffc1b36955",
     "log": "20260619-022001-https-github-com-xtekky-gpt4free.log",
