@@ -1,0 +1,32 @@
+load("//harness:defs.bzl", "repo_build", "repo_smoke")
+
+# xx-net (rank_code_size 382): Python proxy tool to bypass GFW.
+#
+# XX-Net is a daemon proxy server, not a pip-installable CLI package. The
+# repo vendors most Python deps under code/default/lib/noarch/ (dnslib,
+# tlslite, hyper, …). External deps (pyOpenSSL, babel, jinja2) are installed
+# via pip; googletrans is listed in requirements.txt but only used by the
+# developer utility babel_update.py, not at runtime.
+#
+# build: venv + pip install the three runtime deps.
+# test:  deferred — every test file either connects to a running proxy server
+#        (localhost:8085), hits live external services (DNS-over-HTTPS, GitHub
+#        raw URLs), or requires network connectivity. No offline/reproducible
+#        subset exists.
+# smoke: read version from code/default/version.txt; verify that key noarch
+#        modules (utils, xlog, dnslib) import and produce correct results.
+PY = "//toolchains:python_rootfs"
+
+repo_build(
+    name = "xx-net",
+    repo = "https://github.com/XX-net/XX-Net",
+    commit = "a68b972a84ed6e52df9f30237cf47493b9231b53",
+    build = "python3 -m venv .venv && .venv/bin/pip install pyOpenSSL babel jinja2",
+    toolchain = PY,
+)
+
+repo_smoke(
+    name = "xx-net",
+    built = ":xx-net",
+    toolchain = PY,
+)
