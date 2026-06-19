@@ -70,6 +70,13 @@
     "status": "deferred",
     "ts": "2026-06-19T06:14:08.311703+00:00"
   },
+  "https://github.com/continuedev/continue": {
+    "commit": "d0a3c0b626b5bebc3bef4742eec05a0242be0bab",
+    "log": "20260619-134001-https-github-com-continuedev-continue.log",
+    "project": "continue",
+    "status": "landed",
+    "ts": "2026-06-19T13:56:26.299735+00:00"
+  },
   "https://github.com/dioxuslabs/dioxus": {
     "commit": "b00ff7525901984f3a07fa5cfa175b537b64630b",
     "log": "20260619-091001-https-github-com-dioxuslabs-dioxus.log",

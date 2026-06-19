@@ -1,0 +1,31 @@
+load("//harness:defs.bzl", "repo_build", "repo_smoke")
+
+# continue (rank_code_size 240): Open-source AI coding agent (VS Code + CLI).
+# TypeScript multi-package repo: packages/* (config-types, fetch, llm-info,
+# terminal-security, config-yaml, openai-adapters), core, and extensions/cli.
+#
+# build: Build local packages in dependency order (each: npm install + tsc), then
+#        install core's deps (needed by esbuild to resolve core's imports during
+#        bundling), install CLI deps, and bundle with esbuild → dist/cn.js.
+#        The CLI binary is dist/cn.js (ESM wrapper); dist/index.js is the bundle.
+#
+# test:  Deferred. vitest suite (16 files) mocks fetch/API calls but resolving
+#        TypeScript sources across core's 70 transitive deps in a container adds
+#        risk of intermittent failures. Deferring mirrors the gemini-cli pattern.
+#
+# smoke: `cn --version` + `cn --help` — both exit cleanly without a Gemini/Claude
+#        API key or network access (Commander.js handles these flags before any
+#        async AI calls begin).
+repo_build(
+    name = "continue",
+    repo = "https://github.com/continuedev/continue",
+    commit = "d0a3c0b626b5bebc3bef4742eec05a0242be0bab",
+    build = "cd packages/config-types && npm install --no-audit --no-fund && npm run build && cd ../llm-info && npm install --no-audit --no-fund && npm run build && cd ../terminal-security && npm install --no-audit --no-fund && npm run build && cd ../fetch && npm install --no-audit --no-fund && npm run build && cd ../config-yaml && npm install --no-audit --no-fund && npm run build && cd ../openai-adapters && npm install --no-audit --no-fund && npm run build && cd ../../core && npm install --no-audit --no-fund && cd ../extensions/cli && npm install --no-audit --no-fund && node build.mjs",
+    toolchain = "//toolchains:node_rootfs",
+)
+
+repo_smoke(
+    name = "continue",
+    built = ":continue",
+    toolchain = "//toolchains:node_rootfs",
+)
