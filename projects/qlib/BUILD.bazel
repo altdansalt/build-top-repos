@@ -1,0 +1,24 @@
+load("//harness:defs.bzl", "repo_build", "repo_smoke")
+
+# qlib (rank_code_size 499): AI-oriented Quant investment platform.
+#
+# build: apt python3-dev+g++ for Cython extension compilation; pre-install
+#        build deps (cython, numpy<2.0); pip install --no-build-isolation .
+# test:  DEFERRED — all tests require pre-downloaded financial market data or
+#        live network access (Yahoo Finance, Baostock, etc.).
+# smoke: import qlib + verify compiled Cython rolling/expanding extensions.
+PY = "//toolchains:python_rootfs"
+
+repo_build(
+    name = "qlib",
+    repo = "https://github.com/microsoft/qlib",
+    commit = "d5379c520f66a39953bad76234a7019a72796fd0",
+    build = "apt-get install -y -qq python3-dev g++ && python3 -m venv .venv && .venv/bin/pip install --quiet cython \"numpy>=1.24.0,<2.0.0\" setuptools-scm && .venv/bin/pip install --quiet --no-build-isolation . \"numpy>=1.24.0,<2.0.0\"",
+    toolchain = PY,
+)
+
+repo_smoke(
+    name = "qlib",
+    built = ":qlib",
+    toolchain = PY,
+)

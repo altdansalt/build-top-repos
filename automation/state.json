@@ -83,6 +83,13 @@
     "status": "deferred",
     "ts": "2026-06-18T00:00:00+00:00"
   },
+  "https://github.com/microsoft/qlib": {
+    "commit": "d5379c520f66a39953bad76234a7019a72796fd0",
+    "log": "20260619-023001-https-github-com-microsoft-qlib.log",
+    "project": "qlib",
+    "status": "landed",
+    "ts": "2026-06-19T02:41:51.487813+00:00"
+  },
   "https://github.com/mifi/lossless-cut": {
     "log": "20260618-183001-https-github-com-mifi-lossless-cut.log",
     "reason": "lossless-cut is an Electron + React GUI video editing application. It uses electron-vite with a renderer targeting chrome148, requires electron-builder install-app-deps (downloads native Electron binaries), and has no headless or CLI mode \u2014 the packaged app opens a desktop window for all operations. This is the same category as tabby (Electron, deferred) and pake (Tauri, deferred): a GUI-only desktop app with no meaningful headless execution path.",
