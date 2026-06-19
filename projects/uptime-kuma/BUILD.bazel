@@ -1,0 +1,21 @@
+load("//harness:defs.bzl", "repo_build", "repo_smoke")
+
+# uptime-kuma (rank_code_size 489): self-hosted monitoring tool with web dashboard.
+#
+# build: npm ci installs from lockfile (better-sqlite3 uses prebuilt binaries for
+#        Node 22, so no native compilation needed); npm run build compiles the
+#        Vue.js frontend via vite into dist/ so the server serves the full app.
+# test:  DEFERRED — the test suite drives the live server via integration tests
+#        and WebSocket sessions; no offline unit subset exists.
+# smoke: start the Node.js server, wait for HTTP on port 3001, kill it.
+repo_build(
+    name = "uptime-kuma",
+    repo = "https://github.com/louislam/uptime-kuma",
+    commit = "a2ac12fb65e64c1d8db89bd5e4ad5abbe311de86",
+    build = "npm ci && npm run build",
+)
+
+repo_smoke(
+    name = "uptime-kuma",
+    built = ":uptime-kuma",
+)

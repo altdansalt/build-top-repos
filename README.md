@@ -194,7 +194,7 @@ Set `CLAUDE_BUDGET_SECONDS` to change the per-project time budget (default 5400s
 
 ## Status
 
-**48 projects landed, 8 deferred** (see ledger). Six cached language toolchains:
+**49 projects landed, 8 deferred** (see ledger). Six cached language toolchains:
 `node` (24), `python`, `go` (1.26), `rust` (1.96 + clippy/rustfmt), `shell`
 (bats), `c` (autotools + g++-14 + cmake). `bazel test //projects/...` is the
 cross-project health check (build+test+smoke per project). Each landed project is
@@ -241,6 +241,7 @@ offline/core test subset over network/TTY/root-coupled tests.
 | 504 | gpt4free | Python | venv + `pip install` | (deferred: all tests require live AI provider endpoints) | `import g4f` + Client + Provider | ✅⏸️ |
 | 499 | qlib | Python | apt python3-dev+g++; venv + cython/numpy<2.0 + `pip --no-build-isolation` | (deferred: all tests need downloaded financial market data) | `import qlib` + Cython rolling/expanding extensions | ✅⏸️ |
 | 492 | hexo | TS/npm | `npm ci && tsc -b` | `npm test` (1274; FORCE_COLOR for ANSI assertions) | `hexo version` + `hexo help` | ✅✅ |
+| 489 | uptime-kuma | JS/npm | `npm ci && npm run build` (vite) | (deferred: test suite drives the live server via integration tests; no offline unit subset) | start Node.js server → HTTP response on port 3001 | ✅⏸️ |
 | 485 | rtk | Rust | `cargo build` | `cargo test` (2199) | `rtk --version`/`--help` | ✅✅ |
 | 479 | scrapy | Python | venv + `pip install` | (deferred: twisted/network suite) | `scrapy version` + `startproject` | ✅⏸️ |
 | 461 | Xray-core | Go | `go build` | (deferred: needs geoip/geosite data) | `xray version` | ✅⏸️ |
