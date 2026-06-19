@@ -1,0 +1,25 @@
+load("//harness:defs.bzl", "repo_build", "repo_smoke")
+
+# raylib (rank_code_size 452): simple and easy-to-use C library for videogames programming.
+#
+# build: apt libgl1-mesa-dev + X11/input dev headers (bundled GLFW's X11 backend
+#        needs them); cmake -B build -DBUILD_EXAMPLES=OFF (skip examples for speed)
+#        then cmake --build -j8.
+# test:  DEFERRED — all programs in tests/ create a window; no offline unit subset.
+# smoke: verify libraylib.a is present; compile and run a small C program that uses
+#        raymath.h (header-only inline functions) — no window or display needed.
+C = "//toolchains:c_rootfs"
+
+repo_build(
+    name = "raylib",
+    repo = "https://github.com/raysan5/raylib",
+    commit = "aaacda6e147031f2af0cfb6c1fd7e64d761ddb1f",
+    build = "apt-get update -qq && apt-get install -y -qq libgl1-mesa-dev libx11-dev libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev && cmake -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_EXAMPLES=OFF && cmake --build build -j8",
+    toolchain = C,
+)
+
+repo_smoke(
+    name = "raylib",
+    built = ":raylib",
+    toolchain = C,
+)

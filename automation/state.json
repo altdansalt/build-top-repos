@@ -163,6 +163,13 @@
     "status": "landed",
     "ts": "2026-06-18T22:47:04.670009+00:00"
   },
+  "https://github.com/raysan5/raylib": {
+    "commit": "aaacda6e147031f2af0cfb6c1fd7e64d761ddb1f",
+    "log": "20260619-050001-https-github-com-raysan5-raylib.log",
+    "project": "raylib",
+    "status": "landed",
+    "ts": "2026-06-19T05:11:19.669954+00:00"
+  },
   "https://github.com/siddharthvaddem/openscreen": {
     "log": "20260619-013001-https-github-com-siddharthvaddem-openscreen.log",
     "reason": "openscreen is a GUI desktop application for screen recording and demo creation, the TypeScript equivalent of Screen Studio. Its repo contains CMakeLists.txt (cross-platform native screen-capture code), Package.swift (macOS AVFoundation/ScreenCaptureKit Swift wrapper), and package.json (Electron frontend) \u2014 the standard shape of an Electron app with native addons. The application opens a graphical window for all normal operation; there is no CLI or headless mode. Same deferral category as lossless-cut, tabby, pake, and alacritty.",
