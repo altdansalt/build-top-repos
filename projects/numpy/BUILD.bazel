@@ -1,0 +1,27 @@
+load("//harness:defs.bzl", "repo_build", "repo_smoke")
+
+# numpy (rank_code_size 153): fundamental package for scientific computing with Python.
+#
+# build: apt build-essential + python3-dev + ninja; init all git submodules (numpy
+#        vendors meson, highway, pocketfft, and more); venv + scipy-openblas64 (self-
+#        contained BLAS, no system libopenblas needed at smoke time) + meson-python +
+#        cython; activate venv so meson finds cython; pip --no-build-isolation.
+# test:  DEFERRED. The test suite has thousands of tests; many are slow, need
+#        specific BLAS backends, or probe compiler internals. No well-defined fast
+#        offline subset exists; defer rather than run an unbounded suite.
+# smoke: import numpy, verify basic array ops and version string.
+PY = "//toolchains:python_rootfs"
+
+repo_build(
+    name = "numpy",
+    repo = "https://github.com/numpy/numpy",
+    commit = "7dfe67ef29c771c127130e1b72e243b7ff804360",
+    build = "DEBIAN_FRONTEND=noninteractive apt-get update -qq && apt-get install -y -q --no-install-recommends build-essential python3-dev pkg-config ninja-build && git submodule update --init && python3 -m venv .venv && . .venv/bin/activate && pip install \"meson-python>=0.16.0\" \"cython>=3.0.0\" \"setuptools<81\" \"scipy-openblas64\" && pip install --no-build-isolation .",
+    toolchain = PY,
+)
+
+repo_smoke(
+    name = "numpy",
+    built = ":numpy",
+    toolchain = PY,
+)

@@ -194,7 +194,7 @@ Set `CLAUDE_BUDGET_SECONDS` to change the per-project time budget (default 5400s
 
 ## Status
 
-**40 projects landed, 8 deferred** (see ledger). Six cached language toolchains:
+**41 projects landed, 8 deferred** (see ledger). Six cached language toolchains:
 `node` (24), `python`, `go` (1.26), `rust` (1.96 + clippy/rustfmt), `shell`
 (bats), `c` (autotools + g++-14 + cmake). `bazel test //projects/...` is the
 cross-project health check (build+test+smoke per project). Each landed project is
@@ -260,6 +260,7 @@ offline/core test subset over network/TTY/root-coupled tests.
 | 195 | qdrant | Rust | `apt cmake+protoc && cargo build --bin qdrant` | (deferred: integration tests need live server + REST/gRPC endpoints) | `qdrant --version`/`--help` | ✅⏸️ |
 | 105 | tinygrad | Python | venv + `pip install` + numpy | (deferred: unit suite needs CLANG/GPU backend or torch; gguf tests fetch models) | tensor add via `DEV=PYTHON` numpy backend | ✅⏸️ |
 | 373 | json | C++ | `cmake -DJSON_BuildTests=ON && cmake --build -j8` | `ctest` unit suite (~150 tests, all offline) | compile snippet + parse/dump round-trip | ✅✅ |
+| 153 | numpy | Python | apt gcc/ninja/python3-dev; venv + `scipy-openblas64` + `pip --no-build-isolation` | (deferred: thousands of tests; no fast offline subset) | `import numpy`; array add + dot product | ✅⏸️ |
 
 **playwright-mcp — deferred (needs a browser toolchain).** Spike confirmed
 `npm ci` + `npx playwright install --with-deps` work against our snapshot apt, but

@@ -89,6 +89,13 @@
     "status": "landed",
     "ts": "2026-06-18T23:28:26.383992+00:00"
   },
+  "https://github.com/numpy/numpy": {
+    "commit": "7dfe67ef29c771c127130e1b72e243b7ff804360",
+    "log": "20260618-234001-https-github-com-numpy-numpy.log",
+    "project": "numpy",
+    "status": "landed",
+    "ts": "2026-06-19T00:10:07.341995+00:00"
+  },
   "https://github.com/ocrmypdf/OCRmyPDF": {
     "log": "pre-automation",
     "reason": "needs an OCR toolchain (tesseract/ghostscript/unpaper/qpdf) + large real-OCR suite",
