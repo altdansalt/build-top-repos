@@ -158,6 +158,13 @@
     "status": "landed",
     "ts": "2026-06-19T12:53:45.240809+00:00"
   },
+  "https://github.com/immich-app/immich": {
+    "commit": "95fc5e968241faadae02feb5765711c613f0aeb0",
+    "log": "20260619-132001-https-github-com-immich-app-immich.log",
+    "project": "immich",
+    "status": "landed",
+    "ts": "2026-06-19T13:30:47.344558+00:00"
+  },
   "https://github.com/janhq/jan": {
     "log": "20260619-070002-https-github-com-janhq-jan.log",
     "reason": "could not land: verification failed {\"build\": true, \"smoke\": false, \"tests\": {}, \"smoke_target_exists\": true}",

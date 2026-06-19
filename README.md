@@ -194,7 +194,7 @@ Set `CLAUDE_BUDGET_SECONDS` to change the per-project time budget (default 5400s
 
 ## Status
 
-**69 projects landed, 21 deferred** (see ledger). Six cached language toolchains:
+**70 projects landed, 21 deferred** (see ledger). Six cached language toolchains:
 `node` (25), `python`, `go` (1.26), `rust` (1.96 + clippy/rustfmt), `shell`
 (bats), `c` (autotools + g++-14 + cmake). `bazel test //projects/...` is the
 cross-project health check (build+test+smoke per project). Each landed project is
@@ -299,6 +299,7 @@ offline/core test subset over network/TTY/root-coupled tests.
 | 278 | astrbot | Python | venv + `pip install` | (deferred: async pytest-asyncio suite across IM-platform adapters and LLM providers; many tests mock extensively but asyncio-mode tuning and service coupling make offline subset risky) | `astrbot --version` + pipeline stage bootstrap | ✅⏸️ |
 | 271 | hoppscotch | TS/pnpm | pnpm@10.33.4 install (--ignore-scripts skips native backend deps) + build @hoppscotch/data, @hoppscotch/js-sandbox, @hoppscotch/cli | (deferred: vitest suite exercises faraday-cage/QuickJS sandbox execution; no clean offline subset) | `hopp --ver` + `--help` (test command listed) | ✅⏸️ |
 | 253 | meteor | JS/npm | apt curl; `(cd tools/unit-tests && npm install) && METEOR_ALLOW_SUPERUSER=1 ./meteor --arch` — downloads pre-built dev bundle (~160 MB: Node 22 + Meteor tool packages) from CloudFront | 3 Jest unit tests (tools/cli/examples, tools/runners/run-app, tools/utils/utils; all heavy deps mocked) | `./meteor --arch` → `os.linux.x86_64` via dev_bundle/bin/node + tools/index.js | ✅✅ |
+| 247 | immich | TS/pnpm | pnpm@11.6.0 filtered install (`--filter @immich/cli...`; 315 pkgs; `--ignore-scripts` skips server-only bcrypt/sharp) + SDK `tsc` + CLI `vite build` (rolldown; 693 kB bundle) | `vitest run` (42; file-crawl utils + upload-command mocks; all offline) | `immich --version`/`--help` | ✅✅ |
 
 **playwright-mcp — deferred (needs a browser toolchain).** Spike confirmed
 `npm ci` + `npx playwright install --with-deps` work against our snapshot apt, but

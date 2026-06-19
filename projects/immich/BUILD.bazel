@@ -1,0 +1,36 @@
+load("//harness:defs.bzl", "repo_build", "repo_smoke", "repo_test")
+
+# immich (rank_code_size 247): High-performance self-hosted photo and video management.
+# TypeScript pnpm@11.6.0 monorepo (server/web/mobile/ML). We build just the
+# @immich/cli subset: SDK (tsc) + CLI (vite 8/rolldown → single bundled dist/index.js).
+#
+# build: Filtered workspace install (--filter @immich/cli...) covers only the
+#        SDK and CLI packages (315 packages vs thousands for the full monorepo).
+#        --ignore-scripts skips native-addon compilation (bcrypt/sharp/argon2)
+#        that are server-only; the CLI bundles everything via vite's SSR mode so
+#        dist/index.js is fully self-contained at runtime.
+# test:  2-file vitest unit suite (42 tests): file-crawl helpers (mock-fs) and
+#        upload command logic (vitest-fetch-mock + vi.mock('@immich/sdk')); all
+#        offline. Direct ./node_modules/.bin/vitest invocation bypasses pnpm's
+#        verifyDepsBeforeRun hook.
+# smoke: `immich --version` + `immich --help` — no server required for these flags.
+repo_build(
+    name = "immich",
+    repo = "https://github.com/immich-app/immich",
+    commit = "95fc5e968241faadae02feb5765711c613f0aeb0",
+    build = "npm install -g pnpm@11.6.0 && pnpm install --filter @immich/cli... --frozen-lockfile --ignore-scripts && pnpm --filter @immich/sdk run build && pnpm --filter @immich/cli run build",
+    toolchain = "//toolchains:node_rootfs",
+)
+
+repo_test(
+    name = "immich",
+    built = ":immich",
+    test = "cd packages/cli && ./node_modules/.bin/vitest run",
+    toolchain = "//toolchains:node_rootfs",
+)
+
+repo_smoke(
+    name = "immich",
+    built = ":immich",
+    toolchain = "//toolchains:node_rootfs",
+)
