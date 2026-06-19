@@ -1,0 +1,29 @@
+load("//harness:defs.bzl", "repo_build", "repo_smoke")
+
+# bitcoin (rank_code_size 140): Bitcoin Core C++ full node.
+#
+# build: cmake (Release; g++-14; no GUI, no ZMQ, no wallet, no IPC/multiprocess).
+#        apt-installs libboost-dev (headers; boost/multi_index) + libevent-dev
+#        (required networking) + python3-minimal (secp256k1 ctime-test script).
+#        ENABLE_IPC=OFF skips the CapnProto requirement (libmultiprocess).
+#        Runtime libevent .so files bundled into .libs/ (same pattern as manim)
+#        so the smoke container does not need apt.
+# test:  deferred — functional tests need a live node; unit test suite takes
+#        ~10 min and exceeds the sh_test 300s timeout.
+# smoke: set LD_LIBRARY_PATH to .libs/, run --version on bitcoind + bitcoin-cli.
+
+C = "//toolchains:c_rootfs"
+
+repo_build(
+    name = "bitcoin",
+    repo = "https://github.com/bitcoin/bitcoin",
+    commit = "794befd4b06dcace1adbdb15e65bba1667f9bc15",
+    build = "apt-get update -qq && apt-get install -y -qq libboost-dev libevent-dev python3-minimal && cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=g++-14 -DBUILD_GUI=OFF -DWITH_ZMQ=OFF -DENABLE_WALLET=OFF -DBUILD_TESTS=OFF -DENABLE_IPC=OFF && cmake --build build -j8 --target bitcoind bitcoin-cli && mkdir -p .libs && for lib in libevent_core libevent_extra libevent_pthreads; do for f in /usr/lib/x86_64-linux-gnu/$${lib}*.so* /lib/x86_64-linux-gnu/$${lib}*.so*; do test -f \"$$f\" && cp -nL \"$$f\" .libs/ 2>/dev/null || true; done; done",
+    toolchain = C,
+)
+
+repo_smoke(
+    name = "bitcoin",
+    built = ":bitcoin",
+    toolchain = C,
+)

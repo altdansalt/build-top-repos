@@ -194,7 +194,7 @@ Set `CLAUDE_BUDGET_SECONDS` to change the per-project time budget (default 5400s
 
 ## Status
 
-**82 projects landed, 23 deferred** (see ledger). Six cached language toolchains:
+**83 projects landed, 23 deferred** (see ledger). Six cached language toolchains:
 `node` (27), `python`, `go` (1.26), `rust` (1.96 + clippy/rustfmt), `shell`
 (bats), `c` (autotools + g++-14 + cmake). `bazel test //projects/...` is the
 cross-project health check (build+test+smoke per project). Each landed project is
@@ -315,6 +315,7 @@ offline/core test subset over network/TTY/root-coupled tests.
 | 158 | react-native | C++ | — | — | — | ⏸️ deferred |
 | 143 | tooljet | JS/npm | `cd cli && npm ci && tsc -b` (standalone `@tooljet/cli`; ~660 pkgs) | (deferred: Jest unit suite bootstraps TypeORM against live PostgreSQL; globalSetup truncates tables; no offline subset) | `tooljet --version` + `tooljet info` (OS/Node/npm fingerprint) | ✅⏸️ |
 | 142 | llama-index | Python | venv + `pip install llama-index-core/` | (deferred: test suite tightly coupled to LLM API calls and model downloads; no clean offline subset) | import core; `Document` + `SentenceSplitter` (offline text-split) | ✅⏸️ |
+| 140 | bitcoin | C++ | apt libevent-dev+boost+python3; cmake (Release; g++-14; `-DENABLE_IPC=OFF`; no GUI/ZMQ/wallet); bundle libevent `.libs` | (deferred: functional tests need live node; unit suite >300 s) | `bitcoind --version` + `bitcoin-cli --version` | ✅⏸️ |
 
 **playwright-mcp — deferred (needs a browser toolchain).** Spike confirmed
 `npm ci` + `npx playwright install --with-deps` work against our snapshot apt, but
