@@ -151,6 +151,13 @@
     "status": "landed",
     "ts": "2026-06-18T16:25:21.733397+00:00"
   },
+  "https://github.com/hoppscotch/hoppscotch": {
+    "commit": "e067ee0b3224c675ba4b9bcd98366d0f1b6be3ee",
+    "log": "20260619-124001-https-github-com-hoppscotch-hoppscotch.log",
+    "project": "hoppscotch",
+    "status": "landed",
+    "ts": "2026-06-19T12:53:45.240809+00:00"
+  },
   "https://github.com/janhq/jan": {
     "log": "20260619-070002-https-github-com-janhq-jan.log",
     "reason": "could not land: verification failed {\"build\": true, \"smoke\": false, \"tests\": {}, \"smoke_target_exists\": true}",

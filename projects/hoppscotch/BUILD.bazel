@@ -1,0 +1,28 @@
+load("//harness:defs.bzl", "repo_build", "repo_smoke")
+
+# hoppscotch (rank_code_size 271): Open-source API development ecosystem (Postman alternative).
+# pnpm@10.33.4 monorepo: Vue.js web app, NestJS backend, and @hoppscotch/cli (the "hopp" CLI).
+#
+# build: Install pnpm, then install the full workspace with --ignore-scripts to skip
+#        native-module compilation (argon2/bcrypt/canvas are backend-only; isolated-vm
+#        is an optional peer dep in @hoppscotch/js-sandbox, dynamically imported only
+#        in the --legacy-sandbox path). Build the three packages the CLI needs in order:
+#        @hoppscotch/data (vite), @hoppscotch/js-sandbox (vite), @hoppscotch/cli (tsup).
+#        The default sandbox uses faraday-cage (quickjs-emscripten, pure JS/WASM).
+# test:  Deferred. The vitest suite exercises sandbox execution (quickjs-emscripten)
+#        and has async setup complexity; no clean offline subset was identified.
+# smoke: Run the built hopp CLI with --ver (version flag) and --help to confirm
+#        the CLI loads correctly without native modules.
+repo_build(
+    name = "hoppscotch",
+    repo = "https://github.com/hoppscotch/hoppscotch",
+    commit = "e067ee0b3224c675ba4b9bcd98366d0f1b6be3ee",
+    build = "npm install -g pnpm@10.33.4 && pnpm install --frozen-lockfile --ignore-scripts && pnpm --filter @hoppscotch/data run build && pnpm --filter @hoppscotch/js-sandbox run build && pnpm --filter @hoppscotch/cli run build",
+    toolchain = "//toolchains:node_rootfs",
+)
+
+repo_smoke(
+    name = "hoppscotch",
+    built = ":hoppscotch",
+    toolchain = "//toolchains:node_rootfs",
+)
