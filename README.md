@@ -194,7 +194,7 @@ Set `CLAUDE_BUDGET_SECONDS` to change the per-project time budget (default 5400s
 
 ## Status
 
-**56 projects landed, 8 deferred** (see ledger). Six cached language toolchains:
+**56 projects landed, 9 deferred** (see ledger). Six cached language toolchains:
 `node` (24), `python`, `go` (1.26), `rust` (1.96 + clippy/rustfmt), `shell`
 (bats), `c` (autotools + g++-14 + cmake). `bazel test //projects/...` is the
 cross-project health check (build+test+smoke per project). Each landed project is
@@ -255,6 +255,7 @@ offline/core test subset over network/TTY/root-coupled tests.
 | 419 | browser-use | Python | venv + `pip install` | (deferred: needs Playwright browser + LLM API keys) | `import browser_use` + version | ✅⏸️ |
 | 407 | mempalace | Python | venv + `pip install` | (deferred: some tests download ChromaDB ONNX model ~79 MB at test time; no offline marker) | `mempalace --version`/`--help` | ✅⏸️ |
 | 404 | textual | Python | venv + `pip install` | `pytest` (~3005; excl. snapshot/optional) | run a headless Textual app via pilot | ✅✅ |
+| 400 | openpilot | Python | — | — | — | ⏸️ deferred |
 | 386 | v2ray-core | Go | `go build` | (deferred: needs geoip/geosite data) | `v2ray version`/`help` | ✅⏸️ |
 | 357 | black | Python | venv + `pip install` | `pytest` (~465) | format `x=1` → `x = 1` via the CLI | ✅✅ |
 | 311 | cli/cli | Go | `go build` | (deferred: root-permission tests) | `gh --version`/`--help` | ✅⏸️ |
@@ -329,6 +330,8 @@ the full build; a new combined `go_c_rootfs` toolchain holding Go + cmake + g++ 
 required. That toolchain investment is a human decision — deferred.
 
 **openscreen — deferred (Electron screen-recording GUI app; native screen-capture modules).** openscreen is a screen-recording and demo-creation app (alternative to Screen Studio). Its repo contains `CMakeLists.txt` and `Package.swift` (native macOS screen-capture modules built around AVFoundation/ScreenCaptureKit) alongside a `package.json` Electron frontend — the classic Electron + native addon shape. The app opens a GUI window for recording and editing; there is no headless or CLI mode. Same category as lossless-cut, tabby, pake, and alacritty.
+
+**openpilot — deferred (automotive ADAS OS; 22+ vendored native libs; no headless CLI).** openpilot is an open-source operating system for driver-assistance systems, designed to run on comma.ai hardware (comma 3/3X) and interface with a car's CAN bus via panda. Its `pyproject.toml` declares no scripts or entry-points — there is no `openpilot --version` or standalone CLI. The build pulls 22+ vendored C/C++ libraries (FFmpeg, Eigen, ZeroMQ, libjpeg, compiler toolchains) from a custom upstream repository, plus `pycapnp` (requires compiled capnproto headers) and a MetaDrive simulator for tools — effectively a multi-GB native build chain on top of the Python layer. No meaningful headless smoke exists: normal operation manages multiple ADAS subprocesses talking to car hardware, and the test suite requires hardware replay data or hardware-in-the-loop. Deferred pending a purpose-built toolchain that vendors the native deps.
 
 **GUI / heavy-system-dep deferrals.** alacritty (OpenGL terminal), tabby
 (Electron), lossless-cut (Electron), and pake (Tauri) are GUI apps with no

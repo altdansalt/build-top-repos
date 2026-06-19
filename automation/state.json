@@ -37,6 +37,12 @@
     "status": "deferred",
     "ts": "2026-06-18T00:00:00+00:00"
   },
+  "https://github.com/commaai/openpilot": {
+    "log": "20260619-061001-https-github-com-commaai-openpilot.log",
+    "reason": "openpilot's pyproject.toml defines no scripts or entry-points, so there is no CLI to smoke-test. The build requires 22+ vendored C/C++ native libraries (FFmpeg, Eigen, ZeroMQ, libjpeg, compiler toolchains) sourced from a custom GitHub repository plus pycapnp (needs compiled capnproto headers) \u2014 effectively a multi-GB native build chain. Normal operation manages ADAS subprocesses interfacing with a car's CAN bus via hardware; tests require replay data or hardware-in-the-loop. No cached toolchain covers this build and no honest headless smoke exists.",
+    "status": "deferred",
+    "ts": "2026-06-19T06:14:08.311703+00:00"
+  },
   "https://github.com/dokku/dokku": {
     "commit": "ef5f2f70866507d4f34953c6985d4fc1fe2b4cd2",
     "log": "20260619-031001-https-github-com-dokku-dokku.log",
