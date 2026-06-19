@@ -5,6 +5,13 @@
     "status": "deferred",
     "ts": "2026-06-18T00:00:00+00:00"
   },
+  "https://github.com/aaif-goose/goose": {
+    "commit": "e6da0c6a14f2b5ab47804631fd9465d238f88b90",
+    "log": "20260619-140001-https-github-com-aaif-goose-goose.log",
+    "project": "goose",
+    "status": "landed",
+    "ts": "2026-06-19T14:26:25.436548+00:00"
+  },
   "https://github.com/affaan-m/ecc": {
     "commit": "34faa39bd3cd496a0aece0245f2b7e38b7923abc",
     "log": "20260619-094001-https-github-com-affaan-m-ecc.log",

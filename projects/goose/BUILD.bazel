@@ -1,0 +1,29 @@
+load("//harness:defs.bzl", "repo_build", "repo_smoke")
+
+# goose (rank_code_size 239): Open-source extensible AI agent CLI — install,
+# execute, edit, and test with any LLM.
+#
+# build: apt-install pkg-config + libsqlite3-dev (sqlx/sqlite needs system
+#        libsqlite3 via pkg-config since the bundled feature isn't selected);
+#        build with --no-default-features + portable-default to skip
+#        local-inference (llama-cpp-2 needs cmake/C++) and system-keyring
+#        (needs libdbus), which are absent from rust_rootfs.
+# smoke: goose --version + goose --help.
+#
+# NOTE: cargo test DEFERRED. The test suite requires live LLM API endpoints
+#       (ANTHROPIC_API_KEY, OPENAI_API_KEY, etc.) and no offline subset exists.
+RUST = "//toolchains:rust_rootfs"
+
+repo_build(
+    name = "goose",
+    repo = "https://github.com/aaif-goose/goose",
+    commit = "e6da0c6a14f2b5ab47804631fd9465d238f88b90",
+    build = "DEBIAN_FRONTEND=noninteractive apt-get update -qq && apt-get install -y -q pkg-config libsqlite3-dev && CARGO_HOME=/work/goose/.cargo cargo build --bin goose --no-default-features --features portable-default",
+    toolchain = RUST,
+)
+
+repo_smoke(
+    name = "goose",
+    built = ":goose",
+    toolchain = RUST,
+)
