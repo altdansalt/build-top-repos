@@ -210,6 +210,12 @@
     "status": "deferred",
     "ts": "2026-06-19T00:20:48.102327+00:00"
   },
+  "https://github.com/qbittorrent/qbittorrent": {
+    "log": "20260619-085001-https-github-com-qbittorrent-qbittorrent.log",
+    "reason": "qBittorrent's headless variant (qbittorrent-nox) avoids a display server but still links Qt6Core at runtime, which transitively requires the ~36 MB libicudata.so.74 ICU data library plus libQt6Network, libQt6Sql, libQt6Xml, and libtorrent-rasterbar. These are not in c_rootfs. Bundling them at build time would create an ~80-100 MB artifact of shared libs; running apt-get install in the smoke step risks the 300s sh_test timeout. Ubuntu Qt6 packages do not ship static libs, so static linking is unavailable without building Qt6 from source (itself a multi-hour build requiring a new toolchain). A dedicated c_qt_rootfs toolchain baking Qt6 + libtorrent-rasterbar is needed \u2014 toolchain investment is a human decision.",
+    "status": "deferred",
+    "ts": "2026-06-19T08:55:21.112420+00:00"
+  },
   "https://github.com/qdrant/qdrant": {
     "commit": "44ad62f8cd69642be5afa6441612525e24a0d063",
     "log": "20260618-223001-https-github-com-qdrant-qdrant.log",

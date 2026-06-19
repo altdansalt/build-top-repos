@@ -194,7 +194,7 @@ Set `CLAUDE_BUDGET_SECONDS` to change the per-project time budget (default 5400s
 
 ## Status
 
-**61 projects landed, 14 deferred** (see ledger). Six cached language toolchains:
+**61 projects landed, 15 deferred** (see ledger). Six cached language toolchains:
 `node` (24), `python`, `go` (1.26), `rust` (1.96 + clippy/rustfmt), `shell`
 (bats), `c` (autotools + g++-14 + cmake). `bazel test //projects/...` is the
 cross-project health check (build+test+smoke per project). Each landed project is
@@ -284,6 +284,7 @@ offline/core test subset over network/TTY/root-coupled tests.
 | 19 | php-src | C | apt re2c; buildconf + configure (no libxml/sqlite3/dom; HEAD removed pre-gen lexers + bundled SQLite) + make | (deferred: ~15 000-test suite) | `sapi/cli/php --version` + eval PHP expressions | ✅⏸️ |
 | 244 | zellij | Rust | apt cmake+perl; `cargo build --no-default-features --features vendored_curl,web_server_capability` (pre-compiled WASM plugins embedded from assets) | (deferred: integration suite drives TUI sessions via fake PTY; no offline unit subset) | `zellij --version`/`--help` | ✅⏸️ |
 | 563 | openscreen | TS | — | — | — | ⏸️ deferred |
+| 353 | qbittorrent | C++ | — | — | — | ⏸️ deferred |
 
 **playwright-mcp — deferred (needs a browser toolchain).** Spike confirmed
 `npm ci` + `npx playwright install --with-deps` work against our snapshot apt, but
@@ -340,6 +341,18 @@ required. That toolchain investment is a human decision — deferred.
 **openpilot — deferred (automotive ADAS OS; 22+ vendored native libs; no headless CLI).** openpilot is an open-source operating system for driver-assistance systems, designed to run on comma.ai hardware (comma 3/3X) and interface with a car's CAN bus via panda. Its `pyproject.toml` declares no scripts or entry-points — there is no `openpilot --version` or standalone CLI. The build pulls 22+ vendored C/C++ libraries (FFmpeg, Eigen, ZeroMQ, libjpeg, compiler toolchains) from a custom upstream repository, plus `pycapnp` (requires compiled capnproto headers) and a MetaDrive simulator for tools — effectively a multi-GB native build chain on top of the Python layer. No meaningful headless smoke exists: normal operation manages multiple ADAS subprocesses talking to car hardware, and the test suite requires hardware replay data or hardware-in-the-loop. Deferred pending a purpose-built toolchain that vendors the native deps.
 
 **imhex — deferred (Dear ImGui GUI hex editor; OpenGL + GLFW + display required).** ImHex is a graphical hex editor built on Dear ImGui with OpenGL 3.3 and GLFW for window management. Compiling it requires a large set of GUI dev headers (libgl-dev, libglew-dev, libglfw3-dev, and many more) plus dozens of C++ libraries fetched via CMake FetchContent during configuration. The application initialises an OpenGL context and GLFW window before doing anything useful — running it without a display server fails immediately at context creation; there is no `--version` early-exit, headless mode, or standalone CLI. Same category as alacritty and sniffnet.
+
+**qBittorrent — deferred (Qt6 runtime dep; needs c_qt_rootfs toolchain).** qBittorrent's
+headless variant (`qbittorrent-nox`) avoids a display server but still uses Qt6 internally:
+`libQt6Core.so.6` is an unconditional dependency and itself transitively requires the
+~36 MB ICU data library (`libicudata.so.74`) plus `libQt6Network`, `libQt6Sql`,
+`libQt6Xml`, and `libtorrent-rasterbar` at runtime. None of these are in `c_rootfs`.
+Bundling them at build time would produce an oversized artifact (~80-100 MB of shared
+libs); running `apt-get install` inside the smoke step risks the 300 s `sh_test`
+timeout (ICU data alone is ~36 MB to download). Ubuntu's Qt6 packages do not ship
+static libraries, so static linking without building Qt6 from source is not available.
+A dedicated `c_qt_rootfs` toolchain baking Qt6 + libtorrent-rasterbar is the right
+investment — deferred until that toolchain is built.
 
 **GUI / heavy-system-dep deferrals.** alacritty (OpenGL terminal), tabby
 (Electron), lossless-cut (Electron), pake (Tauri), and imhex (Dear ImGui hex
