@@ -194,7 +194,7 @@ Set `CLAUDE_BUDGET_SECONDS` to change the per-project time budget (default 5400s
 
 ## Status
 
-**65 projects landed, 17 deferred** (see ledger). Six cached language toolchains:
+**66 projects landed, 17 deferred** (see ledger). Six cached language toolchains:
 `node` (24), `python`, `go` (1.26), `rust` (1.96 + clippy/rustfmt), `shell`
 (bats), `c` (autotools + g++-14 + cmake). `bazel test //projects/...` is the
 cross-project health check (build+test+smoke per project). Each landed project is
@@ -291,6 +291,7 @@ offline/core test subset over network/TTY/root-coupled tests.
 | 322 | ecc | JS/npm | `npm install` | CI validators (agents/commands/rules/skills/hooks/catalog/registry; deferred: hooks+Python-invoking tests need python3) | `ecc --help` + `ecc catalog` | ✅⏸️ |
 | 315 | astro | TS/pnpm | pnpm@11.5.0 install + turbo build (`astro` + `@astrojs/*`; tsc + WASM compiler copy) | (deferred: integration tests need Playwright browser; e2e needs Firefox/Chrome) | `astro --version` + build a minimal static page (WASM compiler + Vite pipeline) | ✅⏸️ |
 | 314 | autogen | Python | venv + `pip install` (monorepo: autogen-core + autogen-agentchat from `python/packages/`) | `pytest` autogen-core unit suite (215; excl. code-executor/model-context/regressions) | `import autogen_core`/`autogen_agentchat` + version + basic API objects | ✅✅ |
+| 303 | spacy | Python | apt python3-dev+g++; venv + `pip install` + explicit click (typer 0.12+ dropped click as hard dep; spaCy code imports it directly) | (deferred: test suite fixtures load NLP models; no clean offline subset) | `spacy info` + blank-model tokenization from /tmp | ✅⏸️ |
 
 **playwright-mcp — deferred (needs a browser toolchain).** Spike confirmed
 `npm ci` + `npx playwright install --with-deps` work against our snapshot apt, but

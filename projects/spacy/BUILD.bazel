@@ -1,0 +1,28 @@
+load("//harness:defs.bzl", "repo_build", "repo_smoke")
+
+# spacy (rank_code_size 303): Industrial-strength NLP library in Python.
+#
+# build: apt python3-dev + g++ for Cython extension compilation (spaCy's
+#        tokenizer.pyx / vocab.pyx / etc. are compiled at install time);
+#        venv + pip install into the venv (build-system deps incl. Cython are
+#        fetched automatically into an isolated build env by pip).
+# test:  DEFERRED — spaCy's test suite uses NLP model fixtures (en_core_web_sm
+#        etc.) that require downloading trained models; no clean offline subset
+#        is readily identifiable without running the full conftest setup.
+# smoke: `spacy --version`, then a blank-model tokenization round-trip (blank
+#        models are always available without downloading anything).
+PY = "//toolchains:python_rootfs"
+
+repo_build(
+    name = "spacy",
+    repo = "https://github.com/explosion/spaCy",
+    commit = "e67199550e365dacee28b109210c3a43e1477638",
+    build = "apt-get install -y -qq python3-dev g++ && python3 -m venv .venv && .venv/bin/pip install --quiet . click",
+    toolchain = PY,
+)
+
+repo_smoke(
+    name = "spacy",
+    built = ":spacy",
+    toolchain = PY,
+)
