@@ -194,7 +194,7 @@ Set `CLAUDE_BUDGET_SECONDS` to change the per-project time budget (default 5400s
 
 ## Status
 
-**88 projects landed, 26 deferred** (see ledger). Six cached language toolchains:
+**88 projects landed, 27 deferred** (see ledger). Six cached language toolchains:
 `node` (28), `python`, `go` (1.26), `rust` (1.96 + clippy/rustfmt), `shell`
 (bats), `c` (autotools + g++-14 + cmake). `bazel test //projects/...` is the
 cross-project health check (build+test+smoke per project). Each landed project is
@@ -324,6 +324,7 @@ offline/core test subset over network/TTY/root-coupled tests.
 | 99 | deno | Rust | apt cmake+protobuf-compiler+pkg-config+curl+clang; rm rust-toolchain.toml; cargo build --bin deno (v8 crate downloads prebuilt V8 via curl; aws-lc-rs uses cmake; bindgen needs clang) | (deferred: test suite requires a live Deno runtime and network access; no offline subset) | `deno --version` + eval JS snippet | ✅⏸️ |
 | 95 | servo | Rust | — | — | — | ⏸️ deferred |
 | 90 | langflow | Python | venv + `pip install` (langflow-sdk + lfx + langflow-base from source) | (deferred: test suite requires running DB + LLM API keys; no offline subset) | `langflow-base --version` + `--help` | ✅⏸️ |
+| 54 | warp | Rust | — | — | — | ⏸️ deferred |
 
 **playwright-mcp — deferred (needs a browser toolchain).** Spike confirmed
 `npm ci` + `npx playwright install --with-deps` work against our snapshot apt, but
@@ -416,6 +417,8 @@ investment — deferred until that toolchain is built.
 **tdesktop — deferred (Qt5/Qt6 GUI desktop app; Qt dev headers required; no headless mode).** Telegram Desktop is a full Qt5/Qt6 messaging GUI application. Its CMake build unconditionally requires Qt5 or Qt6 development libraries (`qt5-default`/`qt6-base-dev` and many Qt modules: QtWidgets, QtNetwork, QtCore, QtGui) plus additional system libs (OpenSSL, FFmpeg, OpenAL, libxcb, libvpx, opus, lz4) — none of which are in `c_rootfs`. On Linux, `QApplication` initializes an X11/Wayland display connection before any argument processing, making even a `--version` early-exit impossible in the headless container; the application has no CLI or headless operation mode. Providing the required Qt5/Qt6 + display stack would require a dedicated `c_qt_rootfs` toolchain — same gap as obs-studio and qbittorrent. Deferred until that toolchain is built.
 
 **servo — deferred (Rust browser engine; GStreamer + EGL/GLES + X11 stack; runtime dep footprint too large).** Servo is a Rust browser/rendering engine combining WebRender (GPU rendering via OpenGL ES + EGL), SpiderMonkey (JavaScript engine via the mozjs crate, requiring cmake + clang + llvm-dev for C++ codegen), and a full GStreamer media pipeline (gstreamer1.0-plugins-good/bad/ugly/libav + ~12 additional GStreamer dev packages). Servo's own `mach bootstrap` installs ~40 apt packages on Linux; the minimal set includes `libgles2-mesa-dev`, `libegl1-mesa-dev`, `xorg-dev`, `libx11-dev`, `libxcb-render0-dev`, `libxcb-xfixes0-dev`, `libxkbcommon-dev`, `libvulkan1`, `libharfbuzz-dev`, `libfreetype6-dev`, and the full GStreamer stack. At runtime, `servoshell` links against libEGL.so.1, libGLESv2.so.2, libgstreamer-1.0.so.0 and dozens of GStreamer codec plugin `.so` files, libvulkan.so.1, libX11.so.6, libxcb*.so, libharfbuzz.so.0, and more — a combined runtime footprint of hundreds of MB of shared libraries, far beyond what the `.so`-bundling approach used by manim or codewhale can handle. A dedicated toolchain baking Mesa EGL/GLES, GStreamer codecs, X11/XCB, and Vulkan would be required. Same broad category as alacritty (OpenGL rendering), but with a significantly larger and more varied dependency footprint.
+
+**warp — deferred (GPU-accelerated terminal emulator; wgpu + winit + x11rb; no headless mode).** Warp (warpdotdev/warp) is a GPU-accelerated agentic terminal emulator. On Linux its compilation requires wgpu (Vulkan/EGL GPU rendering), winit (display-server window management), and x11rb (X11 protocol) — none of whose development headers (`libvulkan-dev`, `libxkbcommon-dev`, `libx11-dev`, `libxcb-*-dev`) are present in `rust_rootfs`. The main binary (`warp-oss`) calls `warp::run()` directly without any CLI argument check, so there is no early-exit path for `--version` before the GPU rendering pipeline and window manager are initialised; the binary opens a graphical terminal window for all normal operation. The `rust-toolchain.toml` additionally pins `1.92.0` (removable, as done for deno/polars), but the GUI and GPU dep gap is the blocking constraint. Same category as alacritty (OpenGL terminal) and kitty (GPU terminal emulator).
 
 **GUI / heavy-system-dep deferrals.** alacritty (OpenGL terminal), tabby
 (Electron), lossless-cut (Electron), pake (Tauri), and imhex (Dear ImGui hex

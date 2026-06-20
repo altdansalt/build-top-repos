@@ -558,6 +558,12 @@
     "status": "landed",
     "ts": "2026-06-18T22:21:04.769423+00:00"
   },
+  "https://github.com/warpdotdev/warp": {
+    "log": "20260620-010001-https-github-com-warpdotdev-warp.log",
+    "reason": "Warp is a full GPU-accelerated terminal emulator GUI application. Its build requires wgpu (Vulkan/EGL GPU rendering), winit (window management), and x11rb (X11 protocol) dev headers (libvulkan-dev, libxkbcommon-dev, libx11-dev, libxcb-*-dev) \u2014 none present in rust_rootfs. The main binary (warp-oss) calls warp::run() immediately with no CLI argument pre-check, so even --version triggers full GPU/window initialization. There is no headless or CLI-only mode. This is the same deferral category as alacritty (OpenGL terminal, deferred) and kitty (GPU terminal emulator, deferred). A dedicated toolchain baking the X11/Wayland/wgpu dev stack would be required \u2014 the same class of investment noted for sniffnet and servo.",
+    "status": "deferred",
+    "ts": "2026-06-20T01:04:43.777140+00:00"
+  },
   "https://github.com/webpack/webpack": {
     "commit": "868209f9b33f88fff9531727eee72088171c4e0f",
     "log": "20260618-233001-https-github-com-webpack-webpack.log",
