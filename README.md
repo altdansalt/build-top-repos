@@ -194,7 +194,7 @@ Set `CLAUDE_BUDGET_SECONDS` to change the per-project time budget (default 5400s
 
 ## Status
 
-**88 projects landed, 27 deferred** (see ledger). Six cached language toolchains:
+**89 projects landed, 27 deferred** (see ledger). Six cached language toolchains:
 `node` (28), `python`, `go` (1.26), `rust` (1.96 + clippy/rustfmt), `shell`
 (bats), `c` (autotools + g++-14 + cmake). `bazel test //projects/...` is the
 cross-project health check (build+test+smoke per project). Each landed project is
@@ -325,6 +325,7 @@ offline/core test subset over network/TTY/root-coupled tests.
 | 95 | servo | Rust | — | — | — | ⏸️ deferred |
 | 90 | langflow | Python | venv + `pip install` (langflow-sdk + lfx + langflow-base from source) | (deferred: test suite requires running DB + LLM API keys; no offline subset) | `langflow-base --version` + `--help` | ✅⏸️ |
 | 54 | warp | Rust | — | — | — | ⏸️ deferred |
+| 52 | tidb | Go | `go build ./cmd/tidb-server/` | (deferred: integration tests require TiKV/PD cluster; no offline subset) | `tidb-server -V` + `--help` | ✅⏸️ |
 
 **playwright-mcp — deferred (needs a browser toolchain).** Spike confirmed
 `npm ci` + `npx playwright install --with-deps` work against our snapshot apt, but

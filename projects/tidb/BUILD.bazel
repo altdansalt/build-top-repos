@@ -1,0 +1,24 @@
+load("//harness:defs.bzl", "repo_build", "repo_smoke")
+
+# tidb (rank_code_size 52): Distributed SQL database with ACID guarantees,
+# native support for transactions, analytics, and vector search.
+#
+# build: `go build` the tidb-server binary from cmd/tidb-server.
+# test:  deferred — integration tests require a running TiKV/PD cluster;
+#        no clean offline subset within the Bazel 300s timeout.
+# smoke: verify the built tidb-server binary by printing version and help.
+GO = "//toolchains:go_rootfs"
+
+repo_build(
+    name = "tidb",
+    repo = "https://github.com/pingcap/tidb",
+    commit = "7f73dd74a089dd9d0f2c55147b9fadca4c537707",
+    build = "go build -o tidb-server ./cmd/tidb-server/",
+    toolchain = GO,
+)
+
+repo_smoke(
+    name = "tidb",
+    built = ":tidb",
+    toolchain = GO,
+)
