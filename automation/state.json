@@ -314,6 +314,12 @@
     "status": "deferred",
     "ts": "2026-06-18T18:31:20.786562+00:00"
   },
+  "https://github.com/milvus-io/milvus": {
+    "log": "20260620-012001-https-github-com-milvus-io-milvus.log",
+    "reason": "The entire milvus server binary (and all utility tools) depend on a precompiled C++ shared library (milvus_core.so) via CGo. Building that library from source requires cmake, conan, g++, and a Rust toolchain (for the tantivy-binding full-text search component embedded in internal/core/thirdparty). No single cached toolchain (go_rootfs, c_rootfs, rust_rootfs) covers this stack; a combined Go+C+++Rust toolchain would be required. Deferring for the same reason as ollama.",
+    "status": "deferred",
+    "ts": "2026-06-20T01:24:14.752138+00:00"
+  },
   "https://github.com/mudler/localai": {
     "log": "20260619-162001-https-github-com-mudler-localai.log",
     "reason": "could not land: verification failed {\"build\": true, \"smoke\": false, \"tests\": {}, \"smoke_target_exists\": true}",
