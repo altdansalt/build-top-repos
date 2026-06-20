@@ -376,6 +376,12 @@
     "status": "deferred",
     "ts": "2026-06-18T22:04:16.582313+00:00"
   },
+  "https://github.com/openclaw/openclaw": {
+    "log": "20260620-022002-https-github-com-openclaw-openclaw.log",
+    "reason": "The CLI entry point (openclaw.mjs) calls ensureSupportedNodeVersion() before any argument parsing, including --version. Node 22.14.0 (pinned in node_rootfs) is below the 22.19 minimum, so the process exits with code 1 before producing any output. The smoke would always fail. Upgrading the node_rootfs toolchain to Node 22.19+ is required to land this project.",
+    "status": "deferred",
+    "ts": "2026-06-20T02:22:53.990916+00:00"
+  },
   "https://github.com/parcel-bundler/parcel": {
     "commit": "59484858a1a0bcbb71f74088956bb437a2db6505",
     "log": "20260619-083001-https-github-com-parcel-bundler-parcel.log",
