@@ -194,7 +194,7 @@ Set `CLAUDE_BUDGET_SECONDS` to change the per-project time budget (default 5400s
 
 ## Status
 
-**89 projects landed, 29 deferred** (see ledger). Six cached language toolchains:
+**89 projects landed, 30 deferred** (see ledger). Six cached language toolchains:
 `node` (28), `python`, `go` (1.26), `rust` (1.96 + clippy/rustfmt), `shell`
 (bats), `c` (autotools + g++-14 + cmake). `bazel test //projects/...` is the
 cross-project health check (build+test+smoke per project). Each landed project is
@@ -328,6 +328,7 @@ offline/core test subset over network/TTY/root-coupled tests.
 | 52 | tidb | Go | `go build ./cmd/tidb-server/` | (deferred: integration tests require TiKV/PD cluster; no offline subset) | `tidb-server -V` + `--help` | ✅⏸️ |
 | 51 | milvus | Go | — | — | — | ⏸️ deferred |
 | 38 | godot | C++ | — | — | — | ⏸️ deferred |
+| 23 | cockroach | Go | — | — | — | ⏸️ deferred |
 
 **playwright-mcp — deferred (needs a browser toolchain).** Spike confirmed
 `npm ci` + `npx playwright install --with-deps` work against our snapshot apt, but
@@ -426,6 +427,8 @@ investment — deferred until that toolchain is built.
 **milvus — deferred (Go binary requires CGo linking against `milvus_core` C++ library; needs cmake + conan + Rust; no combined toolchain).** Milvus is a cloud-native vector database whose entire Go binary is coupled to a pre-compiled C++ shared library (`milvus_core.so`). The main entry point (`cmd/main.go`) transitively imports `internal/util/initcore` and `internal/util/segcore`, both of which use `#cgo pkg-config: milvus_core` to call into the C++ segcore and knowhere vector-search libraries. Building `milvus_core` from `internal/core/` requires cmake + conan + g++ for the knowhere/arrow/faiss stack, plus a Rust toolchain for the bundled `tantivy-binding` (full-text search). The `internal/storagev2/packed` package also carries CGo bindings, meaning even utility tools like `cmd/tools/binlog` cannot be built without `milvus_core`. Neither `go_rootfs` (no C++ or Rust) nor `c_rootfs` (no Go), nor `rust_rootfs` (no Go or cmake) covers this combination. A combined toolchain baking Go + cmake + conan + g++ + Rust is the right investment — same blocking gap as ollama. Deferred until that toolchain is built.
 
 **godot — deferred (GUI game engine; SCons build; X11/GL headers required; build time prohibitive at rank 38).** Godot Engine is a multi-platform 2D/3D game editor and runtime (rank 38 — one of the largest codebases in the list). On Linux the `linuxbsd` platform build requires SCons (`python3-scons`, not present in `c_rootfs`), plus X11 dev headers (`libx11-dev`, `libxcursor-dev`, `libxinerama-dev`, `libxrandr-dev`, `libxi-dev`), and optionally OpenGL/Vulkan headers. Even with all packages installed via apt, the SCons compilation of a codebase this size is prohibitively slow: build attempts timed out after 10+ minutes without completing the git clone + SCons invocation. The resulting binary is primarily a graphical game editor; while `godot --headless` allows running GDScript without a display at runtime, there is no lightweight CLI or server-only binary (Godot 4 dropped the dedicated `platform=server` separate build). A dedicated toolchain pre-baking SCons + X11/GL dev headers is the right investment — deferred until then.
+
+**cockroach — deferred (protobuf codegen not checked in; requires CockroachDB's own Bazel pipeline).** CockroachDB's repository does not check in protobuf-generated `*pb` packages (`inspectzpb`, `rowencpb`, `insightspb`, `changefeedpb`, and ~8 more). These are produced by CockroachDB's internal Bazel build pipeline (`./dev build` → `bazel build //...`), which runs `protoc` + custom CockroachDB Gazelle rules before handing off to the Go compiler. A bare `CGO_ENABLED=0 go build ./pkg/cmd/cockroach` fails immediately with "no required module provides package github.com/cockroachdb/cockroach/pkg/…/…pb" for each missing package. Satisfying this would require baking `protoc`, `protoc-gen-go`, and CockroachDB's Bazel/Gazelle setup into a new toolchain — the same class of investment as adding a browser toolchain for playwright-mcp. Deferred until that toolchain is built.
 
 **GUI / heavy-system-dep deferrals.** alacritty (OpenGL terminal), tabby
 (Electron), lossless-cut (Electron), pake (Tauri), and imhex (Dear ImGui hex
