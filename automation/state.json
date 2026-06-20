@@ -186,6 +186,12 @@
     "status": "landed",
     "ts": "2026-06-19T18:16:55.912528+00:00"
   },
+  "https://github.com/godotengine/godot": {
+    "log": "20260620-013001-https-github-com-godotengine-godot.log",
+    "reason": "Godot is a multi-platform 2D/3D game editor/engine (rank 38 \u2014 one of the largest codebases). On Linux, the linuxbsd platform build requires SCons (python3-scons, not in c_rootfs) plus X11 dev headers and optionally OpenGL/Vulkan headers. Build attempts timed out after 10+ minutes without completing the git clone + SCons compilation step. The codebase is prohibitively large for in-container SCons builds: even with -j8 the full editor build takes 30-60+ minutes. The resulting binary is primarily a graphical game editor; Godot 4 dropped the dedicated platform=server separate build, so there is no lightweight headless CLI binary. A dedicated toolchain pre-baking SCons + X11/GL dev headers would be the right investment.",
+    "status": "deferred",
+    "ts": "2026-06-20T01:49:03.372727+00:00"
+  },
   "https://github.com/google-gemini/gemini-cli": {
     "commit": "d5e25b99291ca510fe357b29323d636c15b6cd49",
     "log": "20260618-214001-https-github-com-google-gemini-gemini-cli.log",

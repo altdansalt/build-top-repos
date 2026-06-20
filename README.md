@@ -194,7 +194,7 @@ Set `CLAUDE_BUDGET_SECONDS` to change the per-project time budget (default 5400s
 
 ## Status
 
-**89 projects landed, 28 deferred** (see ledger). Six cached language toolchains:
+**89 projects landed, 29 deferred** (see ledger). Six cached language toolchains:
 `node` (28), `python`, `go` (1.26), `rust` (1.96 + clippy/rustfmt), `shell`
 (bats), `c` (autotools + g++-14 + cmake). `bazel test //projects/...` is the
 cross-project health check (build+test+smoke per project). Each landed project is
@@ -327,6 +327,7 @@ offline/core test subset over network/TTY/root-coupled tests.
 | 54 | warp | Rust | — | — | — | ⏸️ deferred |
 | 52 | tidb | Go | `go build ./cmd/tidb-server/` | (deferred: integration tests require TiKV/PD cluster; no offline subset) | `tidb-server -V` + `--help` | ✅⏸️ |
 | 51 | milvus | Go | — | — | — | ⏸️ deferred |
+| 38 | godot | C++ | — | — | — | ⏸️ deferred |
 
 **playwright-mcp — deferred (needs a browser toolchain).** Spike confirmed
 `npm ci` + `npx playwright install --with-deps` work against our snapshot apt, but
@@ -423,6 +424,8 @@ investment — deferred until that toolchain is built.
 **warp — deferred (GPU-accelerated terminal emulator; wgpu + winit + x11rb; no headless mode).** Warp (warpdotdev/warp) is a GPU-accelerated agentic terminal emulator. On Linux its compilation requires wgpu (Vulkan/EGL GPU rendering), winit (display-server window management), and x11rb (X11 protocol) — none of whose development headers (`libvulkan-dev`, `libxkbcommon-dev`, `libx11-dev`, `libxcb-*-dev`) are present in `rust_rootfs`. The main binary (`warp-oss`) calls `warp::run()` directly without any CLI argument check, so there is no early-exit path for `--version` before the GPU rendering pipeline and window manager are initialised; the binary opens a graphical terminal window for all normal operation. The `rust-toolchain.toml` additionally pins `1.92.0` (removable, as done for deno/polars), but the GUI and GPU dep gap is the blocking constraint. Same category as alacritty (OpenGL terminal) and kitty (GPU terminal emulator).
 
 **milvus — deferred (Go binary requires CGo linking against `milvus_core` C++ library; needs cmake + conan + Rust; no combined toolchain).** Milvus is a cloud-native vector database whose entire Go binary is coupled to a pre-compiled C++ shared library (`milvus_core.so`). The main entry point (`cmd/main.go`) transitively imports `internal/util/initcore` and `internal/util/segcore`, both of which use `#cgo pkg-config: milvus_core` to call into the C++ segcore and knowhere vector-search libraries. Building `milvus_core` from `internal/core/` requires cmake + conan + g++ for the knowhere/arrow/faiss stack, plus a Rust toolchain for the bundled `tantivy-binding` (full-text search). The `internal/storagev2/packed` package also carries CGo bindings, meaning even utility tools like `cmd/tools/binlog` cannot be built without `milvus_core`. Neither `go_rootfs` (no C++ or Rust) nor `c_rootfs` (no Go), nor `rust_rootfs` (no Go or cmake) covers this combination. A combined toolchain baking Go + cmake + conan + g++ + Rust is the right investment — same blocking gap as ollama. Deferred until that toolchain is built.
+
+**godot — deferred (GUI game engine; SCons build; X11/GL headers required; build time prohibitive at rank 38).** Godot Engine is a multi-platform 2D/3D game editor and runtime (rank 38 — one of the largest codebases in the list). On Linux the `linuxbsd` platform build requires SCons (`python3-scons`, not present in `c_rootfs`), plus X11 dev headers (`libx11-dev`, `libxcursor-dev`, `libxinerama-dev`, `libxrandr-dev`, `libxi-dev`), and optionally OpenGL/Vulkan headers. Even with all packages installed via apt, the SCons compilation of a codebase this size is prohibitively slow: build attempts timed out after 10+ minutes without completing the git clone + SCons invocation. The resulting binary is primarily a graphical game editor; while `godot --headless` allows running GDScript without a display at runtime, there is no lightweight CLI or server-only binary (Godot 4 dropped the dedicated `platform=server` separate build). A dedicated toolchain pre-baking SCons + X11/GL dev headers is the right investment — deferred until then.
 
 **GUI / heavy-system-dep deferrals.** alacritty (OpenGL terminal), tabby
 (Electron), lossless-cut (Electron), pake (Tauri), and imhex (Dear ImGui hex
