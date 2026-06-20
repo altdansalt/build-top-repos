@@ -423,6 +423,12 @@
     "status": "landed",
     "ts": "2026-06-19T21:47:39.384867+00:00"
   },
+  "https://github.com/posthog/posthog": {
+    "log": "20260620-023002-https-github-com-posthog-posthog.log",
+    "reason": "PostHog is a full-stack web analytics platform (rank 9). Its Python backend is a Django application that calls django.setup() \u2014 connecting to PostgreSQL and ClickHouse \u2014 before any command runs. The repo is a polyglot monorepo (Python + TypeScript + Rust + Go) with no single toolchain covering the whole build. No CLI binary exists that runs without the full service stack, making an honest headless smoke impossible.",
+    "status": "deferred",
+    "ts": "2026-06-20T02:32:32.534173+00:00"
+  },
   "https://github.com/prisma/prisma": {
     "commit": null,
     "log": "20260619-100001-https-github-com-prisma-prisma.log",
