@@ -430,6 +430,12 @@
     "status": "deferred",
     "ts": "2026-06-19T00:20:48.102327+00:00"
   },
+  "https://github.com/pytorch/pytorch": {
+    "log": "20260620-021001-https-github-com-pytorch-pytorch.log",
+    "reason": "PyTorch at rank 14 is one of the largest codebases in the dataset. Building from source requires cmake, ninja, g++, and many native C++ libraries not all present in python_rootfs or c_rootfs; CPU-only compilation alone takes 1-4 hours on fast hardware, far exceeding the Bazel timeout. The only fast path \u2014 pip install from the PyTorch whl index \u2014 downloads a pre-built binary artifact that does not correspond to the pinned source commit, making it an unprincipled smoke analogous to downloading a pre-built cpython binary instead of compiling. Full GPU-accelerated builds additionally require a cuda_rootfs toolchain with the NVIDIA CUDA toolkit. No honest build-from-source path fits the current cached toolchains.",
+    "status": "deferred",
+    "ts": "2026-06-20T02:12:45.358239+00:00"
+  },
   "https://github.com/qbittorrent/qbittorrent": {
     "log": "20260619-085001-https-github-com-qbittorrent-qbittorrent.log",
     "reason": "qBittorrent's headless variant (qbittorrent-nox) avoids a display server but still links Qt6Core at runtime, which transitively requires the ~36 MB libicudata.so.74 ICU data library plus libQt6Network, libQt6Sql, libQt6Xml, and libtorrent-rasterbar. These are not in c_rootfs. Bundling them at build time would create an ~80-100 MB artifact of shared libs; running apt-get install in the smoke step risks the 300s sh_test timeout. Ubuntu Qt6 packages do not ship static libs, so static linking is unavailable without building Qt6 from source (itself a multi-hour build requiring a new toolchain). A dedicated c_qt_rootfs toolchain baking Qt6 + libtorrent-rasterbar is needed \u2014 toolchain investment is a human decision.",
