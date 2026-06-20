@@ -320,6 +320,12 @@
     "status": "landed",
     "ts": "2026-06-19T02:41:51.487813+00:00"
   },
+  "https://github.com/microsoft/vscode": {
+    "log": "20260620-020001-https-github-com-microsoft-vscode.log",
+    "reason": "VS Code is an Electron GUI code editor (rank 16, one of the largest codebases). Its build requires a pinned Electron binary and native C++ addons not available in node_rootfs. There is no meaningful headless operation \u2014 even `code --version` requires the Electron binary and a display on Linux. The companion project code-server (rank 725) was already deferred explicitly because it compiles the bundled microsoft/vscode submodule as a multi-GB build. Same category as electron, tabby, and lossless-cut deferrals.",
+    "status": "deferred",
+    "ts": "2026-06-20T02:02:50.448932+00:00"
+  },
   "https://github.com/mifi/lossless-cut": {
     "log": "20260618-183001-https-github-com-mifi-lossless-cut.log",
     "reason": "lossless-cut is an Electron + React GUI video editing application. It uses electron-vite with a renderer targeting chrome148, requires electron-builder install-app-deps (downloads native Electron binaries), and has no headless or CLI mode \u2014 the packaged app opens a desktop window for all operations. This is the same category as tabby (Electron, deferred) and pake (Tauri, deferred): a GUI-only desktop app with no meaningful headless execution path.",
