@@ -491,6 +491,12 @@
     "status": "landed",
     "ts": "2026-06-18T23:12:35.107042+00:00"
   },
+  "https://github.com/tinyhumansai/openhuman": {
+    "log": "20260620-001001-https-github-com-tinyhumansai-openhuman.log",
+    "reason": "could not land: verification failed {\"build\": true, \"smoke\": false, \"tests\": {}, \"smoke_target_exists\": true}",
+    "status": "deferred",
+    "ts": "2026-06-20T00:51:00.427855+00:00"
+  },
   "https://github.com/toeverything/affine": {
     "log": "20260619-222001-https-github-com-toeverything-affine.log",
     "reason": "AFFiNE requires both Node.js (Yarn 4 monorepo) and Rust (cargo for @affine/native napi-rs addon) in the same build container. node_rootfs has no cargo; rust_rootfs has no Node.js/Yarn. The application is an Electron desktop GUI with no headless CLI mode, and the server component needs external databases (PostgreSQL, Redis, Elasticsearch). No honest smoke is possible without a combined toolchain.",
