@@ -1,0 +1,30 @@
+load("//harness:defs.bzl", "repo_build", "repo_smoke")
+
+# langflow (rank_code_size 90): Python tool for building and deploying
+# AI-powered agents and workflows.
+#
+# Monorepo structure: langflow-sdk (src/sdk/), lfx (src/lfx/ — the lightweight
+# executor runtime), and langflow-base (src/backend/base/ — the full FastAPI
+# server backend).  We install all three from source; remaining transitive deps
+# (langchain, pydantic, fastapi, …) arrive as manylinux wheels from PyPI.
+#
+# build: venv + install langflow-sdk, lfx, and langflow-base from source.
+# test:  DEFERRED — test suite requires a running SQLite/PostgreSQL database,
+#        Alembic migrations, and live LLM API keys; no offline unit subset.
+# smoke: langflow-base --version + --help (server not started; eager CLI flag
+#        exits before any DB or server code executes).
+PY = "//toolchains:python_rootfs"
+
+repo_build(
+    name = "langflow",
+    repo = "https://github.com/langflow-ai/langflow",
+    commit = "43d3510ec74ad3125f1e1e0b5598900c0e0e70f8",
+    build = "python3 -m venv .venv && .venv/bin/pip install ./src/sdk ./src/lfx ./src/backend/base",
+    toolchain = PY,
+)
+
+repo_smoke(
+    name = "langflow",
+    built = ":langflow",
+    toolchain = PY,
+)

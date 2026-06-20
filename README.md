@@ -194,7 +194,7 @@ Set `CLAUDE_BUDGET_SECONDS` to change the per-project time budget (default 5400s
 
 ## Status
 
-**87 projects landed, 26 deferred** (see ledger). Six cached language toolchains:
+**88 projects landed, 26 deferred** (see ledger). Six cached language toolchains:
 `node` (28), `python`, `go` (1.26), `rust` (1.96 + clippy/rustfmt), `shell`
 (bats), `c` (autotools + g++-14 + cmake). `bazel test //projects/...` is the
 cross-project health check (build+test+smoke per project). Each landed project is
@@ -323,6 +323,7 @@ offline/core test subset over network/TTY/root-coupled tests.
 | 104 | llama-cpp | C++ | cmake (CPU-only; g++-14; no CUDA) | (deferred: all tests need a GGUF model file at runtime) | `llama-cli --help` (no model needed) | ✅⏸️ |
 | 99 | deno | Rust | apt cmake+protobuf-compiler+pkg-config+curl+clang; rm rust-toolchain.toml; cargo build --bin deno (v8 crate downloads prebuilt V8 via curl; aws-lc-rs uses cmake; bindgen needs clang) | (deferred: test suite requires a live Deno runtime and network access; no offline subset) | `deno --version` + eval JS snippet | ✅⏸️ |
 | 95 | servo | Rust | — | — | — | ⏸️ deferred |
+| 90 | langflow | Python | venv + `pip install` (langflow-sdk + lfx + langflow-base from source) | (deferred: test suite requires running DB + LLM API keys; no offline subset) | `langflow-base --version` + `--help` | ✅⏸️ |
 
 **playwright-mcp — deferred (needs a browser toolchain).** Spike confirmed
 `npm ci` + `npx playwright install --with-deps` work against our snapshot apt, but
